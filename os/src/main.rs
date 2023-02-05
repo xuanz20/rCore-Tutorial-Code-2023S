@@ -13,17 +13,18 @@ mod board;
 
 #[macro_use]
 mod console;
-mod config;
-mod drivers;
-mod fs;
-mod lang_items;
-mod mm;
-mod sbi;
-mod sync;
-mod syscall;
-mod task;
-mod timer;
-mod trap;
+pub mod config;
+pub mod drivers;
+pub mod fs;
+pub mod lang_items;
+pub mod logging;
+pub mod mm;
+pub mod sbi;
+pub mod sync;
+pub mod syscall;
+pub mod task;
+pub mod timer;
+pub mod trap;
 
 use core::arch::global_asm;
 
@@ -44,6 +45,7 @@ fn clear_bss() {
 pub fn rust_main() -> ! {
     clear_bss();
     println!("[kernel] Hello, world!");
+    logging::init();
     mm::init();
     mm::remap_test();
     trap::init();

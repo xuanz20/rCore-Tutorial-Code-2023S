@@ -1,13 +1,26 @@
-use crate::fs::{open_file, OpenFlags};
-use crate::mm::{translated_ref, translated_refmut, translated_str};
-use crate::task::{
-    current_process, current_task, current_user_token, exit_current_and_run_next, pid2process,
-    suspend_current_and_run_next, SignalFlags,
+use crate::{
+    fs::{open_file, OpenFlags},
+    mm::{translated_ref, translated_refmut, translated_str},
+    task::{
+        current_process, current_task, current_user_token, exit_current_and_run_next, pid2process,
+        suspend_current_and_run_next, SignalFlags, TaskStatus,
+    },
+    config::MAX_SYSCALL_NUM,
 };
-use crate::timer::get_time_ms;
-use alloc::string::String;
-use alloc::sync::Arc;
-use alloc::vec::Vec;
+use alloc::{string::String, sync::Arc, vec::Vec};
+
+#[repr(C)]
+#[derive(Debug)]
+pub struct TimeVal {
+    pub sec: usize,
+    pub usec: usize,
+}
+
+pub struct TaskInfo {
+    status: TaskStatus,
+    syscall_times: [u32; MAX_SYSCALL_NUM],
+    time: usize,
+}
 
 pub fn sys_exit(exit_code: i32) -> ! {
     exit_current_and_run_next(exit_code);
@@ -17,10 +30,6 @@ pub fn sys_exit(exit_code: i32) -> ! {
 pub fn sys_yield() -> isize {
     suspend_current_and_run_next();
     0
-}
-
-pub fn sys_get_time() -> isize {
-    get_time_ms() as isize
 }
 
 pub fn sys_getpid() -> isize {
@@ -114,4 +123,39 @@ pub fn sys_kill(pid: usize, signal: u32) -> isize {
     } else {
         -1
     }
+}
+
+/// YOUR JOB: get time with second and microsecond
+/// HINT: You might reimplement it with virtual memory management.
+/// HINT: What if [`TimeVal`] is splitted by two pages ?
+pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
+    -1
+}
+
+/// YOUR JOB: Finish sys_task_info to pass testcases
+/// HINT: You might reimplement it with virtual memory management.
+/// HINT: What if [`TaskInfo`] is splitted by two pages ?
+pub fn sys_task_info(ti: *mut TaskInfo) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement mmap.
+pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement munmap.
+pub fn sys_munmap(_start: usize, _len: usize) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement spawn.
+/// HINT: fork + exec =/= spawn
+pub fn sys_spawn(_path: *const u8) -> isize {
+    -1
+}
+
+/// YOUR JOB: Set task priority
+pub fn sys_set_priority(_prio: isize) -> isize {
+    -1
 }
