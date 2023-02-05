@@ -15,20 +15,17 @@
 //! We then call [`task::run_first_task()`] and for the first time go to
 //! userspace.
 
-#![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
 
-extern crate alloc;
-
 #[macro_use]
 extern crate bitflags;
+#[macro_use]
+extern crate log;
 
-#[path = "boards/qemu.rs"]
-mod board;
+extern crate alloc;
 
 #[macro_use]
 mod console;
@@ -36,6 +33,7 @@ mod config;
 mod lang_items;
 mod loader;
 mod mm;
+mod logging;
 mod sbi;
 mod sync;
 pub mod syscall;
@@ -67,7 +65,6 @@ pub fn rust_main() -> ! {
     println!("[kernel] back to world!");
     mm::remap_test();
     trap::init();
-    //trap::enable_interrupt();
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
     task::run_first_task();

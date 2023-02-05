@@ -1,7 +1,21 @@
 //! Process management syscalls
+use crate::{
+    config::MAX_SYSCALL_NUM,
+    task::{exit_current_and_run_next, suspend_current_and_run_next, TaskStatus},
+};
 
-use crate::task::{exit_current_and_run_next, suspend_current_and_run_next};
-use crate::timer::get_time_ms;
+#[repr(C)]
+#[derive(Debug)]
+pub struct TimeVal {
+    pub sec: usize,
+    pub usec: usize,
+}
+
+pub struct TaskInfo {
+    status: TaskStatus,
+    syscall_times: [u32; MAX_SYSCALL_NUM],
+    time: usize,
+}
 
 /// task exits and submit an exit code
 pub fn sys_exit(exit_code: i32) -> ! {
@@ -16,7 +30,26 @@ pub fn sys_yield() -> isize {
     0
 }
 
-/// get current time
-pub fn sys_get_time() -> isize {
-    get_time_ms() as isize
+/// YOUR JOB: get time with second and microsecond
+/// HINT: You might reimplement it with virtual memory management.
+/// HINT: What if [`TimeVal`] is splitted by two pages ? 
+pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
+    -1
+}
+
+/// YOUR JOB: Finish sys_task_info to pass testcases
+/// HINT: You might reimplement it with virtual memory management.
+/// HINT: What if [`TaskInfo`] is splitted by two pages ? 
+pub fn sys_task_info(ti: *mut TaskInfo) -> isize {
+    -1
+}
+
+// YOUR JOB: Implement mmap.
+pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
+    -1
+}
+
+// YOUR JOB: Implement munmap.
+pub fn sys_munmap(_start: usize, _len: usize) -> isize {
+    -1
 }

@@ -9,10 +9,6 @@ os/src/linker.ld
 os/last-*
 os/Cargo.lock
 os/.gdb_history
-user/build
-user/target/*
-user/.idea/*
-user/Cargo.lock
 easy-fs/Cargo.lock
 easy-fs/target/*
 easy-fs-fuse/Cargo.lock
@@ -20,3 +16,5 @@ easy-fs-fuse/target/*
 tools/
 pushall.sh
 *.bak
+
+user/*
