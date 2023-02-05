@@ -76,8 +76,6 @@
 <span id="76">76</span>
 <span id="77">77</span>
 <span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
 </pre><pre class="rust"><code><span class="doccomment">//! The main module and entrypoint</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Various facilities of the kernels are implemented as submodules. The most</span>
@@ -98,21 +96,17 @@
 <span class="doccomment">//! We then call [`task::run_tasks()`] and for the first time go to</span>
 <span class="doccomment">//! userspace.</span>
 
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>)]</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
 <span class="attribute">#![<span class="ident">no_std</span>]</span>
 <span class="attribute">#![<span class="ident">no_main</span>]</span>
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">panic_info_message</span>)]</span>
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">alloc_error_handler</span>)]</span>
 
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">alloc</span>;
-
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bitflags</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
 
-<span class="attribute">#[<span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;boards/qemu.rs&quot;</span>]</span>
-<span class="kw">mod</span> <span class="ident">board</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">alloc</span>;
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">console</span>;
@@ -122,6 +116,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">lang_items</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mm</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sbi</span>;
+<span class="kw">mod</span> <span class="ident">logging</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sync</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">syscall</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">task</span>;
@@ -148,6 +143,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rust_main</span>() -&gt; <span class="op">!</span> {
     <span class="ident">clear_bss</span>();
     <span class="macro">println!</span>(<span class="string">&quot;[kernel] Hello, world!&quot;</span>);
+    <span class="ident">logging::init</span>();
     <span class="ident">mm::init</span>();
     <span class="ident">mm::remap_test</span>();
     <span class="ident">trap::init</span>();
