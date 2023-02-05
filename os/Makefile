@@ -22,6 +22,10 @@ KERNEL_ENTRY_PA := 0x80200000
 OBJDUMP := rust-objdump --arch-name=riscv64
 OBJCOPY := rust-objcopy --binary-architecture=riscv64
 
+CHAPTER ?= $(shell git rev-parse --abbrev-ref HEAD | grep -oP 'ch\K[0-9]')
+TEST ?= $(CHAPTER)
+BASE ?= 1
+
 # Disassembly
 DISASM ?= -x
 
@@ -40,7 +44,7 @@ $(KERNEL_BIN): kernel
 	@$(OBJCOPY) $(KERNEL_ELF) --strip-all -O binary $@
 
 kernel:
-	@cd ../user && make build TEST=$(TEST)
+	@make -C ../user build TEST=$(TEST) CHAPTER=$(CHAPTER) BASE=$(BASE)
 	@echo Platform: $(BOARD)
 	@cp src/linker-$(BOARD).ld src/linker.ld
 	@cargo build --release
@@ -58,8 +62,6 @@ disasm-vim: kernel
 	@rm $(DISASM_TMP)
 
 run: run-inner
-
-	
 
 run-inner: build
 	@qemu-system-riscv64 \

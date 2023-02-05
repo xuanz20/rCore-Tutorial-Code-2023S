@@ -1,11 +1,28 @@
-use crate::loader::get_app_data_by_name;
-use crate::mm::{translated_refmut, translated_str};
-use crate::task::{
-    add_task, current_task, current_user_token, exit_current_and_run_next,
-    suspend_current_and_run_next,
-};
-use crate::timer::get_time_ms;
+//! Process management syscalls
 use alloc::sync::Arc;
+
+use crate::{
+    config::MAX_SYSCALL_NUM,
+    loader::get_app_data_by_name,
+    mm::{translated_refmut, translated_str},
+    task::{
+        add_task, current_task, current_user_token, exit_current_and_run_next,
+        suspend_current_and_run_next, TaskStatus,
+    },
+};
+
+#[repr(C)]
+#[derive(Debug)]
+pub struct TimeVal {
+    pub sec: usize,
+    pub usec: usize,
+}
+
+pub struct TaskInfo {
+    status: TaskStatus,
+    syscall_times: [u32; MAX_SYSCALL_NUM],
+    time: usize,
+}
 
 pub fn sys_exit(exit_code: i32) -> ! {
     exit_current_and_run_next(exit_code);
@@ -15,10 +32,6 @@ pub fn sys_exit(exit_code: i32) -> ! {
 pub fn sys_yield() -> isize {
     suspend_current_and_run_next();
     0
-}
-
-pub fn sys_get_time() -> isize {
-    get_time_ms() as isize
 }
 
 pub fn sys_getpid() -> isize {
@@ -86,4 +99,43 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
         -2
     }
     // ---- release current PCB lock automatically
+}
+
+/// YOUR JOB: get time with second and microsecond
+/// HINT: You might reimplement it with virtual memory management.
+/// HINT: What if [`TimeVal`] is splitted by two pages ?
+pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
+    -1
+}
+
+/// YOUR JOB: Finish sys_task_info to pass testcases
+/// HINT: You might reimplement it with virtual memory management.
+/// HINT: What if [`TaskInfo`] is splitted by two pages ?
+pub fn sys_task_info(ti: *mut TaskInfo) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement mmap.
+pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement munmap.
+pub fn sys_munmap(_start: usize, _len: usize) -> isize {
+    -1
+}
+
+/// change data segment size
+pub fn sys_sbrk(size: i32) -> isize {
+    if let Some(old_brk) = current_task().unwrap().change_program_brk(size) {
+        old_brk as isize
+    } else {
+        -1
+    }
+}
+
+/// YOUR JOB: Implement spawn.
+/// HINT: fork + exec =/= spawn
+pub fn sys_spawn(_path: *const u8) -> isize {
+    -1
 }
