@@ -18,21 +18,17 @@
 //! We then call [`task::run_tasks()`] and for the first time go to
 //! userspace.
 
-#![deny(missing_docs)]
-#![deny(warnings)]
-#![allow(unused_imports)]
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
 
-extern crate alloc;
-
 #[macro_use]
 extern crate bitflags;
+#[macro_use]
+extern crate log;
 
-#[path = "boards/qemu.rs"]
-mod board;
+extern crate alloc;
 
 #[macro_use]
 mod console;
@@ -42,6 +38,7 @@ pub mod fs;
 pub mod lang_items;
 pub mod mm;
 pub mod sbi;
+mod logging;
 pub mod sync;
 pub mod syscall;
 pub mod task;
@@ -68,6 +65,7 @@ fn clear_bss() {
 pub fn rust_main() -> ! {
     clear_bss();
     println!("[kernel] Hello, world!");
+    logging::init();
     mm::init();
     mm::remap_test();
     trap::init();

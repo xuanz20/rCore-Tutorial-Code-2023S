@@ -29,7 +29,7 @@ pub use context::TaskContext;
 use lazy_static::*;
 pub use manager::{fetch_task, TaskManager};
 use switch::__switch;
-use task::{TaskControlBlock, TaskStatus};
+pub use task::{TaskControlBlock, TaskStatus};
 
 pub use manager::add_task;
 pub use pid::{pid_alloc, KernelStack, PidAllocator, PidHandle};
@@ -59,8 +59,6 @@ pub fn suspend_current_and_run_next() {
 /// pid of usertests app in make run TEST=1
 pub const IDLE_PID: usize = 0;
 
-use crate::board::QEMUExit;
-
 /// Exit the current 'Running' task and run the next task in task list.
 pub fn exit_current_and_run_next(exit_code: i32) {
     // take from Processor
@@ -72,13 +70,7 @@ pub fn exit_current_and_run_next(exit_code: i32) {
             "[kernel] Idle process exit with exit_code {} ...",
             exit_code
         );
-        if exit_code != 0 {
-            //crate::sbi::shutdown(255); //255 == -1 for err hint
-            crate::board::QEMU_EXIT_HANDLE.exit_failure();
-        } else {
-            //crate::sbi::shutdown(0); //0 for success hint
-            crate::board::QEMU_EXIT_HANDLE.exit_success();
-        }
+        panic!("All applications completed!");
     }
 
     // **** access current TCB exclusively
@@ -112,13 +104,17 @@ pub fn exit_current_and_run_next(exit_code: i32) {
 }
 
 lazy_static! {
-    ///Globle process that init user shell
+    /// Creation of initial process
+    ///
+    /// the name "initproc" may be changed to any other app name like "usertests",
+    /// but we have user_shell, so we don't need to change it.
     pub static ref INITPROC: Arc<TaskControlBlock> = Arc::new({
-        let inode = open_file("initproc", OpenFlags::RDONLY).unwrap();
+        let inode = open_file("ch6b_initproc", OpenFlags::RDONLY).unwrap();
         let v = inode.read_all();
         TaskControlBlock::new(v.as_slice())
     });
 }
+
 ///Add init process to the manager
 pub fn add_initproc() {
     add_task(INITPROC.clone());

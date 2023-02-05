@@ -1,4 +1,4 @@
-//!Implementation of [`TaskControlBlock`]
+//! Types related to task management & Functions for completely changing TCB
 use super::TaskContext;
 use super::{pid_alloc, KernelStack, PidHandle};
 use crate::config::TRAP_CONTEXT;
@@ -11,24 +11,54 @@ use alloc::vec;
 use alloc::vec::Vec;
 use core::cell::RefMut;
 
+/// Task control block structure
+///
+/// Directly save the contents that will not change during running
 pub struct TaskControlBlock {
-    // immutable
+    // Immutable
+    /// Process identifier
     pub pid: PidHandle,
+
+    /// Kernel stack corresponding to PID
     pub kernel_stack: KernelStack,
-    // mutable
+
+    // Mutable
     inner: UPSafeCell<TaskControlBlockInner>,
 }
 
 pub struct TaskControlBlockInner {
+    /// The physical page number of the frame where the trap context is placed
     pub trap_cx_ppn: PhysPageNum,
+
+    /// Application data can only appear in areas
+    /// where the application address space is lower than base_size
     pub base_size: usize,
+
+    /// Save task context
     pub task_cx: TaskContext,
+
+    /// Maintain the execution status of the current process
     pub task_status: TaskStatus,
+
+    /// Application address space
     pub memory_set: MemorySet,
+
+    /// Parent process of the current process.
+    /// Weak will not affect the reference count of the parent
     pub parent: Option<Weak<TaskControlBlock>>,
+
+    /// A vector containing TCBs of all child processes of the current process
     pub children: Vec<Arc<TaskControlBlock>>,
+
+    /// It is set when active exit or execution error occurs
     pub exit_code: i32,
     pub fd_table: Vec<Option<Arc<dyn File + Send + Sync>>>,
+
+    /// Heap bottom
+    pub heap_bottom: usize,
+
+    /// Program break
+    pub program_brk: usize,
 }
 
 impl TaskControlBlockInner {
@@ -55,9 +85,14 @@ impl TaskControlBlockInner {
 }
 
 impl TaskControlBlock {
+    /// Get the mutex to get the RefMut [`TaskControlBlockInner`].
     pub fn inner_exclusive_access(&self) -> RefMut<'_, TaskControlBlockInner> {
         self.inner.exclusive_access()
     }
+
+    /// Create a new process
+    ///
+    /// At present, it is only used for the creation of initproc
     pub fn new(elf_data: &[u8]) -> Self {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
@@ -90,6 +125,8 @@ impl TaskControlBlock {
                         // 2 -> stderr
                         Some(Arc::new(Stdout)),
                     ],
+                    heap_bottom: user_sp,
+                    program_brk: user_sp,
                 })
             },
         };
@@ -104,6 +141,8 @@ impl TaskControlBlock {
         );
         task_control_block
     }
+
+    /// Load a new elf to replace the original application address space and start execution.
     pub fn exec(&self, elf_data: &[u8]) {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
@@ -129,6 +168,7 @@ impl TaskControlBlock {
         *inner.get_trap_cx() = trap_cx;
         // **** release current PCB
     }
+
     pub fn fork(self: &Arc<TaskControlBlock>) -> Arc<TaskControlBlock> {
         // ---- hold parent PCB lock
         let mut parent_inner = self.inner_exclusive_access();
@@ -165,6 +205,8 @@ impl TaskControlBlock {
                     children: Vec::new(),
                     exit_code: 0,
                     fd_table: new_fd_table,
+                    heap_bottom: parent_inner.heap_bottom,
+                    program_brk: parent_inner.program_brk,
                 })
             },
         });
@@ -179,8 +221,33 @@ impl TaskControlBlock {
         // **** release child PCB
         // ---- release parent PCB
     }
+    
     pub fn getpid(&self) -> usize {
         self.pid.0
+    }
+
+    /// change the location of the program break. return None if failed.
+    pub fn change_program_brk(&self, size: i32) -> Option<usize> {
+        let mut inner = self.inner_exclusive_access();
+        let heap_bottom = inner.heap_bottom;
+        let old_break = inner.program_brk;
+        let new_brk = inner.program_brk as isize + size as isize;
+        if new_brk < heap_bottom as isize {
+            return None;
+        }
+        let result = if size < 0 {
+            inner.memory_set
+                .shrink_to(VirtAddr(heap_bottom), VirtAddr(new_brk as usize))
+        } else {
+            inner.memory_set
+                .append_to(VirtAddr(heap_bottom), VirtAddr(new_brk as usize))
+        };
+        if result {
+            inner.program_brk = new_brk as usize;
+            Some(old_break)
+        } else {
+            None
+        }
     }
 }
 
