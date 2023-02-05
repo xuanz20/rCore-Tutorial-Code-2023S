@@ -2,7 +2,7 @@ use super::{frame_alloc, FrameTracker};
 use super::{PTEFlags, PageTable, PageTableEntry};
 use super::{PhysAddr, PhysPageNum, VirtAddr, VirtPageNum};
 use super::{StepByOne, VPNRange};
-use crate::config::{MEMORY_END, MMIO, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT, USER_STACK_SIZE};
+use crate::config::{MEMORY_END, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT, USER_STACK_SIZE, MMIO};
 use crate::sync::UPSafeCell;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
@@ -92,14 +92,14 @@ impl MemorySet {
         // map trampoline
         memory_set.map_trampoline();
         // map kernel sections
-        println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-        println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-        println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
-        println!(
+        info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
+        info!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
+        info!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
+        info!(
             ".bss [{:#x}, {:#x})",
             sbss_with_stack as usize, ebss as usize
         );
-        println!("mapping .text section");
+        info!("mapping .text section");
         memory_set.push(
             MapArea::new(
                 (stext as usize).into(),
@@ -109,7 +109,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping .rodata section");
+        info!("mapping .rodata section");
         memory_set.push(
             MapArea::new(
                 (srodata as usize).into(),
@@ -119,7 +119,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping .data section");
+        info!("mapping .data section");
         memory_set.push(
             MapArea::new(
                 (sdata as usize).into(),
@@ -129,7 +129,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping .bss section");
+        info!("mapping .bss section");
         memory_set.push(
             MapArea::new(
                 (sbss_with_stack as usize).into(),
@@ -139,7 +139,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping physical memory");
+        info!("mapping physical memory");
         memory_set.push(
             MapArea::new(
                 (ekernel as usize).into(),
@@ -149,7 +149,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping memory-mapped registers");
+        info!("mapping memory-mapped registers");
         for pair in MMIO {
             memory_set.push(
                 MapArea::new(
@@ -215,6 +215,16 @@ impl MemorySet {
             ),
             None,
         );
+        // used in sbrk
+        memory_set.push(
+            MapArea::new(
+                user_stack_top.into(),
+                user_stack_top.into(),
+                MapType::Framed,
+                MapPermission::R | MapPermission::W | MapPermission::U,
+            ),
+            None,
+        );
         // map TrapContext
         memory_set.push(
             MapArea::new(
@@ -260,9 +270,37 @@ impl MemorySet {
     pub fn translate(&self, vpn: VirtPageNum) -> Option<PageTableEntry> {
         self.page_table.translate(vpn)
     }
+
+    ///Remove all `MapArea`
     pub fn recycle_data_pages(&mut self) {
-        //*self = Self::new_bare();
         self.areas.clear();
+    }
+
+    #[allow(unused)]
+    pub fn shrink_to(&mut self, start: VirtAddr, new_end: VirtAddr) -> bool {
+        if let Some(area) = self
+            .areas
+            .iter_mut()
+            .find(|area| area.vpn_range.get_start() == start.floor())
+        {
+            area.shrink_to(&mut self.page_table, new_end.ceil());
+            true
+        } else {
+            false
+        }
+    }
+    #[allow(unused)]
+    pub fn append_to(&mut self, start: VirtAddr, new_end: VirtAddr) -> bool {
+        if let Some(area) = self
+            .areas
+            .iter_mut()
+            .find(|area| area.vpn_range.get_start() == start.floor())
+        {
+            area.append_to(&mut self.page_table, new_end.ceil());
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -327,6 +365,20 @@ impl MapArea {
         for vpn in self.vpn_range {
             self.unmap_one(page_table, vpn);
         }
+    }
+    #[allow(unused)]
+    pub fn shrink_to(&mut self, page_table: &mut PageTable, new_end: VirtPageNum) {
+        for vpn in VPNRange::new(new_end, self.vpn_range.get_end()) {
+            self.unmap_one(page_table, vpn)
+        }
+        self.vpn_range = VPNRange::new(self.vpn_range.get_start(), new_end);
+    }
+    #[allow(unused)]
+    pub fn append_to(&mut self, page_table: &mut PageTable, new_end: VirtPageNum) {
+        for vpn in VPNRange::new(self.vpn_range.get_end(), new_end) {
+            self.map_one(page_table, vpn)
+        }
+        self.vpn_range = VPNRange::new(self.vpn_range.get_start(), new_end);
     }
     /// data: start-aligned but maybe with shorter length
     /// assume that all frames were cleared before
