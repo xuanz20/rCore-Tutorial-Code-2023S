@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["condvar",""],["mutex",""],["semaphore",""],["up",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["condvar",""],["mutex",""],["semaphore",""],["up",""]],"struct":[["Condvar",""],["MutexBlocking",""],["MutexSpin",""],["Semaphore",""],["UPSafeCell","Wrap a static data structure inside it so that we are able to access it without any `unsafe`."]],"trait":[["Mutex",""]]};
