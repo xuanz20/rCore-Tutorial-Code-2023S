@@ -20,7 +20,7 @@ use crate::loader::{get_num_app, init_app_cx};
 use crate::sync::UPSafeCell;
 use lazy_static::*;
 use switch::__switch;
-use task::{TaskControlBlock, TaskStatus};
+pub use task::{TaskControlBlock, TaskStatus};
 
 pub use context::TaskContext;
 
@@ -133,9 +133,7 @@ impl TaskManager {
             }
             // go back to user mode
         } else {
-            println!("All applications completed!");
-            use crate::board::QEMUExit;
-            crate::board::QEMU_EXIT_HANDLE.exit_success();
+            panic!("All applications completed!");
         }
     }
 }

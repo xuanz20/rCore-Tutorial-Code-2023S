@@ -15,22 +15,23 @@
 //! We then call [`task::run_first_task()`] and for the first time go to
 //! userspace.
 
-#![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
+#![feature(alloc_error_handler)]
 
-use core::arch::global_asm;
+#[macro_use]
+extern crate log;
 
-#[path = "boards/qemu.rs"]
-mod board;
+extern crate alloc;
 
 #[macro_use]
 mod console;
 mod config;
+mod heap_alloc;
 mod lang_items;
 mod loader;
+mod logging;
 mod sbi;
 mod sync;
 pub mod syscall;
@@ -38,8 +39,8 @@ pub mod task;
 mod timer;
 pub mod trap;
 
-global_asm!(include_str!("entry.asm"));
-global_asm!(include_str!("link_app.S"));
+core::arch::global_asm!(include_str!("entry.asm"));
+core::arch::global_asm!(include_str!("link_app.S"));
 
 /// clear BSS segment
 fn clear_bss() {
@@ -58,6 +59,7 @@ fn clear_bss() {
 pub fn rust_main() -> ! {
     clear_bss();
     println!("[kernel] Hello, world!");
+    heap_alloc::init_heap();
     trap::init();
     loader::load_apps();
     trap::enable_timer_interrupt();
