@@ -43,7 +43,6 @@ kernel:
 	@cargo build $(MODE_ARG)
 	@rm src/linker.ld
 
-
 clean:
 	@cargo clean
 
