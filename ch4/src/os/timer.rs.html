@@ -20,6 +20,12 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
 </pre><pre class="rust"><code><span class="doccomment">//! RISC-V timer-related functionality</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::CLOCK_FREQ</span>;
@@ -28,6 +34,7 @@
 
 <span class="kw">const</span> <span class="ident">TICKS_PER_SEC</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100</span>;
 <span class="kw">const</span> <span class="ident">MSEC_PER_SEC</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1000</span>;
+<span class="kw">const</span> <span class="ident">MICRO_PER_SEC</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1_000_000</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_time</span>() -&gt; <span class="ident">usize</span> {
     <span class="ident">time::read</span>()
@@ -36,6 +43,11 @@
 <span class="doccomment">/// get current time in microseconds</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_time_ms</span>() -&gt; <span class="ident">usize</span> {
     <span class="ident">time::read</span>() <span class="op">/</span> (<span class="ident">CLOCK_FREQ</span> <span class="op">/</span> <span class="ident">MSEC_PER_SEC</span>)
+}
+
+<span class="doccomment">/// get current time in microseconds</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_time_us</span>() -&gt; <span class="ident">usize</span> {
+    <span class="ident">time::read</span>() <span class="op">/</span> (<span class="ident">CLOCK_FREQ</span> <span class="op">/</span> <span class="ident">MICRO_PER_SEC</span>)
 }
 
 <span class="doccomment">/// set the next timer interrupt</span>

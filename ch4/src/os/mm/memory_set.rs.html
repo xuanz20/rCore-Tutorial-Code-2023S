@@ -391,25 +391,13 @@
 <span id="391">391</span>
 <span id="392">392</span>
 <span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of [`MapArea`] and [`MemorySet`].</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">frame_alloc</span>, <span class="ident">FrameTracker</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PTEFlags</span>, <span class="ident">PageTable</span>, <span class="ident">PageTableEntry</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PhysAddr</span>, <span class="ident">PhysPageNum</span>, <span class="ident">VirtAddr</span>, <span class="ident">VirtPageNum</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">StepByOne</span>, <span class="ident">VPNRange</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">MEMORY_END</span>, <span class="ident">MMIO</span>, <span class="ident">PAGE_SIZE</span>, <span class="ident">TRAMPOLINE</span>, <span class="ident">TRAP_CONTEXT</span>, <span class="ident">USER_STACK_SIZE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">MEMORY_END</span>, <span class="ident">PAGE_SIZE</span>, <span class="ident">TRAMPOLINE</span>, <span class="ident">TRAP_CONTEXT</span>, <span class="ident">USER_STACK_SIZE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
 <span class="kw">use</span> <span class="ident">alloc::collections::BTreeMap</span>;
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
@@ -486,14 +474,14 @@
         <span class="comment">// map trampoline</span>
         <span class="ident">memory_set</span>.<span class="ident">map_trampoline</span>();
         <span class="comment">// map kernel sections</span>
-        <span class="macro">println!</span>(<span class="string">&quot;.text [{:#x}, {:#x})&quot;</span>, <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="macro">println!</span>(<span class="string">&quot;.rodata [{:#x}, {:#x})&quot;</span>, <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="macro">println!</span>(<span class="string">&quot;.data [{:#x}, {:#x})&quot;</span>, <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="macro">println!</span>(
+        <span class="macro">info!</span>(<span class="string">&quot;.text [{:#x}, {:#x})&quot;</span>, <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.rodata [{:#x}, {:#x})&quot;</span>, <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.data [{:#x}, {:#x})&quot;</span>, <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(
             <span class="string">&quot;.bss [{:#x}, {:#x})&quot;</span>,
             <span class="ident">sbss_with_stack</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">ebss</span> <span class="kw">as</span> <span class="ident">usize</span>
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .text section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .text section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -503,7 +491,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .rodata section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .rodata section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -513,7 +501,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .data section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .data section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -523,7 +511,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .bss section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .bss section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">sbss_with_stack</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -533,7 +521,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping physical memory&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping physical memory&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">ekernel</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -543,18 +531,6 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping memory-mapped registers&quot;</span>);
-        <span class="kw">for</span> <span class="ident">pair</span> <span class="kw">in</span> <span class="ident">MMIO</span> {
-            <span class="ident">memory_set</span>.<span class="ident">push</span>(
-                <span class="ident">MapArea::new</span>(
-                    (<span class="kw-2">*</span><span class="ident">pair</span>).<span class="number">0</span>.<span class="ident">into</span>(),
-                    ((<span class="kw-2">*</span><span class="ident">pair</span>).<span class="number">0</span> <span class="op">+</span> (<span class="kw-2">*</span><span class="ident">pair</span>).<span class="number">1</span>).<span class="ident">into</span>(),
-                    <span class="ident">MapType::Identical</span>,
-                    <span class="ident">MapPermission::R</span> <span class="op">|</span> <span class="ident">MapPermission::W</span>,
-                ),
-                <span class="prelude-val">None</span>,
-            );
-        }
         <span class="ident">memory_set</span>
     }
     <span class="doccomment">/// Include sections in elf and trampoline and TrapContext and user stack,</span>
