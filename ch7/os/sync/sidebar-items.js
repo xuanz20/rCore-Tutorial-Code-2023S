@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["up",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["up",""]],"struct":[["UPSafeCell","Wrap a static data structure inside it so that we are able to access it without any `unsafe`."]]};

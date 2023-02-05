@@ -235,9 +235,6 @@
 <span id="235">235</span>
 <span id="236">236</span>
 <span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
 </pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">action</span>;
 <span class="kw">mod</span> <span class="ident">context</span>;
 <span class="kw">mod</span> <span class="ident">manager</span>;
@@ -255,7 +252,7 @@
 <span class="kw">use</span> <span class="ident">manager::fetch_task</span>;
 <span class="kw">use</span> <span class="ident">manager::remove_from_pid2task</span>;
 <span class="kw">use</span> <span class="ident">switch::__switch</span>;
-<span class="kw">use</span> <span class="ident">task</span>::{<span class="ident">TaskControlBlock</span>, <span class="ident">TaskStatus</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">task</span>::{<span class="ident">TaskControlBlock</span>, <span class="ident">TaskStatus</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">action</span>::{<span class="ident">SignalAction</span>, <span class="ident">SignalActions</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">manager</span>::{<span class="ident">add_task</span>, <span class="ident">pid2task</span>};
@@ -286,8 +283,6 @@
 <span class="doccomment">/// pid of usertests app in make run TEST=1</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IDLE_PID</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::board::QEMUExit</span>;
-
 <span class="doccomment">/// Exit the current &#39;Running&#39; task and run the next task in task list.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exit_current_and_run_next</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) {
     <span class="comment">// take from Processor</span>
@@ -299,13 +294,7 @@
             <span class="string">&quot;[kernel] Idle process exit with exit_code {} ...&quot;</span>,
             <span class="ident">exit_code</span>
         );
-        <span class="kw">if</span> <span class="ident">exit_code</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="comment">//crate::sbi::shutdown(255); //255 == -1 for err hint</span>
-            <span class="ident"><span class="kw">crate</span>::board::QEMU_EXIT_HANDLE</span>.<span class="ident">exit_failure</span>();
-        } <span class="kw">else</span> {
-            <span class="comment">//crate::sbi::shutdown(0); //0 for success hint</span>
-            <span class="ident"><span class="kw">crate</span>::board::QEMU_EXIT_HANDLE</span>.<span class="ident">exit_success</span>();
-        }
+        <span class="macro">panic!</span>(<span class="string">&quot;All applications completed!&quot;</span>);
     }
 
     <span class="comment">// remove from pid2task</span>
@@ -343,13 +332,18 @@
 }
 
 <span class="macro">lazy_static!</span> {
+    <span class="doccomment">/// Creation of initial process</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// the name &quot;initproc&quot; may be changed to any other app name like &quot;usertests&quot;,</span>
+    <span class="doccomment">/// but we have user_shell, so we don&#39;t need to change it.</span>
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">INITPROC</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc::new</span>({
-        <span class="kw">let</span> <span class="ident">inode</span> <span class="op">=</span> <span class="ident">open_file</span>(<span class="string">&quot;initproc&quot;</span>, <span class="ident">OpenFlags::RDONLY</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">inode</span> <span class="op">=</span> <span class="ident">open_file</span>(<span class="string">&quot;ch6b_initproc&quot;</span>, <span class="ident">OpenFlags::RDONLY</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">inode</span>.<span class="ident">read_all</span>();
         <span class="ident">TaskControlBlock::new</span>(<span class="ident">v</span>.<span class="ident">as_slice</span>())
     });
 }
 
+<span class="doccomment">///Add init process to the manager</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_initproc</span>() {
     <span class="ident">add_task</span>(<span class="ident">INITPROC</span>.<span class="ident">clone</span>());
 }

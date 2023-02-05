@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["MSEC_PER_SEC",""],["TICKS_PER_SEC",""]],"fn":[["get_time",""],["get_time_ms",""],["set_next_trigger",""]]};
+window.SIDEBAR_ITEMS = {"constant":[["MICRO_PER_SEC","get current time"],["MSEC_PER_SEC",""],["TICKS_PER_SEC",""]],"fn":[["get_time",""],["get_time_ms",""],["get_time_us","get current time in microseconds"],["set_next_trigger","set the next timer interrupt"]]};

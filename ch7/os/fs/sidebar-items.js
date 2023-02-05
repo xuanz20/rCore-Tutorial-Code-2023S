@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["inode",""],["pipe",""],["stdio",""]],"trait":[["File",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["list_apps",""],["make_pipe","Return (read_end, write_end)"],["open_file",""]],"mod":[["inode",""],["pipe",""],["stdio",""]],"struct":[["OSInode",""],["OpenFlags",""],["Pipe",""],["Stdin",""],["Stdout",""]],"trait":[["File",""]]};
