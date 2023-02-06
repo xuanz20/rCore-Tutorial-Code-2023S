@@ -4,24 +4,34 @@ use crate::config::{kernel_stack_position, TRAP_CONTEXT};
 use crate::mm::{MapPermission, MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE};
 use crate::trap::{trap_handler, TrapContext};
 
-/// task control block structure
+/// The task control block (TCB) of a task.
 pub struct TaskControlBlock {
+    /// The task status in lifecycle
     pub task_status: TaskStatus,
+    /// The task context
     pub task_cx: TaskContext,
+    /// The task address space
     pub memory_set: MemorySet,
+    /// The phys page number of trap context
     pub trap_cx_ppn: PhysPageNum,
+    /// The size(top addr) of program which is loaded from elf file
     pub base_size: usize,
+    /// The bottom addr of heap
     pub heap_bottom: usize,
+    /// the top addr of heap
     pub program_brk: usize,
 }
 
 impl TaskControlBlock {
+    /// get the trap context
     pub fn get_trap_cx(&self) -> &'static mut TrapContext {
         self.trap_cx_ppn.get_mut()
     }
+    /// get the user token
     pub fn get_user_token(&self) -> usize {
         self.memory_set.token()
     }
+    /// Based on the elf info in program, build the contents of task in a new address space
     pub fn new(elf_data: &[u8], app_id: usize) -> Self {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
@@ -83,7 +93,10 @@ impl TaskControlBlock {
 #[derive(Copy, Clone, PartialEq)]
 /// task status: UnInit, Ready, Running, Exited
 pub enum TaskStatus {
+    /// ready to run
     Ready,
+    /// running
     Running,
+    /// exited
     Exited,
 }
