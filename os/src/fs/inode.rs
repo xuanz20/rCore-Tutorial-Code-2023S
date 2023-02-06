@@ -108,11 +108,10 @@ pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
             Some(Arc::new(OSInode::new(readable, writable, inode)))
         } else {
             // create file
-            ROOT_INODE
-                .create(name)
-                .map(|inode| {
-                    warn!("CREAT");
-                    Arc::new(OSInode::new(readable, writable, inode))})
+            ROOT_INODE.create(name).map(|inode| {
+                warn!("CREAT");
+                Arc::new(OSInode::new(readable, writable, inode))
+            })
         }
     } else {
         ROOT_INODE.find(name).map(|inode| {

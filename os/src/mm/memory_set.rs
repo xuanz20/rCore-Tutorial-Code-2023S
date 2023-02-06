@@ -3,7 +3,7 @@ use super::{frame_alloc, FrameTracker};
 use super::{PTEFlags, PageTable, PageTableEntry};
 use super::{PhysAddr, PhysPageNum, VirtAddr, VirtPageNum};
 use super::{StepByOne, VPNRange};
-use crate::config::{MEMORY_END, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT, USER_STACK_SIZE, MMIO};
+use crate::config::{MEMORY_END, MMIO, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT, USER_STACK_SIZE};
 use crate::sync::UPSafeCell;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
@@ -284,6 +284,7 @@ impl MemorySet {
         self.areas.clear();
     }
 
+    /// shrink the area to new_end
     #[allow(unused)]
     pub fn shrink_to(&mut self, start: VirtAddr, new_end: VirtAddr) -> bool {
         if let Some(area) = self
@@ -297,6 +298,8 @@ impl MemorySet {
             false
         }
     }
+
+    /// append the area to new_end
     #[allow(unused)]
     pub fn append_to(&mut self, start: VirtAddr, new_end: VirtAddr) -> bool {
         if let Some(area) = self
