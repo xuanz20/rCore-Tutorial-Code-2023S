@@ -76,6 +76,8 @@
 <span id="76">76</span>
 <span id="77">77</span>
 <span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
 </pre><pre class="rust"><code><span class="doccomment">//! The main module and entrypoint</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Various facilities of the kernels are implemented as submodules. The most</span>
@@ -96,6 +98,8 @@
 <span class="doccomment">//! We then call [`task::run_tasks()`] and for the first time go to</span>
 <span class="doccomment">//! userspace.</span>
 
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>)]</span>
 <span class="attribute">#![<span class="ident">no_std</span>]</span>
 <span class="attribute">#![<span class="ident">no_main</span>]</span>
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">panic_info_message</span>)]</span>
@@ -114,9 +118,9 @@
 <span class="kw">mod</span> <span class="ident">drivers</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">fs</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">lang_items</span>;
+<span class="kw">mod</span> <span class="ident">logging</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mm</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sbi</span>;
-<span class="kw">mod</span> <span class="ident">logging</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sync</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">syscall</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">task</span>;

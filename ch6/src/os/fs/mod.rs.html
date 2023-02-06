@@ -45,6 +45,7 @@
 <span id="45">45</span>
 <span id="46">46</span>
 <span id="47">47</span>
+<span id="48">48</span>
 </pre><pre class="rust"><code><span class="doccomment">//! File system in os</span>
 <span class="kw">mod</span> <span class="ident">inode</span>;
 <span class="kw">mod</span> <span class="ident">stdio</span>;
@@ -82,6 +83,7 @@
     <span class="doccomment">/// The mode of a inode</span>
     <span class="doccomment">/// whether a directory or a file</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatMode</span>: <span class="ident">u32</span> {
+        <span class="doccomment">/// null</span>
         <span class="kw">const</span> <span class="ident">NULL</span>  <span class="op">=</span> <span class="number">0</span>;
         <span class="doccomment">/// directory</span>
         <span class="kw">const</span> <span class="ident">DIR</span>   <span class="op">=</span> <span class="number">0o040000</span>;
