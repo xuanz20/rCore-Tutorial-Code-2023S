@@ -38,6 +38,7 @@ impl Drop for FrameTracker {
 trait FrameAllocator {
     fn new() -> Self;
     fn alloc(&mut self) -> Option<PhysPageNum>;
+    fn alloc_more(&mut self, pages: usize) -> Option<Vec<PhysPageNum>>;
     fn dealloc(&mut self, ppn: PhysPageNum);
 }
 
@@ -70,6 +71,16 @@ impl FrameAllocator for StackFrameAllocator {
         } else {
             self.current += 1;
             Some((self.current - 1).into())
+        }
+    }
+    fn alloc_more(&mut self, pages: usize) -> Option<Vec<PhysPageNum>> {
+        if self.current + pages >= self.end {
+            None
+        } else {
+            self.current += pages;
+            let arr:Vec<usize> = (1..pages + 1).collect();
+            let v = arr.iter().map(|x| (self.current - x).into()).collect();
+            Some(v)
         }
     }
     fn dealloc(&mut self, ppn: PhysPageNum) {
@@ -108,6 +119,14 @@ pub fn frame_alloc() -> Option<FrameTracker> {
         .map(FrameTracker::new)
 }
 
+/// Allocate more continuous physical page frames in FrameTracker style
+pub fn frame_alloc_more(num: usize) -> Option<Vec<FrameTracker>> {
+    FRAME_ALLOCATOR
+        .exclusive_access()
+        .alloc_more(num)
+        .map(|x| x.iter().map(|&t| FrameTracker::new(t)).collect())
+}
+
 /// Deallocate a physical page frame with a given ppn
 pub fn frame_dealloc(ppn: PhysPageNum) {
     FRAME_ALLOCATOR.exclusive_access().dealloc(ppn);
@@ -126,6 +145,24 @@ pub fn frame_allocator_test() {
         let frame = frame_alloc().unwrap();
         println!("{:?}", frame);
         v.push(frame);
+    }
+    drop(v);
+    println!("frame_allocator_test passed!");
+}
+
+
+#[allow(unused)]
+pub fn frame_allocator_alloc_more_test() {
+    let mut v: Vec<FrameTracker> = Vec::new();
+    let frames = frame_alloc_more(5).unwrap();
+    for frame in &frames {
+        println!("{:?}", frame);
+    }
+    v.extend(frames);
+    v.clear();
+    let frames = frame_alloc_more(5).unwrap();
+    for frame in &frames {
+        println!("{:?}", frame);
     }
     drop(v);
     println!("frame_allocator_test passed!");
