@@ -72,6 +72,8 @@ pub const SYSCALL_MAIL_WRITE: usize = 402;
 */
 /// dup syscall
 pub const SYSCALL_DUP: usize = 24;
+/// connect syscall
+const SYSCALL_CONNECT: usize = 29;
 /// pipe syscall
 pub const SYSCALL_PIPE: usize = 59;
 /// task info syscall
@@ -98,7 +100,7 @@ pub const SYSCALL_SEMAPHORE_DOWN: usize = 470;
 pub const SYSCALL_CONDVAR_CREATE: usize = 471;
 /// condvar_signal syscall
 pub const SYSCALL_CONDVAR_SIGNAL: usize = 472;
-///
+/// condvar_wait syscall
 pub const SYSCALL_CONDVAR_WAIT: usize = 473;
 const SYSCALL_FRAMEBUFFER: usize = 2000;
 const SYSCALL_FRAMEBUFFER_FLUSH: usize = 2001;
@@ -111,6 +113,7 @@ mod input;
 mod process;
 mod sync;
 mod thread;
+mod net;
 
 use fs::*;
 use gui::*;
@@ -118,12 +121,14 @@ use input::*;
 use process::*;
 use sync::*;
 use thread::*;
+use net::*;
 
 use crate::fs::Stat;
 
 /// handle syscall exception with `syscall_id` and other arguments
 pub fn syscall(syscall_id: usize, args: [usize; 4]) -> isize {
     match syscall_id {
+        SYSCALL_CONNECT => sys_connect(args[0] as _, args[1] as _, args[2] as _),
         SYSCALL_DUP => sys_dup(args[0]),
         SYSCALL_LINKAT => sys_linkat(args[1] as *const u8, args[3] as *const u8),
         SYSCALL_UNLINKAT => sys_unlinkat(args[1] as *const u8),
