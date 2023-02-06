@@ -197,7 +197,7 @@ impl TaskControlBlock {
         // **** release children PCB automatically
     }
 
-    
+    /// Get the pid of the process
     pub fn getpid(&self) -> usize {
         self.pid.0
     }
@@ -212,10 +212,12 @@ impl TaskControlBlock {
             return None;
         }
         let result = if size < 0 {
-            inner.memory_set
+            inner
+                .memory_set
                 .shrink_to(VirtAddr(heap_bottom), VirtAddr(new_brk as usize))
         } else {
-            inner.memory_set
+            inner
+                .memory_set
                 .append_to(VirtAddr(heap_bottom), VirtAddr(new_brk as usize))
         };
         if result {
@@ -228,8 +230,12 @@ impl TaskControlBlock {
 }
 
 #[derive(Copy, Clone, PartialEq)]
+/// task status: UnInit, Ready, Running, Exited
 pub enum TaskStatus {
+    /// ready to run
     Ready,
+    /// running
     Running,
+    /// exited
     Zombie,
 }

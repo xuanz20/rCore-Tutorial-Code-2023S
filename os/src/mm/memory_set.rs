@@ -262,13 +262,12 @@ impl MemorySet {
     pub fn translate(&self, vpn: VirtPageNum) -> Option<PageTableEntry> {
         self.page_table.translate(vpn)
     }
-    
+
     ///Remove all `MapArea`
     pub fn recycle_data_pages(&mut self) {
         self.areas.clear();
-
     }
-    
+
     #[allow(unused)]
     pub fn shrink_to(&mut self, start: VirtAddr, new_end: VirtAddr) -> bool {
         if let Some(area) = self
