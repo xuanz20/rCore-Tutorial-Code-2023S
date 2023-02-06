@@ -17,6 +17,34 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
 </pre><pre class="rust"><code><span class="doccomment">//! File system in os</span>
 <span class="kw">mod</span> <span class="ident">inode</span>;
 <span class="kw">mod</span> <span class="ident">stdio</span>;
@@ -32,6 +60,34 @@
     <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span>;
     <span class="doccomment">/// Write `UserBuffer` to file</span>
     <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span>;
+}
+
+<span class="doccomment">/// The stat of a inode</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Stat</span> {
+    <span class="doccomment">/// ID of device containing file</span>
+    <span class="kw">pub</span> <span class="ident">dev</span>: <span class="ident">u64</span>,
+    <span class="doccomment">/// inode number</span>
+    <span class="kw">pub</span> <span class="ident">ino</span>: <span class="ident">u64</span>,
+    <span class="doccomment">/// file type and mode</span>
+    <span class="kw">pub</span> <span class="ident">mode</span>: <span class="ident">StatMode</span>,
+    <span class="doccomment">/// number of hard links</span>
+    <span class="kw">pub</span> <span class="ident">nlink</span>: <span class="ident">u32</span>,
+    <span class="doccomment">/// unused pad</span>
+    <span class="ident">pad</span>: [<span class="ident">u64</span>; <span class="number">7</span>],
+}
+
+<span class="macro">bitflags!</span> {
+    <span class="doccomment">/// The mode of a inode</span>
+    <span class="doccomment">/// whether a directory or a file</span>
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatMode</span>: <span class="ident">u32</span> {
+        <span class="kw">const</span> <span class="ident">NULL</span>  <span class="op">=</span> <span class="number">0</span>;
+        <span class="doccomment">/// directory</span>
+        <span class="kw">const</span> <span class="ident">DIR</span>   <span class="op">=</span> <span class="number">0o040000</span>;
+        <span class="doccomment">/// ordinary regular file</span>
+        <span class="kw">const</span> <span class="ident">FILE</span>  <span class="op">=</span> <span class="number">0o100000</span>;
+    }
 }
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">inode</span>::{<span class="ident">list_apps</span>, <span class="ident">open_file</span>, <span class="ident">OSInode</span>, <span class="ident">OpenFlags</span>};

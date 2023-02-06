@@ -69,8 +69,23 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><pre class="rust"><code><span class="doccomment">//! File and filesystem-related syscalls</span>
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::fs</span>::{<span class="ident">open_file</span>, <span class="ident">OpenFlags</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::fs</span>::{<span class="ident">open_file</span>, <span class="ident">OpenFlags</span>, <span class="ident">Stat</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">translated_byte_buffer</span>, <span class="ident">translated_str</span>, <span class="ident">UserBuffer</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_task</span>, <span class="ident">current_user_token</span>};
 
@@ -140,5 +155,19 @@
     <span class="ident">inner</span>.<span class="ident">fd_table</span>[<span class="ident">fd</span>].<span class="ident">take</span>();
     <span class="number">0</span>
 }
-</code></pre></div>
+
+<span class="doccomment">/// YOUR JOB: Implement fstat.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_fstat</span>(<span class="ident">_fd</span>: <span class="ident">usize</span>, <span class="ident">_st</span>: <span class="kw-2">*mut</span> <span class="ident">Stat</span>) -&gt; <span class="ident">isize</span> {
+    <span class="op">-</span><span class="number">1</span>
+}
+
+<span class="doccomment">/// YOUR JOB: Implement linkat.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_linkat</span>(<span class="ident">_old_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">_new_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="op">-</span><span class="number">1</span>
+}
+
+<span class="doccomment">/// YOUR JOB: Implement unlinkat.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_unlinkat</span>(<span class="ident">_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="op">-</span><span class="number">1</span>
+}</code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="os" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (f6f9d5e73 2022-08-04)" ></div></body></html>
