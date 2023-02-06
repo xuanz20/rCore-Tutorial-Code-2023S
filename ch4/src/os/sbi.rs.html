@@ -38,14 +38,12 @@
 <span id="38">38</span>
 <span id="39">39</span>
 <span id="40">40</span>
-<span id="41">41</span>
 </pre><pre class="rust"><code><span class="doccomment">//! SBI call wrappers</span>
 
 <span class="kw">use</span> <span class="ident">core::arch::asm</span>;
 
 <span class="kw">const</span> <span class="ident">SBI_SET_TIMER</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 <span class="kw">const</span> <span class="ident">SBI_CONSOLE_PUTCHAR</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1</span>;
-<span class="kw">const</span> <span class="ident">SBI_CONSOLE_GETCHAR</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">const</span> <span class="ident">SBI_SHUTDOWN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
 
 <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
@@ -79,5 +77,6 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shutdown</span>() -&gt; <span class="op">!</span> {
     <span class="ident">sbi_call</span>(<span class="ident">SBI_SHUTDOWN</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
     <span class="macro">panic!</span>(<span class="string">&quot;It should shutdown!&quot;</span>);
-}</code></pre></div>
+}
+</code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="os" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (f6f9d5e73 2022-08-04)" ></div></body></html>
