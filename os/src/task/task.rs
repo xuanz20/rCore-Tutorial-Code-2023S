@@ -1,13 +1,19 @@
-use super::{pid_alloc, KernelStack, PidHandle, SignalFlags, SignalActions, TaskContext};
-use crate::{config::TRAP_CONTEXT
-,fs::{File, Stdin, Stdout}
-,mm::{translated_refmut, MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE}
-,sync::UPSafeCell
-,trap::{trap_handler, TrapContext}};
-use alloc::{string::String
-,sync::{Arc, Weak}
-,vec
-,vec::Vec};
+//! Types related to task management & Functions for completely changing TCB
+
+use super::{pid_alloc, KernelStack, PidHandle, SignalActions, SignalFlags, TaskContext};
+use crate::{
+    config::TRAP_CONTEXT,
+    fs::{File, Stdin, Stdout},
+    mm::{translated_refmut, MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE},
+    sync::UPSafeCell,
+    trap::{trap_handler, TrapContext},
+};
+use alloc::{
+    string::String,
+    sync::{Arc, Weak},
+    vec,
+    vec::Vec,
+};
 use core::cell::RefMut;
 
 /// Task control block structure
@@ -158,6 +164,8 @@ impl TaskControlBlock {
         );
         task_control_block
     }
+
+    /// Load a new elf to replace the original application address space and start execution
     pub fn exec(&self, elf_data: &[u8], args: Vec<String>) {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, mut user_sp, entry_point) = MemorySet::from_elf(elf_data);
@@ -210,6 +218,7 @@ impl TaskControlBlock {
         // **** release current PCB
     }
 
+    /// Fork from parent to child
     pub fn fork(self: &Arc<TaskControlBlock>) -> Arc<TaskControlBlock> {
         // ---- hold parent PCB lock
         let mut parent_inner = self.inner_exclusive_access();
@@ -270,7 +279,8 @@ impl TaskControlBlock {
         // **** release child PCB
         // ---- release parent PCB
     }
-    
+
+    /// get pid of process
     pub fn getpid(&self) -> usize {
         self.pid.0
     }
@@ -285,10 +295,12 @@ impl TaskControlBlock {
             return None;
         }
         let result = if size < 0 {
-            inner.memory_set
+            inner
+                .memory_set
                 .shrink_to(VirtAddr(heap_bottom), VirtAddr(new_brk as usize))
         } else {
-            inner.memory_set
+            inner
+                .memory_set
                 .append_to(VirtAddr(heap_bottom), VirtAddr(new_brk as usize))
         };
         if result {
@@ -301,8 +313,12 @@ impl TaskControlBlock {
 }
 
 #[derive(Copy, Clone, PartialEq)]
+/// task status: UnInit, Ready, Running, Exited
 pub enum TaskStatus {
+    /// ready to run
     Ready,
+    /// running
     Running,
+    ///
     Zombie,
 }

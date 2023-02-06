@@ -18,9 +18,14 @@ pub struct TimeVal {
     pub usec: usize,
 }
 
+/// Task information
+#[allow(dead_code)]
 pub struct TaskInfo {
+    /// Task status in it's life cycle
     status: TaskStatus,
+    /// The numbers of syscall called by task
     syscall_times: [u32; MAX_SYSCALL_NUM],
+    /// Total running time of task
     time: usize,
 }
 
@@ -136,14 +141,14 @@ pub fn sys_kill(pid: usize, signum: i32) -> isize {
 /// YOUR JOB: get time with second and microsecond
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TimeVal`] is splitted by two pages ?
-pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
+pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
     -1
 }
 
 /// YOUR JOB: Finish sys_task_info to pass testcases
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TaskInfo`] is splitted by two pages ?
-pub fn sys_task_info(ti: *mut TaskInfo) -> isize {
+pub fn sys_task_info(_ti: *mut TaskInfo) -> isize {
     -1
 }
 

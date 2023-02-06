@@ -5,11 +5,14 @@ use alloc::vec::Vec;
 use core::fmt::{self, Debug, Formatter};
 use lazy_static::*;
 
+/// tracker for physical page frame allocation and deallocation
 pub struct FrameTracker {
+    /// physical page number
     pub ppn: PhysPageNum,
 }
 
 impl FrameTracker {
+    /// Create a new FrameTracker
     pub fn new(ppn: PhysPageNum) -> Self {
         // page cleaning
         let bytes_array = ppn.get_bytes_array();
@@ -97,6 +100,7 @@ pub fn init_frame_allocator() {
     );
 }
 
+/// Allocate a physical page frame in FrameTracker style
 pub fn frame_alloc() -> Option<FrameTracker> {
     FRAME_ALLOCATOR
         .exclusive_access()
@@ -104,6 +108,7 @@ pub fn frame_alloc() -> Option<FrameTracker> {
         .map(FrameTracker::new)
 }
 
+/// Deallocate a physical page frame with a given ppn
 pub fn frame_dealloc(ppn: PhysPageNum) {
     FRAME_ALLOCATOR.exclusive_access().dealloc(ppn);
 }

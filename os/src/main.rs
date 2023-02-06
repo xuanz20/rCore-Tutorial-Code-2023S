@@ -18,6 +18,8 @@
 //! We then call [`task::run_tasks()`] and for the first time go to
 //! userspace.
 
+#![deny(missing_docs)]
+#![deny(warnings)]
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
@@ -36,9 +38,9 @@ mod config;
 mod drivers;
 pub mod fs;
 pub mod lang_items;
+mod logging;
 pub mod mm;
 pub mod sbi;
-mod logging;
 pub mod sync;
 pub mod syscall;
 pub mod task;
@@ -61,6 +63,7 @@ fn clear_bss() {
 }
 
 #[no_mangle]
+/// the rust entry-point of os
 pub fn rust_main() -> ! {
     clear_bss();
     println!("[kernel] Hello, world!");

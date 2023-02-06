@@ -1,3 +1,14 @@
+//! Implementation of process management mechanism
+//!
+//! Here is the entry for process scheduling required by other modules
+//! (such as syscall or clock interrupt).
+//! By suspending or exiting the current process, you can
+//! modify the process state, manage the process queue through TASK_MANAGER,
+//! and switch the control flow through PROCESSOR.
+//!
+//! Be careful when you see [`__switch`]. Control flow around this function
+//! might not be what you expect.
+
 mod action;
 mod context;
 mod manager;
@@ -25,6 +36,7 @@ pub use processor::{
 };
 pub use signal::{SignalFlags, MAX_SIG};
 
+/// Make current task suspended and switch to the next task
 pub fn suspend_current_and_run_next() {
     // There must be an application running.
     let task = take_current_task().unwrap();
@@ -100,7 +112,7 @@ lazy_static! {
     /// the name "initproc" may be changed to any other app name like "usertests",
     /// but we have user_shell, so we don't need to change it.
     pub static ref INITPROC: Arc<TaskControlBlock> = Arc::new({
-        let inode = open_file("ch6b_initproc", OpenFlags::RDONLY).unwrap();
+        let inode = open_file("ch7b_initproc", OpenFlags::RDONLY).unwrap();
         let v = inode.read_all();
         TaskControlBlock::new(v.as_slice())
     });
@@ -111,6 +123,7 @@ pub fn add_initproc() {
     add_task(INITPROC.clone());
 }
 
+/// Check if the current task has any signal to handle
 pub fn check_signals_error_of_current() -> Option<(i32, &'static str)> {
     let task = current_task().unwrap();
     let task_inner = task.inner_exclusive_access();
@@ -121,6 +134,7 @@ pub fn check_signals_error_of_current() -> Option<(i32, &'static str)> {
     task_inner.signals.check_error()
 }
 
+/// Add signal to the current task
 pub fn current_add_signal(signal: SignalFlags) {
     let task = current_task().unwrap();
     let mut task_inner = task.inner_exclusive_access();
@@ -131,6 +145,7 @@ pub fn current_add_signal(signal: SignalFlags) {
     // );
 }
 
+/// call kernel signal handler
 fn call_kernel_signal_handler(signal: SignalFlags) {
     let task = current_task().unwrap();
     let mut task_inner = task.inner_exclusive_access();
@@ -155,6 +170,7 @@ fn call_kernel_signal_handler(signal: SignalFlags) {
     }
 }
 
+/// call user signal handler
 fn call_user_signal_handler(sig: usize, signal: SignalFlags) {
     let task = current_task().unwrap();
     let mut task_inner = task.inner_exclusive_access();
@@ -182,6 +198,7 @@ fn call_user_signal_handler(sig: usize, signal: SignalFlags) {
     }
 }
 
+/// Check if the current task has any signal to handle
 fn check_pending_signals() {
     for sig in 0..(MAX_SIG + 1) {
         let task = current_task().unwrap();
@@ -221,6 +238,7 @@ fn check_pending_signals() {
     }
 }
 
+/// Handle signals for the current process
 pub fn handle_signals() {
     loop {
         check_pending_signals();

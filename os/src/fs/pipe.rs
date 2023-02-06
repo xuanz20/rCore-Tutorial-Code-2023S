@@ -5,6 +5,7 @@ use alloc::sync::{Arc, Weak};
 
 use crate::task::suspend_current_and_run_next;
 
+/// IPC pipe
 pub struct Pipe {
     readable: bool,
     writable: bool,
@@ -12,6 +13,7 @@ pub struct Pipe {
 }
 
 impl Pipe {
+    /// create readable pipe
     pub fn read_end_with_buffer(buffer: Arc<UPSafeCell<PipeRingBuffer>>) -> Self {
         Self {
             readable: true,
@@ -19,6 +21,7 @@ impl Pipe {
             buffer,
         }
     }
+    /// create writable pipe
     pub fn write_end_with_buffer(buffer: Arc<UPSafeCell<PipeRingBuffer>>) -> Self {
         Self {
             readable: false,

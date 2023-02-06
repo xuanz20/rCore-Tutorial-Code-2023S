@@ -4,7 +4,9 @@ use crate::task::{SignalFlags, MAX_SIG};
 #[repr(C, align(16))]
 #[derive(Debug, Clone, Copy)]
 pub struct SignalAction {
+    /// Signal handler address
     pub handler: usize,
+    /// Signal mask
     pub mask: SignalFlags,
 }
 
@@ -17,8 +19,10 @@ impl Default for SignalAction {
     }
 }
 
+/// Signal actions
 #[derive(Clone)]
 pub struct SignalActions {
+    /// Signal actions table
     pub table: [SignalAction; MAX_SIG + 1],
 }
 

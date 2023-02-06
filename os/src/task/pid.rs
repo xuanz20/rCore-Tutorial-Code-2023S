@@ -1,3 +1,8 @@
+//! Task pid implementation.
+//!
+//! Assign PID to the process here. At the same time, the position of the application KernelStack
+//! is determined according to the PID.
+
 use crate::config::{KERNEL_STACK_SIZE, PAGE_SIZE, TRAMPOLINE};
 use crate::mm::{MapPermission, VirtAddr, KERNEL_SPACE};
 use crate::sync::UPSafeCell;
@@ -40,6 +45,7 @@ lazy_static! {
         unsafe { UPSafeCell::new(PidAllocator::new()) };
 }
 
+/// Abstract structure of PID
 pub struct PidHandle(pub usize);
 
 impl Drop for PidHandle {
@@ -49,6 +55,7 @@ impl Drop for PidHandle {
     }
 }
 
+/// Allocate a new PID
 pub fn pid_alloc() -> PidHandle {
     PID_ALLOCATOR.exclusive_access().alloc()
 }
@@ -60,11 +67,13 @@ pub fn kernel_stack_position(app_id: usize) -> (usize, usize) {
     (bottom, top)
 }
 
+/// Kernel stack for a process
 pub struct KernelStack {
     pid: usize,
 }
 
 impl KernelStack {
+    /// Create a new KernelStack for a process.
     pub fn new(pid_handle: &PidHandle) -> Self {
         let pid = pid_handle.0;
         let (kernel_stack_bottom, kernel_stack_top) = kernel_stack_position(pid);
@@ -75,6 +84,8 @@ impl KernelStack {
         );
         KernelStack { pid: pid_handle.0 }
     }
+
+    /// Push a variable of type T into the top of the KernelStack and return its raw pointer
     #[allow(unused)]
     pub fn push_on_top<T>(&self, value: T) -> *mut T
     where
@@ -87,6 +98,7 @@ impl KernelStack {
         }
         ptr_mut
     }
+    /// Get the top of the KernelStack
     pub fn get_top(&self) -> usize {
         let (_, kernel_stack_top) = kernel_stack_position(self.pid);
         kernel_stack_top

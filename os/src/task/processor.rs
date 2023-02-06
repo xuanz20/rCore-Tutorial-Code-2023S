@@ -1,3 +1,9 @@
+//! Implementation of [`Processor`] and Intersection of control flow
+//!
+//! Here, the continuous operation of user apps in CPU is maintained,
+//! the current running state of CPU is recorded,
+//! and the replacement and transfer of control flow of different applications are executed.
+
 use super::__switch;
 use super::{fetch_task, TaskStatus};
 use super::{TaskContext, TaskControlBlock};
@@ -65,11 +71,12 @@ pub fn run_tasks() {
     }
 }
 
+/// Get current task through take, leaving a None in its place
 pub fn take_current_task() -> Option<Arc<TaskControlBlock>> {
     PROCESSOR.exclusive_access().take_current()
 }
 
-///Get running task
+/// Get a copy of the current task
 pub fn current_task() -> Option<Arc<TaskControlBlock>> {
     PROCESSOR.exclusive_access().current()
 }

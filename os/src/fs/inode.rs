@@ -8,6 +8,7 @@ use bitflags::*;
 use easy_fs::{EasyFileSystem, Inode};
 use lazy_static::*;
 
+/// inode in memory
 pub struct OSInode {
     readable: bool,
     writable: bool,
@@ -20,6 +21,7 @@ pub struct OSInodeInner {
 }
 
 impl OSInode {
+    /// create a new inode in memory
     pub fn new(readable: bool, writable: bool, inode: Arc<Inode>) -> Self {
         Self {
             readable,
@@ -27,6 +29,7 @@ impl OSInode {
             inner: unsafe { UPSafeCell::new(OSInodeInner { offset: 0, inode }) },
         }
     }
+    /// read all data from the inode
     pub fn read_all(&self) -> Vec<u8> {
         let mut inner = self.inner.exclusive_access();
         let mut buffer = [0u8; 512];
@@ -50,6 +53,7 @@ lazy_static! {
     };
 }
 
+/// List all apps in the root directory
 pub fn list_apps() {
     println!("/**** APPS ****");
     for app in ROOT_INODE.ls() {
@@ -59,11 +63,17 @@ pub fn list_apps() {
 }
 
 bitflags! {
+    ///  The flags argument to the open() system call is constructed by ORing together zero or more of the following values:
     pub struct OpenFlags: u32 {
+        /// readyonly
         const RDONLY = 0;
+        /// writeonly
         const WRONLY = 1 << 0;
+        /// read and write
         const RDWR = 1 << 1;
+        /// create new file
         const CREATE = 1 << 9;
+        /// truncate file size to 0
         const TRUNC = 1 << 10;
     }
 }
@@ -82,6 +92,7 @@ impl OpenFlags {
     }
 }
 
+/// Open a file
 pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
     let (readable, writable) = flags.read_write();
     if flags.contains(OpenFlags::CREATE) {
