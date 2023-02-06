@@ -25,16 +25,17 @@ const SYSCALL_KILL: usize = 129;
 const SYSCALL_SIGACTION: usize = 134;
 const SYSCALL_SIGPROCMASK: usize = 135;
 const SYSCALL_SIGRETURN: usize = 139;
+const SYSCALL_SET_PRIORITY: usize = 140;
 const SYSCALL_GET_TIME: usize = 169;
 const SYSCALL_GETPID: usize = 172;
-const SYSCALL_FORK: usize = 220;
-const SYSCALL_EXEC: usize = 221;
-const SYSCALL_WAITPID: usize = 260;
-const SYSCALL_TASK_INFO: usize = 410;
 const SYSCALL_SBRK: usize = 214;
 const SYSCALL_MUNMAP: usize = 215;
+const SYSCALL_FORK: usize = 220;
+const SYSCALL_EXEC: usize = 221;
 const SYSCALL_MMAP: usize = 222;
+const SYSCALL_WAITPID: usize = 260;
 const SYSCALL_SPAWN: usize = 400;
+const SYSCALL_TASK_INFO: usize = 410;
 
 mod fs;
 mod process;
@@ -76,6 +77,7 @@ pub fn syscall(syscall_id: usize, args: [usize; 4]) -> isize {
         SYSCALL_MUNMAP => sys_munmap(args[0], args[1]),
         SYSCALL_SBRK => sys_sbrk(args[0] as i32),
         SYSCALL_SPAWN => sys_spawn(args[0] as *const u8),
+        SYSCALL_SET_PRIORITY => sys_set_priority(args[0] as isize),
         _ => panic!("Unsupported syscall_id: {}", syscall_id),
     }
 }

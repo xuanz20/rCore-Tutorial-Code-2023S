@@ -172,6 +172,11 @@ pub fn sys_spawn(_path: *const u8) -> isize {
     -1
 }
 
+// YOUR JOB: Set task priority.
+pub fn sys_set_priority(_prio: isize) -> isize {
+    -1
+}
+
 pub fn sys_sigprocmask(mask: u32) -> isize {
     if let Some(task) = current_task() {
         let mut inner = task.inner_exclusive_access();
