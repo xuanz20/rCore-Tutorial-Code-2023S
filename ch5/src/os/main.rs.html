@@ -75,6 +75,44 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
 </pre><pre class="rust"><code><span class="doccomment">//! The main module and entrypoint</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Various facilities of the kernels are implemented as submodules. The most</span>
@@ -94,6 +132,8 @@
 <span class="doccomment">//! We then call [`task::run_tasks()`] and for the first time go to</span>
 <span class="doccomment">//! userspace.</span>
 
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>)]</span>
 <span class="attribute">#![<span class="ident">no_std</span>]</span>
 <span class="attribute">#![<span class="ident">no_main</span>]</span>
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">panic_info_message</span>)]</span>
@@ -111,8 +151,8 @@
 <span class="kw">mod</span> <span class="ident">config</span>;
 <span class="kw">mod</span> <span class="ident">lang_items</span>;
 <span class="kw">mod</span> <span class="ident">loader</span>;
-<span class="kw">mod</span> <span class="ident">mm</span>;
 <span class="kw">mod</span> <span class="ident">logging</span>;
+<span class="kw">mod</span> <span class="ident">mm</span>;
 <span class="kw">mod</span> <span class="ident">sbi</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sync</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">syscall</span>;
@@ -136,11 +176,47 @@
     }
 }
 
+<span class="doccomment">/// kernel log info</span>
+<span class="kw">fn</span> <span class="ident">kernel_log_info</span>() {
+    <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+        <span class="kw">fn</span> <span class="ident">stext</span>(); <span class="comment">// begin addr of text segment</span>
+        <span class="kw">fn</span> <span class="ident">etext</span>(); <span class="comment">// end addr of text segment</span>
+        <span class="kw">fn</span> <span class="ident">srodata</span>(); <span class="comment">// start addr of Read-Only data segment</span>
+        <span class="kw">fn</span> <span class="ident">erodata</span>(); <span class="comment">// end addr of Read-Only data ssegment</span>
+        <span class="kw">fn</span> <span class="ident">sdata</span>(); <span class="comment">// start addr of data segment</span>
+        <span class="kw">fn</span> <span class="ident">edata</span>(); <span class="comment">// end addr of data segment</span>
+        <span class="kw">fn</span> <span class="ident">sbss</span>(); <span class="comment">// start addr of BSS segment</span>
+        <span class="kw">fn</span> <span class="ident">ebss</span>(); <span class="comment">// end addr of BSS segment</span>
+        <span class="kw">fn</span> <span class="ident">boot_stack_lower_bound</span>(); <span class="comment">// stack lower bound</span>
+        <span class="kw">fn</span> <span class="ident">boot_stack_top</span>(); <span class="comment">// stack top</span>
+    }
+    <span class="ident">logging::init</span>();
+    <span class="macro">println!</span>(<span class="string">&quot;[kernel] Hello, world!&quot;</span>);
+    <span class="macro">trace!</span>(
+        <span class="string">&quot;[kernel] .text [{:#x}, {:#x})&quot;</span>,
+        <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>,
+        <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>
+    );
+    <span class="macro">debug!</span>(
+        <span class="string">&quot;[kernel] .rodata [{:#x}, {:#x})&quot;</span>,
+        <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>
+    );
+    <span class="macro">info!</span>(
+        <span class="string">&quot;[kernel] .data [{:#x}, {:#x})&quot;</span>,
+        <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>
+    );
+    <span class="macro">warn!</span>(
+        <span class="string">&quot;[kernel] boot_stack top=bottom={:#x}, lower_bound={:#x}&quot;</span>,
+        <span class="ident">boot_stack_top</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">boot_stack_lower_bound</span> <span class="kw">as</span> <span class="ident">usize</span>
+    );
+    <span class="macro">error!</span>(<span class="string">&quot;[kernel] .bss [{:#x}, {:#x})&quot;</span>, <span class="ident">sbss</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">ebss</span> <span class="kw">as</span> <span class="ident">usize</span>);
+}
+
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
 <span class="doccomment">/// the rust entry-point of os</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rust_main</span>() -&gt; <span class="op">!</span> {
     <span class="ident">clear_bss</span>();
-    <span class="macro">println!</span>(<span class="string">&quot;[kernel] Hello, world!&quot;</span>);
+    <span class="ident">kernel_log_info</span>();
     <span class="ident">mm::init</span>();
     <span class="ident">mm::remap_test</span>();
     <span class="ident">task::add_initproc</span>();

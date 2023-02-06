@@ -233,6 +233,12 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Types related to task management &amp; Functions for completely changing TCB</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::TaskContext</span>;
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">pid_alloc</span>, <span class="ident">KernelStack</span>, <span class="ident">PidHandle</span>};
@@ -432,7 +438,7 @@
         <span class="comment">// **** release children PCB automatically</span>
     }
 
-    
+    <span class="doccomment">/// Get the pid of the process</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">getpid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">pid</span>.<span class="number">0</span>
     }
@@ -447,10 +453,12 @@
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">size</span> <span class="op">&lt;</span> <span class="number">0</span> {
-            <span class="ident">inner</span>.<span class="ident">memory_set</span>
+            <span class="ident">inner</span>
+                .<span class="ident">memory_set</span>
                 .<span class="ident">shrink_to</span>(<span class="ident">VirtAddr</span>(<span class="ident">heap_bottom</span>), <span class="ident">VirtAddr</span>(<span class="ident">new_brk</span> <span class="kw">as</span> <span class="ident">usize</span>))
         } <span class="kw">else</span> {
-            <span class="ident">inner</span>.<span class="ident">memory_set</span>
+            <span class="ident">inner</span>
+                .<span class="ident">memory_set</span>
                 .<span class="ident">append_to</span>(<span class="ident">VirtAddr</span>(<span class="ident">heap_bottom</span>), <span class="ident">VirtAddr</span>(<span class="ident">new_brk</span> <span class="kw">as</span> <span class="ident">usize</span>))
         };
         <span class="kw">if</span> <span class="ident">result</span> {
@@ -463,9 +471,13 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="doccomment">/// task status: UnInit, Ready, Running, Exited</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TaskStatus</span> {
+    <span class="doccomment">/// ready to run</span>
     <span class="ident">Ready</span>,
+    <span class="doccomment">/// running</span>
     <span class="ident">Running</span>,
+    <span class="doccomment">/// exited</span>
     <span class="ident">Zombie</span>,
 }
 </code></pre></div>
