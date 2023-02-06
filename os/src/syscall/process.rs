@@ -12,6 +12,7 @@ pub struct TimeVal {
     pub usec: usize,
 }
 
+#[allow(dead_code)]
 pub struct TaskInfo {
     status: TaskStatus,
     syscall_times: [u32; MAX_SYSCALL_NUM],
@@ -44,6 +45,6 @@ pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
 }
 
 /// YOUR JOB: Finish sys_task_info to pass testcases
-pub fn sys_task_info(ti: *mut TaskInfo) -> isize {
+pub fn sys_task_info(_ti: *mut TaskInfo) -> isize {
     -1
 }
