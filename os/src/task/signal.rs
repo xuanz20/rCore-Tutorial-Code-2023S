@@ -1,16 +1,23 @@
 use bitflags::*;
 
 bitflags! {
+    /// Signal flags
     pub struct SignalFlags: u32 {
+        /// Interrupt
         const SIGINT    = 1 << 2;
+        /// Illegal instruction
         const SIGILL    = 1 << 4;
+        /// Abort
         const SIGABRT   = 1 << 6;
+        /// Floating point exception
         const SIGFPE    = 1 << 8;
+        /// Segmentation fault
         const SIGSEGV   = 1 << 11;
     }
 }
 
 impl SignalFlags {
+    /// Check if there is an error in the signal flags
     pub fn check_error(&self) -> Option<(i32, &'static str)> {
         if self.contains(Self::SIGINT) {
             Some((-2, "Killed, SIGINT=2"))

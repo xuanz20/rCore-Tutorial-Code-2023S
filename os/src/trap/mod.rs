@@ -1,3 +1,17 @@
+//! Trap handling functionality
+//!
+//! For rCore, we have a single trap entry point, namely `__alltraps`. At
+//! initialization in [`init()`], we set the `stvec` CSR to point to it.
+//!
+//! All traps go through `__alltraps`, which is defined in `trap.S`. The
+//! assembly language code does just enough work restore the kernel space
+//! context, ensuring that Rust code safely runs, and transfers control to
+//! [`trap_handler()`].
+//!
+//! It then calls different functionality based on what exactly the exception
+//! was. For example, timer interrupts trigger task preemption, and syscalls go
+//! to [`syscall()`].
+
 mod context;
 
 use crate::config::TRAMPOLINE;
@@ -16,6 +30,7 @@ use riscv::register::{
 
 global_asm!(include_str!("trap.S"));
 
+/// Initialize trap handling
 pub fn init() {
     set_kernel_trap_entry();
 }
@@ -32,12 +47,14 @@ fn set_user_trap_entry() {
     }
 }
 
+/// enable timer interrupt in supervisor mode
 pub fn enable_timer_interrupt() {
     unsafe {
         sie::set_stimer();
     }
 }
 
+/// trap handler
 #[no_mangle]
 pub fn trap_handler() -> ! {
     set_kernel_trap_entry();
@@ -94,6 +111,7 @@ pub fn trap_handler() -> ! {
     trap_return();
 }
 
+/// return to user space
 #[no_mangle]
 pub fn trap_return() -> ! {
     set_user_trap_entry();
@@ -116,6 +134,7 @@ pub fn trap_return() -> ! {
     }
 }
 
+/// handle trap from kernel
 #[no_mangle]
 pub fn trap_from_kernel() -> ! {
     use riscv::register::sepc;

@@ -1,3 +1,5 @@
+//! Types related to task management & Functions for completely changing TCB
+
 use super::id::TaskUserRes;
 use super::{kstack_alloc, KernelStack, ProcessControlBlock, TaskContext};
 use crate::trap::TrapContext;
@@ -5,19 +7,22 @@ use crate::{mm::PhysPageNum, sync::UPSafeCell};
 use alloc::sync::{Arc, Weak};
 use core::cell::RefMut;
 
+/// Task control block structure
 pub struct TaskControlBlock {
-    // immutable
+    /// immutable
     pub process: Weak<ProcessControlBlock>,
+    /// Kernel stack corresponding to PID
     pub kstack: KernelStack,
-    // mutable
+    /// mutable
     inner: UPSafeCell<TaskControlBlockInner>,
 }
 
 impl TaskControlBlock {
+    /// Get the mutable reference of the inner TCB
     pub fn inner_exclusive_access(&self) -> RefMut<'_, TaskControlBlockInner> {
         self.inner.exclusive_access()
     }
-
+    /// Get the address of app's page table
     pub fn get_user_token(&self) -> usize {
         let process = self.process.upgrade().unwrap();
         let inner = process.inner_exclusive_access();
@@ -27,9 +32,14 @@ impl TaskControlBlock {
 
 pub struct TaskControlBlockInner {
     pub res: Option<TaskUserRes>,
+    /// The physical page number of the frame where the trap context is placed
     pub trap_cx_ppn: PhysPageNum,
+    /// Save task context
     pub task_cx: TaskContext,
+
+    /// Maintain the execution status of the current process
     pub task_status: TaskStatus,
+    /// It is set when active exit or execution error occurs
     pub exit_code: Option<i32>,
 }
 
@@ -45,6 +55,7 @@ impl TaskControlBlockInner {
 }
 
 impl TaskControlBlock {
+    /// Create a new task
     pub fn new(
         process: Arc<ProcessControlBlock>,
         ustack_base: usize,
@@ -71,8 +82,12 @@ impl TaskControlBlock {
 }
 
 #[derive(Copy, Clone, PartialEq)]
+/// The execution status of the current process
 pub enum TaskStatus {
+    /// ready to run
     Ready,
+    /// running
     Running,
+    /// blocked
     Blocked,
 }

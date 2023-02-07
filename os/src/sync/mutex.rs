@@ -1,19 +1,24 @@
 use super::UPSafeCell;
 use crate::task::TaskControlBlock;
-use crate::task::{wakeup_task, current_task};
 use crate::task::{block_current_and_run_next, suspend_current_and_run_next};
+use crate::task::{current_task, wakeup_task};
 use alloc::{collections::VecDeque, sync::Arc};
 
+/// Mutex trait
 pub trait Mutex: Sync + Send {
+    /// Lock the mutex
     fn lock(&self);
+    /// Unlock the mutex
     fn unlock(&self);
 }
 
+/// Spinlock Mutex
 pub struct MutexSpin {
     locked: UPSafeCell<bool>,
 }
 
 impl MutexSpin {
+    /// Create a new spinlock mutex
     pub fn new() -> Self {
         Self {
             locked: unsafe { UPSafeCell::new(false) },
@@ -22,6 +27,7 @@ impl MutexSpin {
 }
 
 impl Mutex for MutexSpin {
+    /// Lock the spinlock mutex
     fn lock(&self) {
         loop {
             let mut locked = self.locked.exclusive_access();
@@ -42,6 +48,7 @@ impl Mutex for MutexSpin {
     }
 }
 
+/// Blocking Mutex
 pub struct MutexBlocking {
     inner: UPSafeCell<MutexBlockingInner>,
 }
@@ -52,6 +59,7 @@ pub struct MutexBlockingInner {
 }
 
 impl MutexBlocking {
+    /// Create a new blocking mutex
     pub fn new() -> Self {
         Self {
             inner: unsafe {
@@ -65,6 +73,7 @@ impl MutexBlocking {
 }
 
 impl Mutex for MutexBlocking {
+    /// lock the blocking mutex
     fn lock(&self) {
         let mut mutex_inner = self.inner.exclusive_access();
         if mutex_inner.locked {
@@ -76,6 +85,7 @@ impl Mutex for MutexBlocking {
         }
     }
 
+    /// unlock the blocking mutex
     fn unlock(&self) {
         let mut mutex_inner = self.inner.exclusive_access();
         assert!(mutex_inner.locked);

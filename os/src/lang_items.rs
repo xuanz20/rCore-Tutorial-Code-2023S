@@ -1,3 +1,5 @@
+//! The panic handler and backtrace
+
 use crate::sbi::shutdown;
 use crate::task::current_kstack_top;
 use core::arch::asm;

@@ -1,8 +1,10 @@
 use crate::sync::{Mutex, UPSafeCell};
-use crate::task::{wakeup_task, block_current_and_run_next, current_task, TaskControlBlock};
+use crate::task::{block_current_and_run_next, current_task, wakeup_task, TaskControlBlock};
 use alloc::{collections::VecDeque, sync::Arc};
 
+/// Condition variable structure
 pub struct Condvar {
+    /// Condition variable inner
     pub inner: UPSafeCell<CondvarInner>,
 }
 
@@ -11,6 +13,7 @@ pub struct CondvarInner {
 }
 
 impl Condvar {
+    /// Create a new condition variable
     pub fn new() -> Self {
         Self {
             inner: unsafe {
@@ -21,6 +24,7 @@ impl Condvar {
         }
     }
 
+    /// Signal a task waiting on the condition variable
     pub fn signal(&self) {
         let mut inner = self.inner.exclusive_access();
         if let Some(task) = inner.wait_queue.pop_front() {
@@ -28,6 +32,7 @@ impl Condvar {
         }
     }
 
+    /// blocking current task, let it wait on the condition variable
     pub fn wait(&self, mutex: Arc<dyn Mutex>) {
         mutex.unlock();
         let mut inner = self.inner.exclusive_access();
