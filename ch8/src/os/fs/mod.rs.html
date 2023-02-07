@@ -42,16 +42,31 @@
 <span id="42">42</span>
 <span id="43">43</span>
 <span id="44">44</span>
-</pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">inode</span>;
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+</pre><pre class="rust"><code><span class="doccomment">//! File trait &amp; inode(dir, file, pipe, stdin, stdout)</span>
+
+<span class="kw">mod</span> <span class="ident">inode</span>;
 <span class="kw">mod</span> <span class="ident">pipe</span>;
 <span class="kw">mod</span> <span class="ident">stdio</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::UserBuffer</span>;
 
+<span class="doccomment">/// trait File for all file types</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">File</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
+    <span class="doccomment">/// the file readable?</span>
     <span class="kw">fn</span> <span class="ident">readable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span>;
+    <span class="doccomment">/// the file writable?</span>
     <span class="kw">fn</span> <span class="ident">writable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span>;
+    <span class="doccomment">/// read from the file to buf, return the number of bytes read</span>
     <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span>;
+    <span class="doccomment">/// write to the file from buf, return the number of bytes written</span>
     <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span>;
 }
 
@@ -75,6 +90,7 @@
     <span class="doccomment">/// The mode of a inode</span>
     <span class="doccomment">/// whether a directory or a file</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatMode</span>: <span class="ident">u32</span> {
+        <span class="doccomment">/// null</span>
         <span class="kw">const</span> <span class="ident">NULL</span>  <span class="op">=</span> <span class="number">0</span>;
         <span class="doccomment">/// directory</span>
         <span class="kw">const</span> <span class="ident">DIR</span>   <span class="op">=</span> <span class="number">0o040000</span>;

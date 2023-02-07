@@ -11,16 +11,38 @@
 <span id="11">11</span>
 <span id="12">12</span>
 <span id="13">13</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Constants in the kernel</span>
 
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
+
+<span class="doccomment">/// user app&#39;s stack size</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">USER_STACK_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4096</span> <span class="op">*</span> <span class="number">2</span>;
+<span class="doccomment">/// kernel stack size</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">KERNEL_STACK_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4096</span> <span class="op">*</span> <span class="number">2</span>;
+<span class="doccomment">/// kernel heap size</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">KERNEL_HEAP_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x20_0000</span>;
+<span class="doccomment">/// physical memory end address</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MEMORY_END</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x80800000</span>;
+<span class="doccomment">/// page size : 4KB</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PAGE_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x1000</span>;
+<span class="doccomment">/// page size bits: 12</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PAGE_SIZE_BITS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0xc</span>;
+<span class="doccomment">/// the max number of syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_SYSCALL_NUM</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">500</span>;
+<span class="doccomment">/// the virtual addr of trapoline</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TRAMPOLINE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">usize::MAX</span> <span class="op">-</span> <span class="ident">PAGE_SIZE</span> <span class="op">+</span> <span class="number">1</span>;
+<span class="doccomment">/// the virtual addr of trap context</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TRAP_CONTEXT_BASE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">TRAMPOLINE</span> <span class="op">-</span> <span class="ident">PAGE_SIZE</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::board</span>::{<span class="ident">CLOCK_FREQ</span>, <span class="ident">MMIO</span>};

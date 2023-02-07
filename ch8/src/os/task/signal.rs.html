@@ -27,19 +27,33 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">bitflags</span>::<span class="kw-2">*</span>;
 
 <span class="macro">bitflags!</span> {
+    <span class="doccomment">/// Signal flags</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignalFlags</span>: <span class="ident">u32</span> {
+        <span class="doccomment">/// Interrupt</span>
         <span class="kw">const</span> <span class="ident">SIGINT</span>    <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">2</span>;
+        <span class="doccomment">/// Illegal instruction</span>
         <span class="kw">const</span> <span class="ident">SIGILL</span>    <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">4</span>;
+        <span class="doccomment">/// Abort</span>
         <span class="kw">const</span> <span class="ident">SIGABRT</span>   <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">6</span>;
+        <span class="doccomment">/// Floating point exception</span>
         <span class="kw">const</span> <span class="ident">SIGFPE</span>    <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>;
+        <span class="doccomment">/// Segmentation fault</span>
         <span class="kw">const</span> <span class="ident">SIGSEGV</span>   <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">11</span>;
     }
 }
 
 <span class="kw">impl</span> <span class="ident">SignalFlags</span> {
+    <span class="doccomment">/// Check if there is an error in the signal flags</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_error</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>)<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">contains</span>(<span class="ident"><span class="self">Self</span>::SIGINT</span>) {
             <span class="prelude-val">Some</span>((<span class="op">-</span><span class="number">2</span>, <span class="string">&quot;Killed, SIGINT=2&quot;</span>))

@@ -81,6 +81,8 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::BlockDevice</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{
     <span class="ident">frame_alloc</span>, <span class="ident">frame_dealloc</span>, <span class="ident">kernel_token</span>, <span class="ident">FrameTracker</span>, <span class="ident">PageTable</span>, <span class="ident">PhysAddr</span>, <span class="ident">PhysPageNum</span>,
@@ -94,6 +96,7 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
 <span class="kw">const</span> <span class="ident">VIRTIO0</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x10001000</span>;
 
+<span class="doccomment">/// VirtIOBlock device driver strcuture for virtio_blk device</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VirtIOBlock</span>(<span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">VirtIOBlk</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">VirtioHal</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
 <span class="macro">lazy_static!</span> {
@@ -117,6 +120,7 @@
 
 <span class="kw">impl</span> <span class="ident">VirtIOBlock</span> {
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
+    <span class="doccomment">/// Create a new VirtIOBlock driver with VIRTIO0 base_addr for virtio_blk device</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="kw">unsafe</span> {
             <span class="self">Self</span>(<span class="ident">UPSafeCell::new</span>(
