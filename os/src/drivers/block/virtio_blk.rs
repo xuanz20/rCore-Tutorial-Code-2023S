@@ -10,7 +10,6 @@ use virtio_drivers::{Hal, VirtIOBlk, VirtIOHeader};
 
 #[allow(unused)]
 const VIRTIO0: usize = 0x10001000;
-
 /// VirtIOBlock device driver strcuture for virtio_blk device
 pub struct VirtIOBlock(UPSafeCell<VirtIOBlk<'static, VirtioHal>>);
 

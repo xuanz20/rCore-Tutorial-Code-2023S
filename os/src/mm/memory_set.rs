@@ -77,6 +77,9 @@ impl MemorySet {
             self.areas.remove(idx);
         }
     }
+    /// Add a new MapArea into this MemorySet.
+    /// Assuming that there are no conflicts in the virtual address
+    /// space.
     fn push(&mut self, mut map_area: MapArea, data: Option<&[u8]>) {
         map_area.map(&mut self.page_table);
         if let Some(data) = data {
@@ -170,7 +173,7 @@ impl MemorySet {
         memory_set
     }
     /// Include sections in elf and trampoline and TrapContext and user stack,
-    /// also returns user_sp and entry point.
+    /// also returns user_sp_base and entry point.
     pub fn from_elf(elf_data: &[u8]) -> (Self, usize, usize) {
         let mut memory_set = Self::new_bare();
         // map trampoline
