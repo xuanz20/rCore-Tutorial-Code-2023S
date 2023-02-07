@@ -125,6 +125,11 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PhysAddr</span>, <span class="ident">PhysPageNum</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::MEMORY_END</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPIntrFreeCell</span>;
@@ -132,11 +137,14 @@
 <span class="kw">use</span> <span class="ident">core::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
 
+<span class="doccomment">/// tracker for physical page frame allocation and deallocation</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FrameTracker</span> {
+    <span class="doccomment">/// physical page number</span>
     <span class="kw">pub</span> <span class="ident">ppn</span>: <span class="ident">PhysPageNum</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">FrameTracker</span> {
+    <span class="doccomment">/// Create a new FrameTracker</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">ppn</span>: <span class="ident">PhysPageNum</span>) -&gt; <span class="self">Self</span> {
         <span class="comment">// page cleaning</span>
         <span class="kw">let</span> <span class="ident">bytes_array</span> <span class="op">=</span> <span class="ident">ppn</span>.<span class="ident">get_bytes_array</span>();
@@ -224,6 +232,7 @@
     );
 }
 
+<span class="doccomment">/// Allocate a physical page frame in FrameTracker style</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">frame_alloc</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FrameTracker</span><span class="op">&gt;</span> {
     <span class="ident">FRAME_ALLOCATOR</span>
         .<span class="ident">exclusive_access</span>()
@@ -231,6 +240,7 @@
         .<span class="ident">map</span>(<span class="ident">FrameTracker::new</span>)
 }
 
+<span class="doccomment">/// Deallocate a physical page frame with a given ppn</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">frame_dealloc</span>(<span class="ident">ppn</span>: <span class="ident">PhysPageNum</span>) {
     <span class="ident">FRAME_ALLOCATOR</span>.<span class="ident">exclusive_access</span>().<span class="ident">dealloc</span>(<span class="ident">ppn</span>);
 }

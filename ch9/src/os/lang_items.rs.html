@@ -35,7 +35,11 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sbi::shutdown</span>;
+<span id="38">38</span>
+<span id="39">39</span>
+</pre><pre class="rust"><code><span class="doccomment">//! The panic handler and backtrace</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sbi::shutdown</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task::current_kstack_top</span>;
 <span class="kw">use</span> <span class="ident">core::arch::asm</span>;
 <span class="kw">use</span> <span class="ident">core::panic::PanicInfo</span>;
