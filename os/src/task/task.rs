@@ -1,3 +1,5 @@
+//! Types related to task management & Functions for completely changing TCB
+
 use super::id::TaskUserRes;
 use super::{kstack_alloc, KernelStack, ProcessControlBlock, TaskContext};
 use crate::trap::TrapContext;
@@ -7,11 +9,13 @@ use crate::{
 };
 use alloc::sync::{Arc, Weak};
 
+/// Task control block structure
 pub struct TaskControlBlock {
-    // immutable
+    /// immutable
     pub process: Weak<ProcessControlBlock>,
+    /// Kernel stack corresponding to PID
     pub kstack: KernelStack,
-    // mutable
+    /// mutable
     pub inner: UPIntrFreeCell<TaskControlBlockInner>,
 }
 
@@ -29,9 +33,14 @@ impl TaskControlBlock {
 
 pub struct TaskControlBlockInner {
     pub res: Option<TaskUserRes>,
+    /// The physical page number of the frame where the trap context is placed
     pub trap_cx_ppn: PhysPageNum,
+    /// Save task context
     pub task_cx: TaskContext,
+
+    /// Maintain the execution status of the current process
     pub task_status: TaskStatus,
+    /// It is set when active exit or execution error occurs
     pub exit_code: Option<i32>,
 }
 
@@ -47,6 +56,7 @@ impl TaskControlBlockInner {
 }
 
 impl TaskControlBlock {
+    /// Create a new task
     pub fn new(
         process: Arc<ProcessControlBlock>,
         ustack_base: usize,
@@ -73,8 +83,12 @@ impl TaskControlBlock {
 }
 
 #[derive(Copy, Clone, PartialEq)]
+/// The execution status of the current process
 pub enum TaskStatus {
+    /// ready to run
     Ready,
+    /// running
     Running,
+    /// blocked
     Blocked,
 }

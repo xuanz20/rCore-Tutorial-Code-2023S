@@ -67,8 +67,10 @@ pub fn kernel_stack_position(kstack_id: usize) -> (usize, usize) {
     (bottom, top)
 }
 
+/// Kernel stack for a task
 pub struct KernelStack(pub usize);
 
+/// Allocate a kernel stack for a task
 pub fn kstack_alloc() -> KernelStack {
     let kstack_id = KSTACK_ALLOCATOR.exclusive_access().alloc();
     let (kstack_bottom, kstack_top) = kernel_stack_position(kstack_id);
@@ -92,6 +94,7 @@ impl Drop for KernelStack {
 
 impl KernelStack {
     #[allow(unused)]
+    /// push a value of type T on the top of the kernel stack
     pub fn push_on_top<T>(&self, value: T) -> *mut T
     where
         T: Sized,
@@ -103,6 +106,7 @@ impl KernelStack {
         }
         ptr_mut
     }
+    /// return the top of the kernel stack
     pub fn get_top(&self) -> usize {
         let (_, kernel_stack_top) = kernel_stack_position(self.0);
         kernel_stack_top

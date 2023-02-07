@@ -1,3 +1,5 @@
+//! block/bus/chardev/gpu/input/plic device driver
+
 pub mod block;
 pub mod bus;
 pub mod chardev;

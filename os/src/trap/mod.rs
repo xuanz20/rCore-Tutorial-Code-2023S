@@ -1,3 +1,17 @@
+//! Trap handling functionality
+//!
+//! For rCore, we have a single trap entry point, namely `__alltraps`. At
+//! initialization in [`init()`], we set the `stvec` CSR to point to it.
+//!
+//! All traps go through `__alltraps`, which is defined in `trap.S`. The
+//! assembly language code does just enough work restore the kernel space
+//! context, ensuring that Rust code safely runs, and transfers control to
+//! [`trap_handler()`].
+//!
+//! It then calls different functionality based on what exactly the exception
+//! was. For example, timer interrupts trigger task preemption, and syscalls go
+//! to [`syscall()`].
+
 mod context;
 
 use crate::config::TRAMPOLINE;
@@ -38,6 +52,7 @@ fn set_user_trap_entry() {
     }
 }
 
+/// enable timer interrupt in supervisor mode
 pub fn enable_timer_interrupt() {
     unsafe {
         sie::set_stimer();
@@ -56,6 +71,7 @@ fn disable_supervisor_interrupt() {
     }
 }
 
+/// trap handler
 #[no_mangle]
 pub fn trap_handler() -> ! {
     set_kernel_trap_entry();
@@ -71,7 +87,7 @@ pub fn trap_handler() -> ! {
             enable_supervisor_interrupt();
 
             // get system call return value
-            let result = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12]]);
+            let result = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12], cx.x[14]]);
             // cx is changed during sys_exec, so we have to call it again
             cx = current_trap_cx();
             cx.x[10] = result as usize;
@@ -119,6 +135,7 @@ pub fn trap_handler() -> ! {
     trap_return();
 }
 
+/// return to user space
 #[no_mangle]
 pub fn trap_return() -> ! {
     disable_supervisor_interrupt();
@@ -143,6 +160,7 @@ pub fn trap_return() -> ! {
     }
 }
 
+/// handle trap from kernel
 #[no_mangle]
 pub fn trap_from_kernel(_trap_cx: &TrapContext) {
     let scause = scause::read();

@@ -1,4 +1,4 @@
-use crate::fs::{make_pipe, open_file, OpenFlags};
+use crate::fs::{make_pipe, open_file, OpenFlags, Stat};
 use crate::mm::{translated_byte_buffer, translated_refmut, translated_str, UserBuffer};
 use crate::task::{current_process, current_user_token};
 use alloc::sync::Arc;
@@ -96,4 +96,19 @@ pub fn sys_dup(fd: usize) -> isize {
     let new_fd = inner.alloc_fd();
     inner.fd_table[new_fd] = Some(Arc::clone(inner.fd_table[fd].as_ref().unwrap()));
     new_fd as isize
+}
+
+/// YOUR JOB: Implement fstat.
+pub fn sys_fstat(_fd: usize, _st: *mut Stat) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement linkat.
+pub fn sys_linkat(_old_name: *const u8, _new_name: *const u8) -> isize {
+    -1
+}
+
+/// YOUR JOB: Implement unlinkat.
+pub fn sys_unlinkat(_name: *const u8) -> isize {
+    -1
 }

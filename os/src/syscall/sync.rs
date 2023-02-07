@@ -132,3 +132,8 @@ pub fn sys_condvar_wait(condvar_id: usize, mutex_id: usize) -> isize {
     condvar.wait_with_mutex(mutex);
     0
 }
+
+/// YOUR JOB: Implement deadlock detection, but might not all in this syscall
+pub fn sys_enable_deadlock_detect(_enabled: usize) -> isize {
+    -1
+}

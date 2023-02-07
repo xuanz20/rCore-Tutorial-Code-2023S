@@ -5,7 +5,9 @@ use crate::task::{
 };
 use alloc::{collections::VecDeque, sync::Arc};
 
+/// Condition variable structure
 pub struct Condvar {
+	/// Condition variable inner
     pub inner: UPIntrFreeCell<CondvarInner>,
 }
 
@@ -14,6 +16,7 @@ pub struct CondvarInner {
 }
 
 impl Condvar {
+    /// Create a new condition variable
     pub fn new() -> Self {
         Self {
             inner: unsafe {
@@ -24,6 +27,7 @@ impl Condvar {
         }
     }
 
+    /// Signal a task waiting on the condition variable
     pub fn signal(&self) {
         let mut inner = self.inner.exclusive_access();
         if let Some(task) = inner.wait_queue.pop_front() {
@@ -31,15 +35,7 @@ impl Condvar {
         }
     }
 
-    /*
-    pub fn wait(&self) {
-        let mut inner = self.inner.exclusive_access();
-        inner.wait_queue.push_back(current_task().unwrap());
-        drop(inner);
-        block_current_and_run_next();
-    }
-    */
-
+    /// blocking current task, but didn't schedule new task
     pub fn wait_no_sched(&self) -> *mut TaskContext {
         self.inner.exclusive_session(|inner| {
             inner.wait_queue.push_back(current_task().unwrap());
@@ -47,6 +43,7 @@ impl Condvar {
         block_current_task()
     }
 
+	/// blocking current task, let it wait on the condition variable
     pub fn wait_with_mutex(&self, mutex: Arc<dyn Mutex>) {
         mutex.unlock();
         self.inner.exclusive_session(|inner| {

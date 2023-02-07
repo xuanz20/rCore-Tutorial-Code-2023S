@@ -3,7 +3,10 @@ use crate::drivers::chardev::CharDevice;
 use crate::drivers::chardev::UART;
 use crate::mm::UserBuffer;
 
+/// stdin file for getting chars from console
 pub struct Stdin;
+
+/// stdout file for putting chars to console
 pub struct Stdout;
 
 impl File for Stdin {

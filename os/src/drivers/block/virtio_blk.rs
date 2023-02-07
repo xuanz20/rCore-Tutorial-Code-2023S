@@ -8,7 +8,7 @@ use virtio_drivers::{BlkResp, RespStatus, VirtIOBlk, VirtIOHeader};
 
 #[allow(unused)]
 const VIRTIO0: usize = 0x10008000;
-
+/// VirtIOBlock device driver strcuture for virtio_blk device
 pub struct VirtIOBlock {
     virtio_blk: UPIntrFreeCell<VirtIOBlk<'static, VirtioHal>>,
     condvars: BTreeMap<u16, Condvar>,
@@ -67,6 +67,7 @@ impl BlockDevice for VirtIOBlock {
 }
 
 impl VirtIOBlock {
+    /// Create a new VirtIOBlock driver with VIRTIO0 base_addr for virtio_blk device
     pub fn new() -> Self {
         let virtio_blk = unsafe {
             UPIntrFreeCell::new(

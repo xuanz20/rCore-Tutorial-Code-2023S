@@ -12,6 +12,7 @@ pub struct Pipe {
 }
 
 impl Pipe {
+	/// create readable pipe
     pub fn read_end_with_buffer(buffer: Arc<UPIntrFreeCell<PipeRingBuffer>>) -> Self {
         Self {
             readable: true,
@@ -19,6 +20,7 @@ impl Pipe {
             buffer,
         }
     }
+    /// create writable pipe
     pub fn write_end_with_buffer(buffer: Arc<UPIntrFreeCell<PipeRingBuffer>>) -> Self {
         Self {
             readable: false,
