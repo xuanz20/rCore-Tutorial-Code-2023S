@@ -429,7 +429,6 @@
 <span id="429">429</span>
 <span id="430">430</span>
 <span id="431">431</span>
-<span id="432">432</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">frame_alloc</span>, <span class="ident">FrameTracker</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PTEFlags</span>, <span class="ident">PageTable</span>, <span class="ident">PageTableEntry</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PhysAddr</span>, <span class="ident">PhysPageNum</span>, <span class="ident">VirtAddr</span>, <span class="ident">VirtPageNum</span>};
@@ -530,14 +529,14 @@
         <span class="comment">// map trampoline</span>
         <span class="ident">memory_set</span>.<span class="ident">map_trampoline</span>();
         <span class="comment">// map kernel sections</span>
-        <span class="macro">println!</span>(<span class="string">&quot;.text [{:#x}, {:#x})&quot;</span>, <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="macro">println!</span>(<span class="string">&quot;.rodata [{:#x}, {:#x})&quot;</span>, <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="macro">println!</span>(<span class="string">&quot;.data [{:#x}, {:#x})&quot;</span>, <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="macro">println!</span>(
+        <span class="macro">info!</span>(<span class="string">&quot;.text [{:#x}, {:#x})&quot;</span>, <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.rodata [{:#x}, {:#x})&quot;</span>, <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.data [{:#x}, {:#x})&quot;</span>, <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(
             <span class="string">&quot;.bss [{:#x}, {:#x})&quot;</span>,
             <span class="ident">sbss_with_stack</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">ebss</span> <span class="kw">as</span> <span class="ident">usize</span>
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .text section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .text section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -547,7 +546,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .rodata section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .rodata section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -557,7 +556,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .data section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .data section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -567,7 +566,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping .bss section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .bss section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">sbss_with_stack</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -577,7 +576,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping physical memory&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping physical memory&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">ekernel</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),
@@ -587,7 +586,7 @@
             ),
             <span class="prelude-val">None</span>,
         );
-        <span class="macro">println!</span>(<span class="string">&quot;mapping memory-mapped registers&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;mapping memory-mapped registers&quot;</span>);
         <span class="kw">for</span> <span class="ident">pair</span> <span class="kw">in</span> <span class="ident">MMIO</span> {
             <span class="ident">memory_set</span>.<span class="ident">push</span>(
                 <span class="ident">MapArea::new</span>(
@@ -683,7 +682,6 @@
 
     <span class="doccomment">///Remove all `MapArea`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">recycle_data_pages</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="comment">//*self = Self::new_bare();</span>
         <span class="self">self</span>.<span class="ident">areas</span>.<span class="ident">clear</span>();
     }
 
