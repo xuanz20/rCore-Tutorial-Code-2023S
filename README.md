@@ -196,16 +196,15 @@ You can open a doc html of `os` using `cargo doc --no-deps --open` under `os` di
 
 ### OS-API-DOCS
 The API Docs for Ten OS
-1. [Lib-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch1/os/index.html)
-1. [Batch-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch2/os/index.html)
-1. [MultiProg-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch3-coop/os/index.html)
-1. [TimeSharing-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch3/os/index.html)
-1. [AddrSpace-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch4/os/index.html)
-1. [Process-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch5/os/index.html)
-1. [FileSystem-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch6/os/index.html)
-1. [IPC-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch7/os/index.html)
-1. [SyncMutex-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch8/os/index.html)
-1. [IODevice-OS API doc](https://learningos.github.io/rCore-Tutorial-v3/ch9/os/index.html)
+1. [Lib-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch1/os/index.html)
+2.  [Batch-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch2/os/index.html)
+3. [TimeSharing-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch3/os/index.html)
+4. [AddrSpace-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch4/os/index.html)
+5. [Process-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch5/os/index.html)
+6. [FileSystem-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch6/os/index.html)
+7. [IPC-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch7/os/index.html)
+8. [SyncMutex-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch8/os/index.html)
+9. [IODevice-OS API doc](https://learningos.github.io/rCore-Tutorial-Code-2023S/ch9/os/index.html)
 
 ## Working in progress
 
