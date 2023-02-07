@@ -34,6 +34,7 @@ lazy_static! {
     /// TASK_MANAGER instance through lazy_static!
     pub static ref TASK_MANAGER: UPSafeCell<TaskManager> =
         unsafe { UPSafeCell::new(TaskManager::new()) };
+    /// PID2PCB instance (map of pid to pcb)
     pub static ref PID2TCB: UPSafeCell<BTreeMap<usize, Arc<TaskControlBlock>>> =
         unsafe { UPSafeCell::new(BTreeMap::new()) };
 }
@@ -57,7 +58,7 @@ pub fn pid2task(pid: usize) -> Option<Arc<TaskControlBlock>> {
     map.get(&pid).map(Arc::clone)
 }
 
-///
+/// Remove process with pid (called by exit_current_and_run_next)
 pub fn remove_from_pid2task(pid: usize) {
     let mut map = PID2TCB.exclusive_access();
     if map.remove(&pid).is_none() {
