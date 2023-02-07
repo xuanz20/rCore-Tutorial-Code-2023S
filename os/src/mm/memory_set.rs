@@ -77,6 +77,9 @@ impl MemorySet {
             self.areas.remove(idx);
         }
     }
+    /// Add a new MapArea into this MemorySet.
+    /// Assuming that there are no conflicts in the virtual address
+    /// space.
     fn push(&mut self, mut map_area: MapArea, data: Option<&[u8]>) {
         map_area.map(&mut self.page_table);
         if let Some(data) = data {
@@ -98,14 +101,14 @@ impl MemorySet {
         // map trampoline
         memory_set.map_trampoline();
         // map kernel sections
-        println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-        println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-        println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
-        println!(
-            ".bss [{:#x}, {:#x})",
-            sbss_with_stack as usize, ebss as usize
-        );
-        println!("mapping .text section");
+        // println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
+        // println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
+        // println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
+        // println!(
+        //     ".bss [{:#x}, {:#x})",
+        //     sbss_with_stack as usize, ebss as usize
+        // );
+        // println!("mapping .text section");
         memory_set.push(
             MapArea::new(
                 (stext as usize).into(),
@@ -115,7 +118,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping .rodata section");
+        // println!("mapping .rodata section");
         memory_set.push(
             MapArea::new(
                 (srodata as usize).into(),
@@ -125,7 +128,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping .data section");
+        // println!("mapping .data section");
         memory_set.push(
             MapArea::new(
                 (sdata as usize).into(),
@@ -135,7 +138,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping .bss section");
+        // println!("mapping .bss section");
         memory_set.push(
             MapArea::new(
                 (sbss_with_stack as usize).into(),
@@ -145,7 +148,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping physical memory");
+        // println!("mapping physical memory");
         memory_set.push(
             MapArea::new(
                 (ekernel as usize).into(),
@@ -155,7 +158,7 @@ impl MemorySet {
             ),
             None,
         );
-        println!("mapping memory-mapped registers");
+        //println!("mapping memory-mapped registers");
         for pair in MMIO {
             memory_set.push(
                 MapArea::new(
@@ -170,7 +173,7 @@ impl MemorySet {
         memory_set
     }
     /// Include sections in elf and trampoline and TrapContext and user stack,
-    /// also returns user_sp and entry point.
+    /// also returns user_sp_base and entry point.
     pub fn from_elf(elf_data: &[u8]) -> (Self, usize, usize) {
         let mut memory_set = Self::new_bare();
         // map trampoline
