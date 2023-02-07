@@ -319,6 +319,6 @@ pub enum TaskStatus {
     Ready,
     /// running
     Running,
-    ///
+    /// exited
     Zombie,
 }
