@@ -97,7 +97,22 @@
 <span id="97">97</span>
 <span id="98">98</span>
 <span id="99">99</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::fs</span>::{<span class="ident">make_pipe</span>, <span class="ident">open_file</span>, <span class="ident">OpenFlags</span>};
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::fs</span>::{<span class="ident">make_pipe</span>, <span class="ident">open_file</span>, <span class="ident">OpenFlags</span>, <span class="ident">Stat</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">translated_byte_buffer</span>, <span class="ident">translated_refmut</span>, <span class="ident">translated_str</span>, <span class="ident">UserBuffer</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_process</span>, <span class="ident">current_user_token</span>};
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
@@ -195,6 +210,21 @@
     <span class="kw">let</span> <span class="ident">new_fd</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">alloc_fd</span>();
     <span class="ident">inner</span>.<span class="ident">fd_table</span>[<span class="ident">new_fd</span>] <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Arc::clone</span>(<span class="ident">inner</span>.<span class="ident">fd_table</span>[<span class="ident">fd</span>].<span class="ident">as_ref</span>().<span class="ident">unwrap</span>()));
     <span class="ident">new_fd</span> <span class="kw">as</span> <span class="ident">isize</span>
+}
+
+<span class="doccomment">/// YOUR JOB: Implement fstat.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_fstat</span>(<span class="ident">_fd</span>: <span class="ident">usize</span>, <span class="ident">_st</span>: <span class="kw-2">*mut</span> <span class="ident">Stat</span>) -&gt; <span class="ident">isize</span> {
+    <span class="op">-</span><span class="number">1</span>
+}
+
+<span class="doccomment">/// YOUR JOB: Implement linkat.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_linkat</span>(<span class="ident">_old_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">_new_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="op">-</span><span class="number">1</span>
+}
+
+<span class="doccomment">/// YOUR JOB: Implement unlinkat.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_unlinkat</span>(<span class="ident">_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="op">-</span><span class="number">1</span>
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="os" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (f6f9d5e73 2022-08-04)" ></div></body></html>

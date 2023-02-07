@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["TrapContext",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["TrapContext","trap context structure containing sstatus, sepc and registers"]]};
