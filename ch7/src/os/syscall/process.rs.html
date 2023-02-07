@@ -243,6 +243,11 @@
 <span id="243">243</span>
 <span id="244">244</span>
 <span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Process management syscalls</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -263,9 +268,14 @@
     <span class="kw">pub</span> <span class="ident">usec</span>: <span class="ident">usize</span>,
 }
 
+<span class="doccomment">/// Task information</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TaskInfo</span> {
+    <span class="doccomment">/// Task status in it&#39;s life cycle</span>
     <span class="ident">status</span>: <span class="ident">TaskStatus</span>,
+    <span class="doccomment">/// The numbers of syscall called by task</span>
     <span class="ident">syscall_times</span>: [<span class="ident">u32</span>; <span class="ident">MAX_SYSCALL_NUM</span>],
+    <span class="doccomment">/// Total running time of task</span>
     <span class="ident">time</span>: <span class="ident">usize</span>,
 }
 
@@ -381,14 +391,14 @@
 <span class="doccomment">/// YOUR JOB: get time with second and microsecond</span>
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TimeVal`] is splitted by two pages ?</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_get_time</span>(<span class="ident">ts</span>: <span class="kw-2">*mut</span> <span class="ident">TimeVal</span>, <span class="ident">_tz</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_get_time</span>(<span class="ident">_ts</span>: <span class="kw-2">*mut</span> <span class="ident">TimeVal</span>, <span class="ident">_tz</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="doccomment">/// YOUR JOB: Finish sys_task_info to pass testcases</span>
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TaskInfo`] is splitted by two pages ?</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_task_info</span>(<span class="ident">ti</span>: <span class="kw-2">*mut</span> <span class="ident">TaskInfo</span>) -&gt; <span class="ident">isize</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_task_info</span>(<span class="ident">_ti</span>: <span class="kw-2">*mut</span> <span class="ident">TaskInfo</span>) -&gt; <span class="ident">isize</span> {
     <span class="op">-</span><span class="number">1</span>
 }
 

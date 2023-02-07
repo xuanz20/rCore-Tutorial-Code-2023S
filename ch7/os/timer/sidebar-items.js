@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["MICRO_PER_SEC","get current time"],["MSEC_PER_SEC",""],["TICKS_PER_SEC",""]],"fn":[["get_time",""],["get_time_ms",""],["get_time_us","get current time in microseconds"],["set_next_trigger","set the next timer interrupt"]]};
+window.SIDEBAR_ITEMS = {"constant":[["MICRO_PER_SEC","get current time"],["MSEC_PER_SEC",""],["TICKS_PER_SEC",""]],"fn":[["get_time","read the `mtime` register"],["get_time_ms","get current time in milliseconds"],["get_time_us","get current time in microseconds"],["set_next_trigger","set the next timer interrupt"]]};

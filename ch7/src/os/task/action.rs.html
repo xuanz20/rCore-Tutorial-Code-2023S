@@ -29,13 +29,19 @@
 <span id="29">29</span>
 <span id="30">30</span>
 <span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">SignalFlags</span>, <span class="ident">MAX_SIG</span>};
 
 <span class="doccomment">/// Action for a signal</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>, <span class="ident">align</span>(<span class="number">16</span>))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignalAction</span> {
+    <span class="doccomment">/// Signal handler address</span>
     <span class="kw">pub</span> <span class="ident">handler</span>: <span class="ident">usize</span>,
+    <span class="doccomment">/// Signal mask</span>
     <span class="kw">pub</span> <span class="ident">mask</span>: <span class="ident">SignalFlags</span>,
 }
 
@@ -48,8 +54,10 @@
     }
 }
 
+<span class="doccomment">/// Signal actions</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignalActions</span> {
+    <span class="doccomment">/// Signal actions table</span>
     <span class="kw">pub</span> <span class="ident">table</span>: [<span class="ident">SignalAction</span>; <span class="ident">MAX_SIG</span> <span class="op">+</span> <span class="number">1</span>],
 }
 

@@ -102,7 +102,24 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">KERNEL_STACK_SIZE</span>, <span class="ident">PAGE_SIZE</span>, <span class="ident">TRAMPOLINE</span>};
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Task pid implementation.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Assign PID to the process here. At the same time, the position of the application KernelStack</span>
+<span class="doccomment">//! is determined according to the PID.</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">KERNEL_STACK_SIZE</span>, <span class="ident">PAGE_SIZE</span>, <span class="ident">TRAMPOLINE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">MapPermission</span>, <span class="ident">VirtAddr</span>, <span class="ident">KERNEL_SPACE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
 <span class="kw">use</span> <span class="ident">alloc::vec::Vec</span>;
@@ -144,6 +161,7 @@
         <span class="kw">unsafe</span> { <span class="ident">UPSafeCell::new</span>(<span class="ident">PidAllocator::new</span>()) };
 }
 
+<span class="doccomment">/// Abstract structure of PID</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PidHandle</span>(<span class="kw">pub</span> <span class="ident">usize</span>);
 
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">PidHandle</span> {
@@ -153,6 +171,7 @@
     }
 }
 
+<span class="doccomment">/// Allocate a new PID</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pid_alloc</span>() -&gt; <span class="ident">PidHandle</span> {
     <span class="ident">PID_ALLOCATOR</span>.<span class="ident">exclusive_access</span>().<span class="ident">alloc</span>()
 }
@@ -164,11 +183,13 @@
     (<span class="ident">bottom</span>, <span class="ident">top</span>)
 }
 
+<span class="doccomment">/// Kernel stack for a process</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KernelStack</span> {
     <span class="ident">pid</span>: <span class="ident">usize</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">KernelStack</span> {
+    <span class="doccomment">/// Create a new KernelStack for a process.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">pid_handle</span>: <span class="kw-2">&amp;</span><span class="ident">PidHandle</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">pid</span> <span class="op">=</span> <span class="ident">pid_handle</span>.<span class="number">0</span>;
         <span class="kw">let</span> (<span class="ident">kernel_stack_bottom</span>, <span class="ident">kernel_stack_top</span>) <span class="op">=</span> <span class="ident">kernel_stack_position</span>(<span class="ident">pid</span>);
@@ -179,6 +200,8 @@
         );
         <span class="ident">KernelStack</span> { <span class="ident">pid</span>: <span class="ident">pid_handle</span>.<span class="number">0</span> }
     }
+
+    <span class="doccomment">/// Push a variable of type T into the top of the KernelStack and return its raw pointer</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_on_top</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">value</span>: <span class="ident">T</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">T</span>
     <span class="kw">where</span>
@@ -191,6 +214,7 @@
         }
         <span class="ident">ptr_mut</span>
     }
+    <span class="doccomment">/// Get the top of the KernelStack</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_top</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">kernel_stack_top</span>) <span class="op">=</span> <span class="ident">kernel_stack_position</span>(<span class="self">self</span>.<span class="ident">pid</span>);
         <span class="ident">kernel_stack_top</span>

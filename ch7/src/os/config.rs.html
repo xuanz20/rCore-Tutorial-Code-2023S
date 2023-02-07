@@ -16,8 +16,6 @@
 <span id="16">16</span>
 <span id="17">17</span>
 <span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
 </pre><pre class="rust"><code><span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">USER_STACK_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4096</span> <span class="op">*</span> <span class="number">2</span>;
@@ -35,7 +33,6 @@
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MEMORY_END</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x81000000</span>;
 
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MMIO</span>: <span class="kw-2">&amp;</span>[(<span class="ident">usize</span>, <span class="ident">usize</span>)] <span class="op">=</span> <span class="kw-2">&amp;</span>[
-    (<span class="number">0x10001000</span>, <span class="number">0x1000</span>),
-];</code></pre></div>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MMIO</span>: <span class="kw-2">&amp;</span>[(<span class="ident">usize</span>, <span class="ident">usize</span>)] <span class="op">=</span> <span class="kw-2">&amp;</span>[(<span class="number">0x10001000</span>, <span class="number">0x1000</span>)];
+</code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="os" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (f6f9d5e73 2022-08-04)" ></div></body></html>

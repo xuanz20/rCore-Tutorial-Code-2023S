@@ -126,7 +126,7 @@
 <span class="kw">use</span> <span class="ident">fs</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">process</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">task::SignalAction</span>, <span class="ident">fs::Stat</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">fs::Stat</span>, <span class="ident">task::SignalAction</span>};
 
 <span class="doccomment">/// handle syscall exception with `syscall_id` and other arguments</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">syscall</span>(<span class="ident">syscall_id</span>: <span class="ident">usize</span>, <span class="ident">args</span>: [<span class="ident">usize</span>; <span class="number">4</span>]) -&gt; <span class="ident">isize</span> {

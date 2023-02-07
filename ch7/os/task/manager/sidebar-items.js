@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["add_task",""],["fetch_task",""],["pid2task",""],["remove_from_pid2task",""]],"struct":[["PID2TCB",""],["TASK_MANAGER",""],["TaskManager",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["add_task","Add process to ready queue"],["fetch_task","Take a process out of the ready queue"],["pid2task","Get process by pid"],["remove_from_pid2task",""]],"struct":[["PID2TCB",""],["TASK_MANAGER","TASK_MANAGER instance through lazy_static!"],["TaskManager",""]]};
