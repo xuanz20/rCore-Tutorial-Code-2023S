@@ -59,9 +59,7 @@ fs-img: $(APPS)
 kernel:
 	@make -C ../user build TEST=$(TEST) CHAPTER=$(CHAPTER) BASE=$(BASE)
 	@echo Platform: $(BOARD)
-	@cp src/linker-$(BOARD).ld src/linker.ld
 	@cargo build --release
-	@rm src/linker.ld
 
 clean:
 	@cargo clean
