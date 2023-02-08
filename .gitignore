@@ -5,7 +5,6 @@
 os/target/*
 os/.idea/*
 os/src/link_app.S
-os/src/linker.ld
 os/last-*
 os/Cargo.lock
 os/.gdb_history
