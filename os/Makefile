@@ -43,9 +43,7 @@ $(KERNEL_BIN): kernel
 kernel:
 	@make -C ../user build TEST=$(TEST) CHAPTER=$(CHAPTER) BASE=$(BASE)
 	@echo Platform: $(BOARD)
-	@cp src/linker-$(BOARD).ld src/linker.ld
 	@cargo build $(MODE_ARG)
-	@rm src/linker.ld
 
 clean:
 	@cargo clean
