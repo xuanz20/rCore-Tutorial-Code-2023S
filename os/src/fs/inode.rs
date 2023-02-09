@@ -100,16 +100,13 @@ impl OpenFlags {
 pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
     let (readable, writable) = flags.read_write();
     if flags.contains(OpenFlags::CREATE) {
-        warn!("OK1");
         if let Some(inode) = ROOT_INODE.find(name) {
             // clear size
-            warn!("OK12");
             inode.clear();
             Some(Arc::new(OSInode::new(readable, writable, inode)))
         } else {
             // create file
             ROOT_INODE.create(name).map(|inode| {
-                warn!("CREAT");
                 Arc::new(OSInode::new(readable, writable, inode))
             })
         }
