@@ -65,6 +65,7 @@ lazy_static! {
 
 /// Add a timer
 pub fn add_timer(expire_ms: usize, task: Arc<TaskControlBlock>) {
+    trace!("kernel: add_timer");
     let mut timers = TIMERS.exclusive_access();
     timers.push(TimerCondVar { expire_ms, task });
 }
@@ -84,6 +85,7 @@ pub fn add_timer(expire_ms: usize, task: Arc<TaskControlBlock>) {
 
 /// Check if the timer has expired
 pub fn check_timer() {
+    trace!("kernel: check_timer");
     let current_ms = get_time_ms();
     TIMERS.exclusive_session(|timers| {
         while let Some(timer) = timers.peek() {

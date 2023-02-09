@@ -18,6 +18,7 @@ pub struct CondvarInner {
 impl Condvar {
     /// Create a new condition variable
     pub fn new() -> Self {
+        trace!("kernel: Condvar::new");
         Self {
             inner: unsafe {
                 UPIntrFreeCell::new(CondvarInner {
@@ -29,6 +30,7 @@ impl Condvar {
 
     /// Signal a task waiting on the condition variable
     pub fn signal(&self) {
+        trace!("kernel: Condvar::signal");
         let mut inner = self.inner.exclusive_access();
         if let Some(task) = inner.wait_queue.pop_front() {
             wakeup_task(task);
@@ -37,6 +39,7 @@ impl Condvar {
 
     /// blocking current task, but didn't schedule new task
     pub fn wait_no_sched(&self) -> *mut TaskContext {
+        trace!("kernel: Condvar::wait_no_sched");
         self.inner.exclusive_session(|inner| {
             inner.wait_queue.push_back(current_task().unwrap());
         });
@@ -45,6 +48,7 @@ impl Condvar {
 
 	/// blocking current task, let it wait on the condition variable
     pub fn wait_with_mutex(&self, mutex: Arc<dyn Mutex>) {
+        trace!("kernel: Condvar::wait_with_mutex");
         mutex.unlock();
         self.inner.exclusive_session(|inner| {
             inner.wait_queue.push_back(current_task().unwrap());

@@ -41,11 +41,13 @@ lazy_static! {
 
 /// Add a task to ready queue
 pub fn add_task(task: Arc<TaskControlBlock>) {
+    //trace!("kernel: TaskManager::add_task");
     TASK_MANAGER.exclusive_access().add(task);
 }
 
 /// Wake up a task
 pub fn wakeup_task(task: Arc<TaskControlBlock>) {
+    trace!("kernel: TaskManager::wakeup_task");
     let mut task_inner = task.inner_exclusive_access();
     task_inner.task_status = TaskStatus::Ready;
     drop(task_inner);
@@ -54,6 +56,7 @@ pub fn wakeup_task(task: Arc<TaskControlBlock>) {
 
 /// Fetch a task out of the ready queue
 pub fn fetch_task() -> Option<Arc<TaskControlBlock>> {
+    //trace!("kernel: TaskManager::fetch_task");
     TASK_MANAGER.exclusive_access().fetch()
 }
 

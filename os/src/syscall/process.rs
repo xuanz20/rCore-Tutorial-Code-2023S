@@ -28,20 +28,24 @@ pub struct TaskInfo {
 }
 
 pub fn sys_exit(exit_code: i32) -> ! {
+    trace!("kernel: sys_exit");
     exit_current_and_run_next(exit_code);
     panic!("Unreachable in sys_exit!");
 }
 
 pub fn sys_yield() -> isize {
+    //trace!("kernel: sys_yield");
     suspend_current_and_run_next();
     0
 }
 
 pub fn sys_getpid() -> isize {
+    trace!("kernel: sys_getpid");
     current_task().unwrap().process.upgrade().unwrap().getpid() as isize
 }
 
 pub fn sys_fork() -> isize {
+    trace!("kernel: sys_fork");
     let current_process = current_process();
     let new_process = current_process.fork();
     let new_pid = new_process.getpid();
@@ -56,6 +60,7 @@ pub fn sys_fork() -> isize {
 }
 
 pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
+    trace!("kernel: sys_exec");
     let token = current_user_token();
     let path = translated_str(token, path);
     let mut args_vec: Vec<String> = Vec::new();
@@ -84,6 +89,7 @@ pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
 /// If there is not a child process whose pid is same as given, return -1.
 /// Else if there is a child process but it is still running, return -2.
 pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
+    //trace!("kernel: sys_waitpid");
     let process = current_process();
     // find a child process
 
@@ -118,6 +124,7 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
 }
 
 pub fn sys_kill(pid: usize, signal: u32) -> isize {
+    trace!("kernel: sys_kill");
     if let Some(process) = pid2process(pid) {
         if let Some(flag) = SignalFlags::from_bits(signal) {
             process.inner_exclusive_access().signals |= flag;
@@ -134,6 +141,7 @@ pub fn sys_kill(pid: usize, signal: u32) -> isize {
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TimeVal`] is splitted by two pages ?
 pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
+    trace!("kernel: sys_get_time NOT IMPLEMENTED");
     -1
 }
 
@@ -141,26 +149,31 @@ pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TaskInfo`] is splitted by two pages ?
 pub fn sys_task_info(_ti: *mut TaskInfo) -> isize {
+    trace!("kernel: sys_task_info NOT IMPLEMENTED");
     -1
 }
 
 /// YOUR JOB: Implement mmap.
 pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
+    trace!("kernel: sys_mmap NOT IMPLEMENTED");
     -1
 }
 
 /// YOUR JOB: Implement munmap.
 pub fn sys_munmap(_start: usize, _len: usize) -> isize {
+    trace!("kernel: sys_munmap NOT IMPLEMENTED");
     -1
 }
 
 /// YOUR JOB: Implement spawn.
 /// HINT: fork + exec =/= spawn
 pub fn sys_spawn(_path: *const u8) -> isize {
+    trace!("kernel: sys_spawn NOT IMPLEMENTED");
     -1
 }
 
 /// YOUR JOB: Set task priority
 pub fn sys_set_priority(_prio: isize) -> isize {
+    trace!("kernel: sys_set_priority NOT IMPLEMENTED");
     -1
 }

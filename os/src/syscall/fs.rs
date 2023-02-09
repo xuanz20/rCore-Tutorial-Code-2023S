@@ -4,6 +4,7 @@ use crate::task::{current_process, current_user_token};
 use alloc::sync::Arc;
 
 pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
+    trace!("kernel: sys_write");
     let token = current_user_token();
     let process = current_process();
     let inner = process.inner_exclusive_access();
@@ -24,6 +25,7 @@ pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
 }
 
 pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
+    trace!("kernel: sys_read");
     let token = current_user_token();
     let process = current_process();
     let inner = process.inner_exclusive_access();
@@ -37,6 +39,7 @@ pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
         }
         // release current task TCB manually to avoid multi-borrow
         drop(inner);
+        trace!("kernel: sys_read .. file.read");
         file.read(UserBuffer::new(translated_byte_buffer(token, buf, len))) as isize
     } else {
         -1
@@ -44,6 +47,7 @@ pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
 }
 
 pub fn sys_open(path: *const u8, flags: u32) -> isize {
+    trace!("kernel: sys_open");
     let process = current_process();
     let token = current_user_token();
     let path = translated_str(token, path);
@@ -58,6 +62,7 @@ pub fn sys_open(path: *const u8, flags: u32) -> isize {
 }
 
 pub fn sys_close(fd: usize) -> isize {
+    trace!("kernel: sys_close");
     let process = current_process();
     let mut inner = process.inner_exclusive_access();
     if fd >= inner.fd_table.len() {
@@ -71,6 +76,7 @@ pub fn sys_close(fd: usize) -> isize {
 }
 
 pub fn sys_pipe(pipe: *mut usize) -> isize {
+    trace!("kernel: sys_pipe");
     let process = current_process();
     let token = current_user_token();
     let mut inner = process.inner_exclusive_access();
@@ -85,6 +91,7 @@ pub fn sys_pipe(pipe: *mut usize) -> isize {
 }
 
 pub fn sys_dup(fd: usize) -> isize {
+    trace!("kernel: sys_dup");
     let process = current_process();
     let mut inner = process.inner_exclusive_access();
     if fd >= inner.fd_table.len() {
@@ -100,15 +107,18 @@ pub fn sys_dup(fd: usize) -> isize {
 
 /// YOUR JOB: Implement fstat.
 pub fn sys_fstat(_fd: usize, _st: *mut Stat) -> isize {
+    trace!("kernel: sys_fstat NOT IMPLEMENTED");
     -1
 }
 
 /// YOUR JOB: Implement linkat.
 pub fn sys_linkat(_old_name: *const u8, _new_name: *const u8) -> isize {
+    trace!("kernel: sys_linkat NOT IMPLEMENTED");
     -1
 }
 
 /// YOUR JOB: Implement unlinkat.
 pub fn sys_unlinkat(_name: *const u8) -> isize {
+    trace!("kernel: sys_unlinkat NOT IMPLEMENTED");
     -1
 }
