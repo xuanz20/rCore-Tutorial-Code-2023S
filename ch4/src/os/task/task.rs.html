@@ -100,6 +100,8 @@
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Types related to task management</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::TaskContext</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">kernel_stack_position</span>, <span class="ident">TRAP_CONTEXT</span>};
@@ -195,6 +197,8 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="doccomment">/// task status: UnInit, Ready, Running, Exited</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TaskStatus</span> {
+    <span class="doccomment">/// uninitialized</span>
+    <span class="ident">UnInit</span>,
     <span class="doccomment">/// ready to run</span>
     <span class="ident">Ready</span>,
     <span class="doccomment">/// running</span>
