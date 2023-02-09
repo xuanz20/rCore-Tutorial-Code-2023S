@@ -35,14 +35,8 @@ pub fn init() {
 }
 
 fn set_kernel_trap_entry() {
-    extern "C" {
-        fn __alltraps();
-        fn __alltraps_k();
-    }
-    let __alltraps_k_va = __alltraps_k as usize - __alltraps as usize + TRAMPOLINE;
     unsafe {
-        stvec::write(__alltraps_k_va, TrapMode::Direct);
-        sscratch::write(trap_from_kernel as usize);
+        stvec::write(trap_from_kernel as usize, TrapMode::Direct);
     }
 }
 
@@ -59,17 +53,17 @@ pub fn enable_timer_interrupt() {
     }
 }
 
-fn enable_supervisor_interrupt() {
-    unsafe {
-        sstatus::set_sie();
-    }
-}
+// fn enable_supervisor_interrupt() {
+//     unsafe {
+//         sstatus::set_sie();
+//     }
+// }
 
-fn disable_supervisor_interrupt() {
-    unsafe {
-        sstatus::clear_sie();
-    }
-}
+// fn disable_supervisor_interrupt() {
+//     unsafe {
+//         sstatus::clear_sie();
+//     }
+// }
 
 /// trap handler
 #[no_mangle]
@@ -84,7 +78,7 @@ pub fn trap_handler() -> ! {
             let mut cx = current_trap_cx();
             cx.sepc += 4;
 
-            enable_supervisor_interrupt();
+            //enable_supervisor_interrupt();
 
             // get system call return value
             let result = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12], cx.x[14]]);
@@ -138,7 +132,7 @@ pub fn trap_handler() -> ! {
 /// return to user space
 #[no_mangle]
 pub fn trap_return() -> ! {
-    disable_supervisor_interrupt();
+    //disable_supervisor_interrupt();
     set_user_trap_entry();
     let trap_cx_user_va = current_trap_cx_user_va();
     let user_satp = current_user_token();
@@ -163,25 +157,29 @@ pub fn trap_return() -> ! {
 /// handle trap from kernel
 #[no_mangle]
 pub fn trap_from_kernel(_trap_cx: &TrapContext) {
-    let scause = scause::read();
-    let stval = stval::read();
-    match scause.cause() {
-        Trap::Interrupt(Interrupt::SupervisorExternal) => {
-            crate::board::irq_handler();
-        }
-        Trap::Interrupt(Interrupt::SupervisorTimer) => {
-            set_next_trigger();
-            check_timer();
-            // do not schedule now
-        }
-        _ => {
-            panic!(
-                "Unsupported trap from kernel: {:?}, stval = {:#x}!",
-                scause.cause(),
-                stval
-            );
-        }
-    }
+    // let scause = scause::read();
+    // let stval = stval::read();
+    // match scause.cause() {
+    //     Trap::Interrupt(Interrupt::SupervisorExternal) => {
+    //         crate::board::irq_handler();
+    //     }
+    //     Trap::Interrupt(Interrupt::SupervisorTimer) => {
+    //         set_next_trigger();
+    //         check_timer();
+    //         // do not schedule now
+    //     }
+    //     _ => {
+    //         panic!(
+    //             "Unsupported trap from kernel: {:?}, stval = {:#x}!",
+    //             scause.cause(),
+    //             stval
+    //         );
+    //     }
+    // }
+
+    use riscv::register::sepc;
+    println!("stval = {:#x}, sepc = {:#x}", stval::read(), sepc::read());
+    panic!("a trap {:?} from kernel!", scause::read().cause());
 }
 
 pub use context::TrapContext;
