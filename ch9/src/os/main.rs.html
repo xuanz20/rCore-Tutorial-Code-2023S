@@ -100,6 +100,9 @@
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
 </pre><pre class="rust"><code><span class="doccomment">//! The main module and entrypoint</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Various facilities of the kernels are implemented as submodules. The most</span>
@@ -130,6 +133,9 @@
 <span class="comment">//use crate::drivers::{GPU_DEVICE, KEYBOARD_DEVICE, MOUSE_DEVICE, INPUT_CONDVAR};</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers</span>::{<span class="ident">GPU_DEVICE</span>, <span class="ident">KEYBOARD_DEVICE</span>, <span class="ident">MOUSE_DEVICE</span>};
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">alloc</span>;
+
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bitflags</span>;
