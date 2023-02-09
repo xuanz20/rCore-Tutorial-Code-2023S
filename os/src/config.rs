@@ -9,7 +9,7 @@ pub const KERNEL_STACK_SIZE: usize = 4096 * 2;
 /// kernel heap size
 pub const KERNEL_HEAP_SIZE: usize = 0x20_0000;
 /// physical memory end address
-pub const MEMORY_END: usize = 0x80800000;
+pub const MEMORY_END: usize = 0x88000000;
 /// page size : 4KB
 pub const PAGE_SIZE: usize = 0x1000;
 /// page size bits: 12
