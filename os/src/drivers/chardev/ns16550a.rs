@@ -7,6 +7,9 @@ use crate::task::schedule;
 use alloc::collections::VecDeque;
 use bitflags::*;
 use volatile::{ReadOnly, Volatile, WriteOnly};
+use crate::sbi::console_getchar;
+use crate::task::suspend_current_and_run_next;
+use crate::DEV_NON_BLOCKING_ACCESS;
 
 bitflags! {
     /// InterruptEnableRegister
@@ -156,17 +159,33 @@ impl<const BASE_ADDR: usize> CharDevice for NS16550a<BASE_ADDR> {
     }
 
     fn read(&self) -> u8 {
-        loop {
-            let mut inner = self.inner.exclusive_access();
-            if let Some(ch) = inner.read_buffer.pop_front() {
-                return ch;
-            } else {
-                let task_cx_ptr = self.condvar.wait_no_sched();
-                drop(inner);
-                schedule(task_cx_ptr);
+        let nb = *DEV_NON_BLOCKING_ACCESS.exclusive_access();
+        if nb {
+            loop {
+                let mut inner = self.inner.exclusive_access();
+                if let Some(ch) = inner.read_buffer.pop_front() {
+                    return ch;
+                } else {
+                    let task_cx_ptr = self.condvar.wait_no_sched();
+                    drop(inner);
+                    schedule(task_cx_ptr);
+                }
             }
+        } else {
+            let mut c: usize;
+            loop {
+                c = console_getchar();
+                if c == 0 {
+                    suspend_current_and_run_next();
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            return c as u8;
         }
     }
+
     fn write(&self, ch: u8) {
         let mut inner = self.inner.exclusive_access();
         inner.ns16550a.write(ch);

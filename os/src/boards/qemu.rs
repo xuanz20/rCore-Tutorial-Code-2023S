@@ -26,6 +26,7 @@ use crate::drivers::{KEYBOARD_DEVICE, MOUSE_DEVICE};
 
 /// init devices: set irq threshold, enable irq, set irq priority
 pub fn device_init() {
+    trace!("kernel: device init");
     use riscv::register::sie;
     let mut plic = unsafe { PLIC::new(VIRT_PLIC) };
     let hart_id: usize = 0;
