@@ -98,6 +98,7 @@
 <span id="98">98</span>
 <span id="99">99</span>
 <span id="100">100</span>
+<span id="101">101</span>
 </pre><pre class="rust"><code><span class="doccomment">//! RISC-V timer-related functionality</span>
 
 <span class="kw">use</span> <span class="ident">core::cmp::Ordering</span>;
@@ -172,6 +173,7 @@
 
 <span class="doccomment">/// Remove a timer</span>
 <span class="comment">// pub fn remove_timer(task: Arc&lt;TaskControlBlock&gt;) {</span>
+<span class="comment">//    trace!(&quot;kernel: remove_timer&quot;);</span>
 <span class="comment">//     let mut timers = TIMERS.exclusive_access();</span>
 <span class="comment">//     let mut temp = BinaryHeap::&lt;TimerCondVar&gt;::new();</span>
 <span class="comment">//     for condvar in timers.drain() {</span>
