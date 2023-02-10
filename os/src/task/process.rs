@@ -73,6 +73,7 @@ impl ProcessControlBlock {
     }
 
     pub fn new(elf_data: &[u8]) -> Arc<Self> {
+        trace!("kernel: ProcessControlBlock::new");
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, ustack_base, entry_point) = MemorySet::from_elf(elf_data);
         // allocate a pid
@@ -134,20 +135,25 @@ impl ProcessControlBlock {
 
     /// Only support processes with a single thread.
     pub fn exec(self: &Arc<Self>, elf_data: &[u8], args: Vec<String>) {
+        trace!("kernel: exec");
         assert_eq!(self.inner_exclusive_access().thread_count(), 1);
         // memory_set with elf program headers/trampoline/trap context/user stack
+        trace!("kernel: exec .. MemorySet::from_elf");
         let (memory_set, ustack_base, entry_point) = MemorySet::from_elf(elf_data);
         let new_token = memory_set.token();
         // substitute memory_set
+        trace!("kernel: exec .. substitute memory_set");
         self.inner_exclusive_access().memory_set = memory_set;
         // then we alloc user resource for main thread again
         // since memory_set has been changed
+        trace!("kernel: exec .. alloc user resource for main thread again");
         let task = self.inner_exclusive_access().get_task(0);
         let mut task_inner = task.inner_exclusive_access();
         task_inner.res.as_mut().unwrap().ustack_base = ustack_base;
         task_inner.res.as_mut().unwrap().alloc_user_res();
         task_inner.trap_cx_ppn = task_inner.res.as_mut().unwrap().trap_cx_ppn();
         // push arguments on user stack
+        trace!("kernel: exec .. push arguments on user stack");
         let mut user_sp = task_inner.res.as_mut().unwrap().ustack_top();
         user_sp -= (args.len() + 1) * core::mem::size_of::<usize>();
         let argv_base = user_sp;
@@ -173,6 +179,7 @@ impl ProcessControlBlock {
         // make the user_sp aligned to 8B for k210 platform
         user_sp -= user_sp % core::mem::size_of::<usize>();
         // initialize trap_cx
+        trace!("kernel: exec .. initialize trap_cx");
         let mut trap_cx = TrapContext::app_init_context(
             entry_point,
             user_sp,
@@ -187,6 +194,7 @@ impl ProcessControlBlock {
 
     /// Only support processes with a single thread.
     pub fn fork(self: &Arc<Self>) -> Arc<Self> {
+        trace!("kernel: fork");
         let mut parent = self.inner_exclusive_access();
         assert_eq!(parent.thread_count(), 1);
         // clone parent's memory_set completely including trampoline/ustacks/trap_cxs

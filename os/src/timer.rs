@@ -65,12 +65,14 @@ lazy_static! {
 
 /// Add a timer
 pub fn add_timer(expire_ms: usize, task: Arc<TaskControlBlock>) {
+    trace!("kernel: add_timer");
     let mut timers = TIMERS.exclusive_access();
     timers.push(TimerCondVar { expire_ms, task });
 }
 
 /// Remove a timer
 pub fn remove_timer(task: Arc<TaskControlBlock>) {
+    trace!("kernel: remove_timer");
     let mut timers = TIMERS.exclusive_access();
     let mut temp = BinaryHeap::<TimerCondVar>::new();
     for condvar in timers.drain() {
@@ -84,6 +86,7 @@ pub fn remove_timer(task: Arc<TaskControlBlock>) {
 
 /// Check if the timer has expired
 pub fn check_timer() {
+    trace!("kernel: check_timer");
     let current_ms = get_time_ms();
     let mut timers = TIMERS.exclusive_access();
     while let Some(timer) = timers.peek() {

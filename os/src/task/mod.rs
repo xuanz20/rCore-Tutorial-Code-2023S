@@ -57,7 +57,7 @@ pub fn suspend_current_and_run_next() {
     schedule(task_cx_ptr);
 }
 
-/// Make current task blocked and switch to the next task
+/// Make current task blocked and switch to the next task.
 pub fn block_current_and_run_next() {
     let task = take_current_task().unwrap();
     let mut task_inner = task.inner_exclusive_access();
@@ -71,6 +71,7 @@ use crate::board::QEMUExit;
 
 /// Exit the current 'Running' task and run the next task in task list.
 pub fn exit_current_and_run_next(exit_code: i32) {
+    trace!("kernel: exit_current_and_run_next");
     // take from Processor
     let task = take_current_task().unwrap();
     let mut task_inner = task.inner_exclusive_access();
