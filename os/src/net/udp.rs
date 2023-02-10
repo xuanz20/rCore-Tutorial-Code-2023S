@@ -1,18 +1,18 @@
-use alloc::vec;
-use lose_net_stack::MacAddress;
-use lose_net_stack::packets::udp::UDPPacket;
-use lose_net_stack::IPv4;
-use crate::fs::File;
 use super::net_interrupt_handler;
-use super::socket::{add_socket, remove_socket, pop_data};
+use super::socket::{add_socket, pop_data, remove_socket};
 use super::LOSE_NET_STACK;
 use super::NET_DEVICE;
+use crate::fs::File;
+use alloc::vec;
+use lose_net_stack::packets::udp::UDPPacket;
+use lose_net_stack::IPv4;
+use lose_net_stack::MacAddress;
 
-pub struct UDP{
+pub struct UDP {
     pub target: IPv4,
     pub sport: u16,
     pub dport: u16,
-    pub socket_index: usize
+    pub socket_index: usize,
 }
 
 impl UDP {
@@ -23,7 +23,7 @@ impl UDP {
             target,
             sport,
             dport,
-            socket_index: index
+            socket_index: index,
         }
     }
 }
@@ -44,9 +44,10 @@ impl File for UDP {
                 let mut left = 0;
                 for i in 0..buf.buffers.len() {
                     let buffer_i_len = buf.buffers[i].len().min(data_len - left);
-                    
-                    buf.buffers[i][..buffer_i_len].copy_from_slice(&data[left..(left + buffer_i_len)]);
-    
+
+                    buf.buffers[i][..buffer_i_len]
+                        .copy_from_slice(&data[left..(left + buffer_i_len)]);
+
                     left += buffer_i_len;
                     if left == data_len {
                         break;
@@ -63,7 +64,7 @@ impl File for UDP {
         let lose_net_stack = LOSE_NET_STACK.0.exclusive_access();
 
         let mut data = vec![0u8; buf.len()];
-        
+
         let mut left = 0;
         for i in 0..buf.buffers.len() {
             data[left..(left + buf.buffers[i].len())].copy_from_slice(buf.buffers[i]);
@@ -73,14 +74,14 @@ impl File for UDP {
         let len = data.len();
 
         let udp_packet = UDPPacket::new(
-            lose_net_stack.ip, 
-            lose_net_stack.mac, 
-            self.sport, 
-            self.target, 
-            MacAddress::new([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]), 
-            self.dport, 
-            len, 
-            data.as_ref()
+            lose_net_stack.ip,
+            lose_net_stack.mac,
+            self.sport,
+            self.target,
+            MacAddress::new([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]),
+            self.dport,
+            len,
+            data.as_ref(),
         );
         NET_DEVICE.transmit(&udp_packet.build_data());
         len

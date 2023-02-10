@@ -20,7 +20,7 @@ pub struct TaskControlBlock {
 }
 
 impl TaskControlBlock {
-	/// Get the mutable reference of the inner TCB
+    /// Get the mutable reference of the inner TCB
     pub fn inner_exclusive_access(&self) -> UPIntrRefMut<'_, TaskControlBlockInner> {
         self.inner.exclusive_access()
     }

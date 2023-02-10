@@ -1,13 +1,13 @@
 use crate::sync::{Mutex, UPIntrFreeCell};
 use crate::task::{
-    wakeup_task, block_current_and_run_next, block_current_task, current_task, TaskContext,
+    block_current_and_run_next, block_current_task, current_task, wakeup_task, TaskContext,
     TaskControlBlock,
 };
 use alloc::{collections::VecDeque, sync::Arc};
 
 /// Condition variable structure
 pub struct Condvar {
-	/// Condition variable inner
+    /// Condition variable inner
     pub inner: UPIntrFreeCell<CondvarInner>,
 }
 
@@ -46,7 +46,7 @@ impl Condvar {
         block_current_task()
     }
 
-	/// blocking current task, let it wait on the condition variable
+    /// blocking current task, let it wait on the condition variable
     pub fn wait_with_mutex(&self, mutex: Arc<dyn Mutex>) {
         trace!("kernel: Condvar::wait_with_mutex");
         mutex.unlock();

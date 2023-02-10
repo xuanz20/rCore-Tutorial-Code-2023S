@@ -41,10 +41,10 @@ impl TaskManager {
 }
 
 lazy_static! {
-	/// TASK_MANAGER instance through lazy_static!
+    /// TASK_MANAGER instance through lazy_static!
     pub static ref TASK_MANAGER: UPIntrFreeCell<TaskManager> =
         unsafe { UPIntrFreeCell::new(TaskManager::new()) };
-    /// PID2PCB instance (map of pid to pcb)    
+    /// PID2PCB instance (map of pid to pcb)
     pub static ref PID2PCB: UPIntrFreeCell<BTreeMap<usize, Arc<ProcessControlBlock>>> =
         unsafe { UPIntrFreeCell::new(BTreeMap::new()) };
 }
@@ -66,7 +66,7 @@ pub fn wakeup_task(task: Arc<TaskControlBlock>) {
 
 /// Remove a task from the ready queue
 pub fn remove_task(task: Arc<TaskControlBlock>) {
-	//trace!("kernel: TaskManager::remove_task");
+    //trace!("kernel: TaskManager::remove_task");
     TASK_MANAGER.exclusive_access().remove(task);
 }
 

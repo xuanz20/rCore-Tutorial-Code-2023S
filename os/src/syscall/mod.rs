@@ -110,18 +110,18 @@ const SYSCALL_KEY_PRESSED: usize = 3001;
 mod fs;
 mod gui;
 mod input;
+mod net;
 mod process;
 mod sync;
 mod thread;
-mod net;
 
 use fs::*;
 use gui::*;
 use input::*;
+use net::*;
 use process::*;
 use sync::*;
 use thread::*;
-use net::*;
 
 use crate::fs::Stat;
 

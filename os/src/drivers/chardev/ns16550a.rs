@@ -2,14 +2,14 @@
 ///! Ref: ns16550a datasheet: https://datasheetspdf.com/pdf-file/605590/NationalSemiconductor/NS16550A/1
 ///! Ref: ns16450 datasheet: https://datasheetspdf.com/pdf-file/1311818/NationalSemiconductor/NS16450/1
 use super::CharDevice;
+use crate::sbi::console_getchar;
 use crate::sync::{Condvar, UPIntrFreeCell};
 use crate::task::schedule;
+use crate::task::suspend_current_and_run_next;
+use crate::DEV_NON_BLOCKING_ACCESS;
 use alloc::collections::VecDeque;
 use bitflags::*;
 use volatile::{ReadOnly, Volatile, WriteOnly};
-use crate::sbi::console_getchar;
-use crate::task::suspend_current_and_run_next;
-use crate::DEV_NON_BLOCKING_ACCESS;
 
 bitflags! {
     /// InterruptEnableRegister

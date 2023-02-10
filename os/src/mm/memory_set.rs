@@ -25,7 +25,7 @@ extern "C" {
 }
 
 lazy_static! {
-	/// The kernel's initial memory mapping(kernel address space)
+    /// The kernel's initial memory mapping(kernel address space)
     pub static ref KERNEL_SPACE: Arc<UPIntrFreeCell<MemorySet>> =
         Arc::new(unsafe { UPIntrFreeCell::new(MemorySet::new_kernel()) });
 }
@@ -101,14 +101,14 @@ impl MemorySet {
         // map trampoline
         memory_set.map_trampoline();
         // map kernel sections
-         info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-         info!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-         info!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
-         info!(
-             ".bss [{:#x}, {:#x})",
-             sbss_with_stack as usize, ebss as usize
-         );
-         info!("mapping .text section");
+        info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
+        info!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
+        info!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
+        info!(
+            ".bss [{:#x}, {:#x})",
+            sbss_with_stack as usize, ebss as usize
+        );
+        info!("mapping .text section");
         memory_set.push(
             MapArea::new(
                 (stext as usize).into(),

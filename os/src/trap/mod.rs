@@ -25,7 +25,9 @@ use core::arch::{asm, global_asm};
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self, Exception, Interrupt, Trap},
-    sie, stval, stvec,
+    sie,
+    stval,
+    stvec,
     // sie, sscratch, sstatus, stval, stvec,
 };
 
@@ -113,7 +115,7 @@ pub fn trap_handler() -> ! {
         Trap::Interrupt(Interrupt::SupervisorExternal) => {
             crate::board::irq_handler();
         }
-        _ => {  
+        _ => {
             panic!(
                 "Unsupported trap {:?}, stval = {:#x}!",
                 scause.cause(),
