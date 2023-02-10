@@ -21,6 +21,7 @@ pub struct OSInodeInner {
 }
 
 impl OSInode {
+    /// create a new inode in memory
     pub fn new(readable: bool, writable: bool, inode: Arc<Inode>) -> Self {
         trace!("kernel: OSInode::new");
         Self {
@@ -29,6 +30,7 @@ impl OSInode {
             inner: unsafe { UPIntrFreeCell::new(OSInodeInner { offset: 0, inode }) },
         }
     }
+    /// read all data from the inode
     pub fn read_all(&self) -> Vec<u8> {
         trace!("kernel: OSInode::read_all");
         let mut inner = self.inner.exclusive_access();
@@ -53,6 +55,7 @@ lazy_static! {
     };
 }
 
+/// List all apps in the root directory
 pub fn list_apps() {
     println!("/**** APPS ****");
     for app in ROOT_INODE.ls() {
@@ -91,6 +94,7 @@ impl OpenFlags {
     }
 }
 
+/// Open a file
 pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
     trace!("kernel: open_file: name = {}, flags = {:?}", name, flags);
     let (readable, writable) = flags.read_write();

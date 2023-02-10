@@ -1,5 +1,7 @@
+/// clock frequency
 pub const CLOCK_FREQ: usize = 12500000;
 
+/// The base address of control registers in VIRT_TEST/RTC/Virtio_Block device
 pub const MMIO: &[(usize, usize)] = &[
     (0x0010_0000, 0x00_2000), // VIRT_TEST/RTC  in virt machine
     (0x2000000, 0x10000),
@@ -22,10 +24,12 @@ use crate::drivers::chardev::{CharDevice, UART};
 use crate::drivers::plic::{IntrTargetPriority, PLIC};
 use crate::drivers::{KEYBOARD_DEVICE, MOUSE_DEVICE};
 
+/// init devices: set irq threshold, enable irq, set irq priority
 pub fn device_init() {
     use riscv::register::sie;
     let mut plic = unsafe { PLIC::new(VIRT_PLIC) };
     let hart_id: usize = 0;
+    // set irq threshold
     let supervisor = IntrTargetPriority::Supervisor;
     let machine = IntrTargetPriority::Machine;
     plic.set_threshold(hart_id, supervisor, 0);
@@ -35,11 +39,13 @@ pub fn device_init() {
         plic.enable(hart_id, supervisor, intr_src_id);
         plic.set_priority(intr_src_id, 1);
     }
+    // enable irq
     unsafe {
         sie::set_sext();
     }
 }
 
+/// irq handler of devices
 pub fn irq_handler() {
     let mut plic = unsafe { PLIC::new(VIRT_PLIC) };
     let intr_src_id = plic.claim(0, IntrTargetPriority::Supervisor);
