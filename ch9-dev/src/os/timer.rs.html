@@ -172,18 +172,18 @@
 }
 
 <span class="doccomment">/// Remove a timer</span>
-<span class="comment">// pub fn remove_timer(task: Arc&lt;TaskControlBlock&gt;) {</span>
-<span class="comment">//    trace!(&quot;kernel: remove_timer&quot;);</span>
-<span class="comment">//     let mut timers = TIMERS.exclusive_access();</span>
-<span class="comment">//     let mut temp = BinaryHeap::&lt;TimerCondVar&gt;::new();</span>
-<span class="comment">//     for condvar in timers.drain() {</span>
-<span class="comment">//         if Arc::as_ptr(&amp;task) != Arc::as_ptr(&amp;condvar.task) {</span>
-<span class="comment">//             temp.push(condvar);</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-<span class="comment">//     timers.clear();</span>
-<span class="comment">//     timers.append(&amp;mut temp);</span>
-<span class="comment">// }</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_timer</span>(<span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: remove_timer&quot;</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">timers</span> <span class="op">=</span> <span class="ident">TIMERS</span>.<span class="ident">exclusive_access</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">temp</span> <span class="op">=</span> <span class="ident">BinaryHeap</span>::<span class="op">&lt;</span><span class="ident">TimerCondVar</span><span class="op">&gt;</span><span class="ident">::new</span>();
+    <span class="kw">for</span> <span class="ident">condvar</span> <span class="kw">in</span> <span class="ident">timers</span>.<span class="ident">drain</span>() {
+        <span class="kw">if</span> <span class="ident">Arc::as_ptr</span>(<span class="kw-2">&amp;</span><span class="ident">task</span>) <span class="op">!</span><span class="op">=</span> <span class="ident">Arc::as_ptr</span>(<span class="kw-2">&amp;</span><span class="ident">condvar</span>.<span class="ident">task</span>) {
+            <span class="ident">temp</span>.<span class="ident">push</span>(<span class="ident">condvar</span>);
+        }
+    }
+    <span class="ident">timers</span>.<span class="ident">clear</span>();
+    <span class="ident">timers</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">temp</span>);
+}
 
 <span class="doccomment">/// Check if the timer has expired</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_timer</span>() {
