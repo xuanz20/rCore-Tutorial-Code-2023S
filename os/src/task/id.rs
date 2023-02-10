@@ -46,10 +46,13 @@ lazy_static! {
         unsafe { UPIntrFreeCell::new(RecycleAllocator::new()) };
 }
 
+/// The idle task's pid is 0
 pub const IDLE_PID: usize = 0;
 
+/// A handle to a pid
 pub struct PidHandle(pub usize);
 
+/// Allocate a pid for a process
 pub fn pid_alloc() -> PidHandle {
     PidHandle(PID_ALLOCATOR.exclusive_access().alloc())
 }
