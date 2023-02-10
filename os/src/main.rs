@@ -99,8 +99,8 @@ pub fn rust_main() -> ! {
     board::device_init();
     fs::list_apps();
     task::add_initproc();
-    //*DEV_NON_BLOCKING_ACCESS.exclusive_access() = true;
-    *DEV_NON_BLOCKING_ACCESS.exclusive_access() = false;
+    *DEV_NON_BLOCKING_ACCESS.exclusive_access() = true;
+    // *DEV_NON_BLOCKING_ACCESS.exclusive_access() = false;
     task::run_tasks();
     panic!("Unreachable in rust_main!");
 }

@@ -29,7 +29,7 @@ impl OSInode {
         }
     }
     pub fn read_all(&self) -> Vec<u8> {
-        trace!("kernel: OSInode::read_all");
+        info!("kernel: OSInode::read_all");
         let mut inner = self.inner.exclusive_access();
         let mut buffer = [0u8; 512];
         let mut v: Vec<u8> = Vec::new();
@@ -85,7 +85,7 @@ impl OpenFlags {
 }
 
 pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
-    trace!("kernel: open_file: name = {}, flags = {:?}", name, flags);
+    info!("kernel: open_file: name = {}, flags = {:?}", name, flags);
     let (readable, writable) = flags.read_write();
     if flags.contains(OpenFlags::CREATE) {
         if let Some(inode) = ROOT_INODE.find(name) {

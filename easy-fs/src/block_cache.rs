@@ -4,7 +4,8 @@ use alloc::sync::Arc;
 use alloc::vec;
 use alloc::vec::Vec;
 use lazy_static::*;
-use spin::Mutex;
+use up::UPIntrFreeCell;
+// use spin::Mutex;
 
 pub struct BlockCache {
     cache: Vec<u8>,
@@ -77,7 +78,7 @@ impl Drop for BlockCache {
 const BLOCK_CACHE_SIZE: usize = 16;
 
 pub struct BlockCacheManager {
-    queue: VecDeque<(usize, Arc<Mutex<BlockCache>>)>,
+    queue: VecDeque<(usize, Arc<UPIntrFreeCell<BlockCache>>)>,
 }
 
 impl BlockCacheManager {
@@ -86,57 +87,68 @@ impl BlockCacheManager {
             queue: VecDeque::new(),
         }
     }
-
-    pub fn get_block_cache(
-        &mut self,
-        block_id: usize,
-        block_device: Arc<dyn BlockDevice>,
-    ) -> Arc<Mutex<BlockCache>> {
-        if let Some(pair) = self.queue.iter().find(|pair| pair.0 == block_id) {
-            Arc::clone(&pair.1)
-        } else {
-            // substitute
-            if self.queue.len() == BLOCK_CACHE_SIZE {
-                // from front to tail
-                if let Some((idx, _)) = self
-                    .queue
-                    .iter()
-                    .enumerate()
-                    .find(|(_, pair)| Arc::strong_count(&pair.1) == 1)
-                {
-                    self.queue.drain(idx..=idx);
-                } else {
-                    panic!("Run out of BlockCache!");
-                }
-            }
-            // load block into mem and push back
-            let block_cache = Arc::new(Mutex::new(BlockCache::new(
-                block_id,
-                Arc::clone(&block_device),
-            )));
-            self.queue.push_back((block_id, Arc::clone(&block_cache)));
-            block_cache
-        }
-    }
 }
 
 lazy_static! {
-    pub static ref BLOCK_CACHE_MANAGER: Mutex<BlockCacheManager> =
-        Mutex::new(BlockCacheManager::new());
+    pub static ref BLOCK_CACHE_MANAGER: UPIntrFreeCell<BlockCacheManager> =
+        unsafe { UPIntrFreeCell::new(BlockCacheManager::new()) };
 }
 
 pub fn get_block_cache(
     block_id: usize,
     block_device: Arc<dyn BlockDevice>,
-) -> Arc<Mutex<BlockCache>> {
-    BLOCK_CACHE_MANAGER
-        .lock()
-        .get_block_cache(block_id, block_device)
+) -> Arc<UPIntrFreeCell<BlockCache>> {
+    let manager = BLOCK_CACHE_MANAGER.exclusive_access();
+    if let Some(pair) = manager.queue.iter().find(|pair| pair.0 == block_id) {
+        return Arc::clone(&pair.1);
+    }
+
+    // load block into mem and push back
+    // may need schedule!
+    drop(manager);
+    let block_cache = Arc::new(unsafe {
+        UPIntrFreeCell::new(BlockCache::new(block_id, Arc::clone(&block_device)))
+    });
+
+    let mut manager = BLOCK_CACHE_MANAGER.exclusive_access();
+    if manager.queue.len() == BLOCK_CACHE_SIZE {
+        // from front to tail
+        if let Some((idx, _)) = manager
+            .queue
+            .iter()
+            .enumerate()
+            .find(|(_, pair)| Arc::strong_count(&pair.1) == 1)
+        {
+            manager.queue.drain(idx..=idx);
+        } else {
+            panic!("Run out of BlockCache!");
+        }
+    }
+    manager.queue.push_back((block_id, Arc::clone(&block_cache)));
+    block_cache
 }
 
 pub fn block_cache_sync_all() {
-    let manager = BLOCK_CACHE_MANAGER.lock();
-    for (_, cache) in manager.queue.iter() {
-        cache.lock().sync();
+    let mut need_sync = Vec::new();
+    for (idx, cache) in BLOCK_CACHE_MANAGER.exclusive_access().queue.iter() {
+        let mut cache = cache.exclusive_access();
+        if cache.modified {
+            cache.modified = false;
+            need_sync.push(*idx);
+        }
+    }
+
+    for cache_idx in need_sync {
+        let manager = BLOCK_CACHE_MANAGER.exclusive_access();
+        let cache = manager.queue.get(cache_idx).unwrap().1.exclusive_access();
+        let block_device = cache.block_device.clone();
+        let block_id  = cache.block_id;
+        // TODO: too heavy
+        let block_data = cache.cache.clone();
+
+        // may need schedule!
+        drop(cache);
+        drop(manager);
+        block_device.write_block(block_id, &block_data);
     }
 }

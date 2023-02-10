@@ -25,9 +25,12 @@ use core::arch::{asm, global_asm};
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self, Exception, Interrupt, Trap},
-    sie, stval, stvec,
+    sie,
+    stval,
+    stvec,
     // sie, sscratch, sstatus, stval, stvec,
 };
+use riscv::register::{sscratch, sstatus};
 
 global_asm!(include_str!("trap.S"));
 
@@ -37,8 +40,14 @@ pub fn init() {
 }
 
 fn set_kernel_trap_entry() {
+    extern "C" {
+        fn __alltraps();
+        fn __alltraps_k();
+    }
+    let __alltraps_k_va = __alltraps_k as usize - __alltraps as usize + TRAMPOLINE;
     unsafe {
-        stvec::write(trap_from_kernel as usize, TrapMode::Direct);
+        stvec::write(__alltraps_k_va, TrapMode::Direct);
+        sscratch::write(trap_from_kernel as usize);
     }
 }
 
@@ -55,17 +64,17 @@ pub fn enable_timer_interrupt() {
     }
 }
 
-// fn enable_supervisor_interrupt() {
-//     unsafe {
-//         sstatus::set_sie();
-//     }
-// }
+fn enable_supervisor_interrupt() {
+    unsafe {
+        sstatus::set_sie();
+    }
+}
 
-// fn disable_supervisor_interrupt() {
-//     unsafe {
-//         sstatus::clear_sie();
-//     }
-// }
+fn disable_supervisor_interrupt() {
+    unsafe {
+        sstatus::clear_sie();
+    }
+}
 
 /// trap handler
 #[no_mangle]
@@ -80,10 +89,23 @@ pub fn trap_handler() -> ! {
             let mut cx = current_trap_cx();
             cx.sepc += 4;
 
-            //enable_supervisor_interrupt();
+            enable_supervisor_interrupt();
 
             // get system call return value
             let result = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12], cx.x[14]]);
+
+            // if let Some(task) = current_task() {
+            //     info!("CHECK BLOCKED");
+            //     let mut task_inner = task.inner_exclusive_access();
+            //     let task_cx_ptr = &mut task_inner.task_cx as *mut TaskContext;
+            //     let need_sched = task_inner.task_status == TaskStatus::Blocked;
+            //     drop(task_inner);
+            //     drop(task);
+            //     if need_sched {
+            //         schedule(task_cx_ptr);
+            //     }
+            // }
+
             // cx is changed during sys_exec, so we have to call it again
             cx = current_trap_cx();
             cx.x[10] = result as usize;
@@ -113,7 +135,7 @@ pub fn trap_handler() -> ! {
         Trap::Interrupt(Interrupt::SupervisorExternal) => {
             crate::board::irq_handler();
         }
-        _ => {  
+        _ => {
             panic!(
                 "Unsupported trap {:?}, stval = {:#x}!",
                 scause.cause(),
@@ -132,7 +154,7 @@ pub fn trap_handler() -> ! {
 /// return to user space
 #[no_mangle]
 pub fn trap_return() -> ! {
-    //disable_supervisor_interrupt();
+    disable_supervisor_interrupt();
     set_user_trap_entry();
     let trap_cx_user_va = current_trap_cx_user_va();
     let user_satp = current_user_token();
@@ -157,29 +179,27 @@ pub fn trap_return() -> ! {
 /// handle trap from kernel
 #[no_mangle]
 pub fn trap_from_kernel(_trap_cx: &TrapContext) {
-    // let scause = scause::read();
-    // let stval = stval::read();
-    // match scause.cause() {
-    //     Trap::Interrupt(Interrupt::SupervisorExternal) => {
-    //         crate::board::irq_handler();
-    //     }
-    //     Trap::Interrupt(Interrupt::SupervisorTimer) => {
-    //         set_next_trigger();
-    //         check_timer();
-    //         // do not schedule now
-    //     }
-    //     _ => {
-    //         panic!(
-    //             "Unsupported trap from kernel: {:?}, stval = {:#x}!",
-    //             scause.cause(),
-    //             stval
-    //         );
-    //     }
-    // }
-
-    use riscv::register::sepc;
-    trace!("stval = {:#x}, sepc = {:#x}", stval::read(), sepc::read());
-    panic!("a trap {:?} from kernel!", scause::read().cause());
+    // info!("{:?}", scause)
+    // info!("{:#X?}", *_trap_cx);
+    let scause = scause::read();
+    let stval = stval::read();
+    match scause.cause() {
+        Trap::Interrupt(Interrupt::SupervisorExternal) => {
+            crate::board::irq_handler();
+        }
+        Trap::Interrupt(Interrupt::SupervisorTimer) => {
+            set_next_trigger();
+            check_timer();
+            // do not schedule now
+        }
+        _ => {
+            panic!(
+                "Unsupported trap from kernel: {:?}, stval = {:#x}!",
+                scause.cause(),
+                stval
+            );
+        }
+    }
 }
 
 pub use context::TrapContext;

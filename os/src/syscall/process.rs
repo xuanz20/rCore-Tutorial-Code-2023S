@@ -60,7 +60,7 @@ pub fn sys_fork() -> isize {
 }
 
 pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
-    trace!("kernel: sys_exec");
+    info!("kernel: sys_exec");
     let token = current_user_token();
     let path = translated_str(token, path);
     let mut args_vec: Vec<String> = Vec::new();
@@ -75,6 +75,7 @@ pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
         }
     }
     if let Some(app_inode) = open_file(path.as_str(), OpenFlags::RDONLY) {
+        info!("OPEN OK");
         let all_data = app_inode.read_all();
         let process = current_process();
         let argc = args_vec.len();
@@ -82,6 +83,7 @@ pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
         // return argc because cx.x[10] will be covered with it later
         argc as isize
     } else {
+        info!("NOT FOUND!");
         -1
     }
 }
