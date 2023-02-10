@@ -44,12 +44,18 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::File</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers::chardev::CharDevice</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers::chardev::UART</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::UserBuffer</span>;
 
+<span class="doccomment">/// stdin file for getting chars from console</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Stdin</span>;
+
+<span class="doccomment">/// stdout file for putting chars to console</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Stdout</span>;
 
 <span class="kw">impl</span> <span class="ident">File</span> <span class="kw">for</span> <span class="ident">Stdin</span> {
