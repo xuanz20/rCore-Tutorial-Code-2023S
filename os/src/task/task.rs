@@ -20,10 +20,11 @@ pub struct TaskControlBlock {
 }
 
 impl TaskControlBlock {
+	/// Get the mutable reference of the inner TCB
     pub fn inner_exclusive_access(&self) -> UPIntrRefMut<'_, TaskControlBlockInner> {
         self.inner.exclusive_access()
     }
-
+    /// Get the address of app's page table
     pub fn get_user_token(&self) -> usize {
         let process = self.process.upgrade().unwrap();
         let inner = process.inner_exclusive_access();

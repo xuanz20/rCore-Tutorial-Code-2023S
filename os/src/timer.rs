@@ -72,6 +72,7 @@ pub fn add_timer(expire_ms: usize, task: Arc<TaskControlBlock>) {
 
 /// Remove a timer
 // pub fn remove_timer(task: Arc<TaskControlBlock>) {
+//    trace!("kernel: remove_timer");
 //     let mut timers = TIMERS.exclusive_access();
 //     let mut temp = BinaryHeap::<TimerCondVar>::new();
 //     for condvar in timers.drain() {

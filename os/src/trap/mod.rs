@@ -31,6 +31,7 @@ use riscv::register::{
 
 global_asm!(include_str!("trap.S"));
 
+/// Initialize trap handling
 pub fn init() {
     set_kernel_trap_entry();
 }
@@ -72,7 +73,7 @@ pub fn trap_handler() -> ! {
     set_kernel_trap_entry();
     let scause = scause::read();
     let stval = stval::read();
-    // println!("into {:?}", scause.cause());
+    // trace!("into {:?}", scause.cause());
     match scause.cause() {
         Trap::Exception(Exception::UserEnvCall) => {
             // jump to next instruction anyway
@@ -93,14 +94,12 @@ pub fn trap_handler() -> ! {
         | Trap::Exception(Exception::InstructionPageFault)
         | Trap::Exception(Exception::LoadFault)
         | Trap::Exception(Exception::LoadPageFault) => {
-            /*
-            println!(
-                "[kernel] {:?} in application, bad addr = {:#x}, bad instruction = {:#x}, kernel killed it.",
+            error!(
+                "[kernel] trap_handler: {:?} in application, bad addr = {:#x}, bad instruction = {:#x}, kernel killed it.",
                 scause.cause(),
                 stval,
                 current_trap_cx().sepc,
             );
-            */
             current_add_signal(SignalFlags::SIGSEGV);
         }
         Trap::Exception(Exception::IllegalInstruction) => {
@@ -124,7 +123,7 @@ pub fn trap_handler() -> ! {
     }
     // check signals
     if let Some((errno, msg)) = check_signals_of_current() {
-        println!("[kernel] {}", msg);
+        trace!("[kernel] trap_handler: .. check signals {}", msg);
         exit_current_and_run_next(errno);
     }
     trap_return();
@@ -142,7 +141,7 @@ pub fn trap_return() -> ! {
         fn __restore();
     }
     let restore_va = __restore as usize - __alltraps as usize + TRAMPOLINE;
-    //println!("before return");
+    // trace!("[kernel] trap_return: ..before return");
     unsafe {
         asm!(
             "fence.i",
@@ -179,7 +178,7 @@ pub fn trap_from_kernel(_trap_cx: &TrapContext) {
     // }
 
     use riscv::register::sepc;
-    println!("stval = {:#x}, sepc = {:#x}", stval::read(), sepc::read());
+    trace!("stval = {:#x}, sepc = {:#x}", stval::read(), sepc::read());
     panic!("a trap {:?} from kernel!", scause::read().cause());
 }
 
