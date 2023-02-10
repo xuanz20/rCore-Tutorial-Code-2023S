@@ -28,6 +28,16 @@ impl TaskManager {
     pub fn fetch(&mut self) -> Option<Arc<TaskControlBlock>> {
         self.ready_queue.pop_front()
     }
+    pub fn remove(&mut self, task: Arc<TaskControlBlock>) {
+        if let Some((id, _)) = self
+            .ready_queue
+            .iter()
+            .enumerate()
+            .find(|(_, t)| Arc::as_ptr(t) == Arc::as_ptr(&task))
+        {
+            self.ready_queue.remove(id);
+        }
+    }
 }
 
 lazy_static! {
@@ -52,6 +62,12 @@ pub fn wakeup_task(task: Arc<TaskControlBlock>) {
     task_inner.task_status = TaskStatus::Ready;
     drop(task_inner);
     add_task(task);
+}
+
+/// Remove a task from the ready queue
+pub fn remove_task(task: Arc<TaskControlBlock>) {
+	//trace!("kernel: TaskManager::remove_task");
+    TASK_MANAGER.exclusive_access().remove(task);
 }
 
 /// Fetch a task out of the ready queue
