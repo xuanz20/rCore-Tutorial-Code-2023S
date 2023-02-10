@@ -125,6 +125,13 @@ pub fn exit_current_and_run_next(exit_code: i32) {
         let mut recycle_res = Vec::<TaskUserRes>::new();
         for task in process_inner.tasks.iter().filter(|t| t.is_some()) {
             let task = task.as_ref().unwrap();
+            // if other tasks are Ready in TaskManager or waiting for a timer to be
+            // expired, we should remove them.
+            //
+            // Mention that we do not need to consider Mutex/Semaphore since they
+            // are limited in a single process. Therefore, the blocked tasks are
+            // removed when the PCB is deallocated.
+            remove_inactive_task(Arc::clone(&task));
             let mut task_inner = task.inner_exclusive_access();
             if let Some(res) = task_inner.res.take() {
                 recycle_res.push(res);
@@ -142,6 +149,8 @@ pub fn exit_current_and_run_next(exit_code: i32) {
         process_inner.memory_set.recycle_data_pages();
         // drop file descriptors
         process_inner.fd_table.clear();
+        // remove all tasks
+        process_inner.tasks.clear();
     }
     drop(process);
     // we do not have to save task context
@@ -178,4 +187,10 @@ pub fn current_add_signal(signal: SignalFlags) {
     let process = current_process();
     let mut process_inner = process.inner_exclusive_access();
     process_inner.signals |= signal;
+}
+
+/// the inactive(blocked) tasks are removed when the PCB is deallocated.(called by exit_current_and_run_next)
+pub fn remove_inactive_task(task: Arc<TaskControlBlock>) {
+    remove_task(Arc::clone(&task));
+    remove_timer(Arc::clone(&task));
 }
