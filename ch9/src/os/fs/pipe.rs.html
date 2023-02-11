@@ -190,7 +190,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Pipe</span> {
-	<span class="doccomment">/// create readable pipe</span>
+    <span class="doccomment">/// create readable pipe</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_end_with_buffer</span>(<span class="ident">buffer</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">UPIntrFreeCell</span><span class="op">&lt;</span><span class="ident">PipeRingBuffer</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">readable</span>: <span class="bool-val">true</span>,

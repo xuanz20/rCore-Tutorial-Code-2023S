@@ -115,7 +115,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">TaskControlBlock</span> {
-	<span class="doccomment">/// Get the mutable reference of the inner TCB</span>
+    <span class="doccomment">/// Get the mutable reference of the inner TCB</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inner_exclusive_access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">UPIntrRefMut</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">TaskControlBlockInner</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>()
     }

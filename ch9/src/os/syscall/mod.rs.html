@@ -167,6 +167,11 @@
 <span id="167">167</span>
 <span id="168">168</span>
 <span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of syscalls</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The single entry point to all system calls, [`syscall()`], is called</span>
@@ -241,6 +246,8 @@ pub const SYSCALL_MAIL_WRITE: usize = 402;
 */</span>
 <span class="doccomment">/// dup syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_DUP</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">24</span>;
+<span class="doccomment">/// connect syscall</span>
+<span class="kw">const</span> <span class="ident">SYSCALL_CONNECT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">29</span>;
 <span class="doccomment">/// pipe syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_PIPE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">59</span>;
 <span class="doccomment">/// task info syscall</span>
@@ -267,7 +274,7 @@ pub const SYSCALL_MAIL_WRITE: usize = 402;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_CONDVAR_CREATE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">471</span>;
 <span class="doccomment">/// condvar_signal syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_CONDVAR_SIGNAL</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">472</span>;
-<span class="doccomment">///</span>
+<span class="doccomment">/// condvar_wait syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_CONDVAR_WAIT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">473</span>;
 <span class="kw">const</span> <span class="ident">SYSCALL_FRAMEBUFFER</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2000</span>;
 <span class="kw">const</span> <span class="ident">SYSCALL_FRAMEBUFFER_FLUSH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2001</span>;
@@ -277,6 +284,7 @@ pub const SYSCALL_MAIL_WRITE: usize = 402;
 <span class="kw">mod</span> <span class="ident">fs</span>;
 <span class="kw">mod</span> <span class="ident">gui</span>;
 <span class="kw">mod</span> <span class="ident">input</span>;
+<span class="kw">mod</span> <span class="ident">net</span>;
 <span class="kw">mod</span> <span class="ident">process</span>;
 <span class="kw">mod</span> <span class="ident">sync</span>;
 <span class="kw">mod</span> <span class="ident">thread</span>;
@@ -284,6 +292,7 @@ pub const SYSCALL_MAIL_WRITE: usize = 402;
 <span class="kw">use</span> <span class="ident">fs</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">gui</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">input</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">net</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">process</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">sync</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">thread</span>::<span class="kw-2">*</span>;
@@ -293,6 +302,7 @@ pub const SYSCALL_MAIL_WRITE: usize = 402;
 <span class="doccomment">/// handle syscall exception with `syscall_id` and other arguments</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">syscall</span>(<span class="ident">syscall_id</span>: <span class="ident">usize</span>, <span class="ident">args</span>: [<span class="ident">usize</span>; <span class="number">4</span>]) -&gt; <span class="ident">isize</span> {
     <span class="kw">match</span> <span class="ident">syscall_id</span> {
+        <span class="ident">SYSCALL_CONNECT</span> =&gt; <span class="ident">sys_connect</span>(<span class="ident">args</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">args</span>[<span class="number">1</span>] <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">args</span>[<span class="number">2</span>] <span class="kw">as</span> <span class="kw">_</span>),
         <span class="ident">SYSCALL_DUP</span> =&gt; <span class="ident">sys_dup</span>(<span class="ident">args</span>[<span class="number">0</span>]),
         <span class="ident">SYSCALL_LINKAT</span> =&gt; <span class="ident">sys_linkat</span>(<span class="ident">args</span>[<span class="number">1</span>] <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">args</span>[<span class="number">3</span>] <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">u8</span>),
         <span class="ident">SYSCALL_UNLINKAT</span> =&gt; <span class="ident">sys_unlinkat</span>(<span class="ident">args</span>[<span class="number">1</span>] <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">u8</span>),
