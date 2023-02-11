@@ -142,6 +142,13 @@
 <span id="142">142</span>
 <span id="143">143</span>
 <span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::File</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers::BLOCK_DEVICE</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::UserBuffer</span>;
@@ -152,6 +159,7 @@
 <span class="kw">use</span> <span class="ident">easy_fs</span>::{<span class="ident">EasyFileSystem</span>, <span class="ident">Inode</span>};
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
 
+<span class="doccomment">/// inode in memory</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OSInode</span> {
     <span class="ident">readable</span>: <span class="ident">bool</span>,
     <span class="ident">writable</span>: <span class="ident">bool</span>,
@@ -201,15 +209,21 @@
     <span class="kw">for</span> <span class="ident">app</span> <span class="kw">in</span> <span class="ident">ROOT_INODE</span>.<span class="ident">ls</span>() {
         <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">app</span>);
     }
-    <span class="macro">println!</span>(<span class="string">&quot;**************/&quot;</span>)
+    <span class="macro">println!</span>(<span class="string">&quot;**************/&quot;</span>);
 }
 
 <span class="macro">bitflags!</span> {
+    <span class="doccomment">///  The flags argument to the open() system call is constructed by ORing together zero or more of the following values:</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OpenFlags</span>: <span class="ident">u32</span> {
+        <span class="doccomment">/// readyonly</span>
         <span class="kw">const</span> <span class="ident">RDONLY</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="doccomment">/// writeonly</span>
         <span class="kw">const</span> <span class="ident">WRONLY</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">0</span>;
+        <span class="doccomment">/// read and write</span>
         <span class="kw">const</span> <span class="ident">RDWR</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>;
+        <span class="doccomment">/// create new file</span>
         <span class="kw">const</span> <span class="ident">CREATE</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">9</span>;
+        <span class="doccomment">/// truncate file size to 0</span>
         <span class="kw">const</span> <span class="ident">TRUNC</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">10</span>;
     }
 }
