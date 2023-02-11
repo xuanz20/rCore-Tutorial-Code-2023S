@@ -96,6 +96,12 @@
 <span id="96">96</span>
 <span id="97">97</span>
 <span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::UPIntrFreeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task::TaskControlBlock</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">wakeup_task</span>, <span class="ident">current_task</span>};
@@ -118,6 +124,7 @@
 <span class="kw">impl</span> <span class="ident">MutexSpin</span> {
     <span class="doccomment">/// Create a new spinlock mutex</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: MutexSpin::new&quot;</span>);
         <span class="self">Self</span> {
             <span class="ident">locked</span>: <span class="kw">unsafe</span> { <span class="ident">UPIntrFreeCell::new</span>(<span class="bool-val">false</span>) },
         }
@@ -127,6 +134,7 @@
 <span class="kw">impl</span> <span class="ident">Mutex</span> <span class="kw">for</span> <span class="ident">MutexSpin</span> {
     <span class="doccomment">/// Lock the spinlock mutex</span>
     <span class="kw">fn</span> <span class="ident">lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: MutexSpin::lock&quot;</span>);
         <span class="kw">loop</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">locked</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">locked</span>.<span class="ident">exclusive_access</span>();
             <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">locked</span> {
@@ -141,6 +149,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">unlock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: MutexSpin::unlock&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">locked</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">locked</span>.<span class="ident">exclusive_access</span>();
         <span class="kw-2">*</span><span class="ident">locked</span> <span class="op">=</span> <span class="bool-val">false</span>;
     }
@@ -159,6 +168,7 @@
 <span class="kw">impl</span> <span class="ident">MutexBlocking</span> {
     <span class="doccomment">/// Create a new blocking mutex</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: MutexBlocking::new&quot;</span>);
         <span class="self">Self</span> {
             <span class="ident">inner</span>: <span class="kw">unsafe</span> {
                 <span class="ident">UPIntrFreeCell::new</span>(<span class="ident">MutexBlockingInner</span> {
@@ -173,6 +183,7 @@
 <span class="kw">impl</span> <span class="ident">Mutex</span> <span class="kw">for</span> <span class="ident">MutexBlocking</span> {
     <span class="doccomment">/// lock the blocking mutex</span>
     <span class="kw">fn</span> <span class="ident">lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: MutexBlocking::lock&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mutex_inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
         <span class="kw">if</span> <span class="ident">mutex_inner</span>.<span class="ident">locked</span> {
             <span class="ident">mutex_inner</span>.<span class="ident">wait_queue</span>.<span class="ident">push_back</span>(<span class="ident">current_task</span>().<span class="ident">unwrap</span>());
@@ -185,6 +196,7 @@
 
     <span class="doccomment">/// unlock the blocking mutex</span>
     <span class="kw">fn</span> <span class="ident">unlock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: MutexBlocking::unlock&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mutex_inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
         <span class="macro">assert!</span>(<span class="ident">mutex_inner</span>.<span class="ident">locked</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">waking_task</span>) <span class="op">=</span> <span class="ident">mutex_inner</span>.<span class="ident">wait_queue</span>.<span class="ident">pop_front</span>() {

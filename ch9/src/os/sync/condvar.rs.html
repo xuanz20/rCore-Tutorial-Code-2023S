@@ -53,6 +53,10 @@
 <span id="53">53</span>
 <span id="54">54</span>
 <span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync</span>::{<span class="ident">Mutex</span>, <span class="ident">UPIntrFreeCell</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{
     <span class="ident">wakeup_task</span>, <span class="ident">block_current_and_run_next</span>, <span class="ident">block_current_task</span>, <span class="ident">current_task</span>, <span class="ident">TaskContext</span>,
@@ -73,6 +77,7 @@
 <span class="kw">impl</span> <span class="ident">Condvar</span> {
     <span class="doccomment">/// Create a new condition variable</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Condvar::new&quot;</span>);
         <span class="self">Self</span> {
             <span class="ident">inner</span>: <span class="kw">unsafe</span> {
                 <span class="ident">UPIntrFreeCell::new</span>(<span class="ident">CondvarInner</span> {
@@ -84,6 +89,7 @@
 
     <span class="doccomment">/// Signal a task waiting on the condition variable</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">signal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Condvar::signal&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>) <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">wait_queue</span>.<span class="ident">pop_front</span>() {
             <span class="ident">wakeup_task</span>(<span class="ident">task</span>);
@@ -92,6 +98,7 @@
 
     <span class="doccomment">/// blocking current task, but didn&#39;t schedule new task</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wait_no_sched</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">TaskContext</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Condvar::wait_no_sched&quot;</span>);
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_session</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> {
             <span class="ident">inner</span>.<span class="ident">wait_queue</span>.<span class="ident">push_back</span>(<span class="ident">current_task</span>().<span class="ident">unwrap</span>());
         });
@@ -100,6 +107,7 @@
 
 	<span class="doccomment">/// blocking current task, let it wait on the condition variable</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wait_with_mutex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mutex</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Mutex</span><span class="op">&gt;</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Condvar::wait_with_mutex&quot;</span>);
         <span class="ident">mutex</span>.<span class="ident">unlock</span>();
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_session</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> {
             <span class="ident">inner</span>.<span class="ident">wait_queue</span>.<span class="ident">push_back</span>(<span class="ident">current_task</span>().<span class="ident">unwrap</span>());

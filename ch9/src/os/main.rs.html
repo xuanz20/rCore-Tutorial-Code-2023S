@@ -103,6 +103,7 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
+<span id="106">106</span>
 </pre><pre class="rust"><code><span class="doccomment">//! The main module and entrypoint</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Various facilities of the kernels are implemented as submodules. The most</span>
@@ -204,7 +205,8 @@
     <span class="ident">board::device_init</span>();
     <span class="ident">fs::list_apps</span>();
     <span class="ident">task::add_initproc</span>();
-    <span class="kw-2">*</span><span class="ident">DEV_NON_BLOCKING_ACCESS</span>.<span class="ident">exclusive_access</span>() <span class="op">=</span> <span class="bool-val">true</span>;
+    <span class="comment">//*DEV_NON_BLOCKING_ACCESS.exclusive_access() = true;</span>
+    <span class="kw-2">*</span><span class="ident">DEV_NON_BLOCKING_ACCESS</span>.<span class="ident">exclusive_access</span>() <span class="op">=</span> <span class="bool-val">false</span>;
     <span class="ident">task::run_tasks</span>();
     <span class="macro">panic!</span>(<span class="string">&quot;Unreachable in rust_main!&quot;</span>);
 }

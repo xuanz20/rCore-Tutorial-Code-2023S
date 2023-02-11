@@ -227,6 +227,9 @@
 <span id="227">227</span>
 <span id="228">228</span>
 <span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ProcessControlBlock</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">KERNEL_STACK_SIZE</span>, <span class="ident">PAGE_SIZE</span>, <span class="ident">TRAMPOLINE</span>, <span class="ident">TRAP_CONTEXT_BASE</span>, <span class="ident">USER_STACK_SIZE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">MapPermission</span>, <span class="ident">PhysPageNum</span>, <span class="ident">VirtAddr</span>, <span class="ident">KERNEL_SPACE</span>};
@@ -275,10 +278,13 @@
         <span class="kw">unsafe</span> { <span class="ident">UPIntrFreeCell::new</span>(<span class="ident">RecycleAllocator::new</span>()) };
 }
 
+<span class="doccomment">/// The idle task&#39;s pid is 0</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IDLE_PID</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 
+<span class="doccomment">/// A handle to a pid</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PidHandle</span>(<span class="kw">pub</span> <span class="ident">usize</span>);
 
+<span class="doccomment">/// Allocate a pid for a process</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pid_alloc</span>() -&gt; <span class="ident">PidHandle</span> {
     <span class="ident">PidHandle</span>(<span class="ident">PID_ALLOCATOR</span>.<span class="ident">exclusive_access</span>().<span class="ident">alloc</span>())
 }
