@@ -137,10 +137,10 @@
 }
 
 <span class="macro">lazy_static!</span> {
-	<span class="doccomment">/// TASK_MANAGER instance through lazy_static!</span>
+    <span class="doccomment">/// TASK_MANAGER instance through lazy_static!</span>
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TASK_MANAGER</span>: <span class="ident">UPIntrFreeCell</span><span class="op">&lt;</span><span class="ident">TaskManager</span><span class="op">&gt;</span> <span class="op">=</span>
         <span class="kw">unsafe</span> { <span class="ident">UPIntrFreeCell::new</span>(<span class="ident">TaskManager::new</span>()) };
-    <span class="doccomment">/// PID2PCB instance (map of pid to pcb)    </span>
+    <span class="doccomment">/// PID2PCB instance (map of pid to pcb)</span>
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">PID2PCB</span>: <span class="ident">UPIntrFreeCell</span><span class="op">&lt;</span><span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ProcessControlBlock</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
         <span class="kw">unsafe</span> { <span class="ident">UPIntrFreeCell::new</span>(<span class="ident">BTreeMap::new</span>()) };
 }
@@ -162,7 +162,7 @@
 
 <span class="doccomment">/// Remove a task from the ready queue</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_task</span>(<span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
-	<span class="comment">//trace!(&quot;kernel: TaskManager::remove_task&quot;);</span>
+    <span class="comment">//trace!(&quot;kernel: TaskManager::remove_task&quot;);</span>
     <span class="ident">TASK_MANAGER</span>.<span class="ident">exclusive_access</span>().<span class="ident">remove</span>(<span class="ident">task</span>);
 }
 

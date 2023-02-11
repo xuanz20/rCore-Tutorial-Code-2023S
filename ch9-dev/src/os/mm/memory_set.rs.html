@@ -423,7 +423,7 @@
 }
 
 <span class="macro">lazy_static!</span> {
-	<span class="doccomment">/// The kernel&#39;s initial memory mapping(kernel address space)</span>
+    <span class="doccomment">/// The kernel&#39;s initial memory mapping(kernel address space)</span>
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">KERNEL_SPACE</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">UPIntrFreeCell</span><span class="op">&lt;</span><span class="ident">MemorySet</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
         <span class="ident">Arc::new</span>(<span class="kw">unsafe</span> { <span class="ident">UPIntrFreeCell::new</span>(<span class="ident">MemorySet::new_kernel</span>()) });
 }
@@ -499,14 +499,14 @@
         <span class="comment">// map trampoline</span>
         <span class="ident">memory_set</span>.<span class="ident">map_trampoline</span>();
         <span class="comment">// map kernel sections</span>
-         <span class="macro">info!</span>(<span class="string">&quot;.text [{:#x}, {:#x})&quot;</span>, <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>);
-         <span class="macro">info!</span>(<span class="string">&quot;.rodata [{:#x}, {:#x})&quot;</span>, <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>);
-         <span class="macro">info!</span>(<span class="string">&quot;.data [{:#x}, {:#x})&quot;</span>, <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>);
-         <span class="macro">info!</span>(
-             <span class="string">&quot;.bss [{:#x}, {:#x})&quot;</span>,
-             <span class="ident">sbss_with_stack</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">ebss</span> <span class="kw">as</span> <span class="ident">usize</span>
-         );
-         <span class="macro">info!</span>(<span class="string">&quot;mapping .text section&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.text [{:#x}, {:#x})&quot;</span>, <span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">etext</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.rodata [{:#x}, {:#x})&quot;</span>, <span class="ident">srodata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">erodata</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;.data [{:#x}, {:#x})&quot;</span>, <span class="ident">sdata</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">edata</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        <span class="macro">info!</span>(
+            <span class="string">&quot;.bss [{:#x}, {:#x})&quot;</span>,
+            <span class="ident">sbss_with_stack</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">ebss</span> <span class="kw">as</span> <span class="ident">usize</span>
+        );
+        <span class="macro">info!</span>(<span class="string">&quot;mapping .text section&quot;</span>);
         <span class="ident">memory_set</span>.<span class="ident">push</span>(
             <span class="ident">MapArea::new</span>(
                 (<span class="ident">stext</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">into</span>(),

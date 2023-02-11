@@ -183,6 +183,8 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Trap handling functionality</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! For rCore, we have a single trap entry point, namely `__alltraps`. At</span>
@@ -210,7 +212,9 @@
 <span class="kw">use</span> <span class="ident">riscv::register</span>::{
     <span class="ident">mtvec::TrapMode</span>,
     <span class="ident">scause</span>::{<span class="self">self</span>, <span class="ident">Exception</span>, <span class="ident">Interrupt</span>, <span class="ident">Trap</span>},
-    <span class="ident">sie</span>, <span class="ident">stval</span>, <span class="ident">stvec</span>,
+    <span class="ident">sie</span>,
+    <span class="ident">stval</span>,
+    <span class="ident">stvec</span>,
     <span class="comment">// sie, sscratch, sstatus, stval, stvec,</span>
 };
 
@@ -298,7 +302,7 @@
         <span class="ident">Trap::Interrupt</span>(<span class="ident">Interrupt::SupervisorExternal</span>) =&gt; {
             <span class="ident"><span class="kw">crate</span>::board::irq_handler</span>();
         }
-        <span class="kw">_</span> =&gt; {  
+        <span class="kw">_</span> =&gt; {
             <span class="macro">panic!</span>(
                 <span class="string">&quot;Unsupported trap {:?}, stval = {:#x}!&quot;</span>,
                 <span class="ident">scause</span>.<span class="ident">cause</span>(),
