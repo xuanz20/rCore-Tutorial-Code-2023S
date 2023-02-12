@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["block_device_test",""]],"mod":[["sdcard",""],["virtio_blk",""]],"struct":[["BLOCK_DEVICE",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["block_device_test","Test the block device"]],"mod":[["virtio_blk",""]],"struct":[["BLOCK_DEVICE","The global block device driver instance: BLOCK_DEVICE with BlockDevice trait"],["VirtIOBlock","VirtIOBlock device driver strcuture for virtio_blk device"]]};
