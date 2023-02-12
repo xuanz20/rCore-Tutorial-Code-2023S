@@ -112,12 +112,23 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::fs</span>::{<span class="ident">make_pipe</span>, <span class="ident">open_file</span>, <span class="ident">OpenFlags</span>, <span class="ident">Stat</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">translated_byte_buffer</span>, <span class="ident">translated_refmut</span>, <span class="ident">translated_str</span>, <span class="ident">UserBuffer</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_process</span>, <span class="ident">current_user_token</span>};
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_write</span>(<span class="ident">fd</span>: <span class="ident">usize</span>, <span class="ident">buf</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_write&quot;</span>);
     <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="ident">current_process</span>();
     <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
@@ -138,6 +149,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_read</span>(<span class="ident">fd</span>: <span class="ident">usize</span>, <span class="ident">buf</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_read&quot;</span>);
     <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="ident">current_process</span>();
     <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
@@ -151,6 +163,7 @@
         }
         <span class="comment">// release current task TCB manually to avoid multi-borrow</span>
         <span class="ident">drop</span>(<span class="ident">inner</span>);
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_read .. file.read&quot;</span>);
         <span class="ident">file</span>.<span class="ident">read</span>(<span class="ident">UserBuffer::new</span>(<span class="ident">translated_byte_buffer</span>(<span class="ident">token</span>, <span class="ident">buf</span>, <span class="ident">len</span>))) <span class="kw">as</span> <span class="ident">isize</span>
     } <span class="kw">else</span> {
         <span class="op">-</span><span class="number">1</span>
@@ -158,6 +171,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_open</span>(<span class="ident">path</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">flags</span>: <span class="ident">u32</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_open&quot;</span>);
     <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="ident">current_process</span>();
     <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">translated_str</span>(<span class="ident">token</span>, <span class="ident">path</span>);
@@ -172,6 +186,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_close</span>(<span class="ident">fd</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_close&quot;</span>);
     <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="ident">current_process</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
     <span class="kw">if</span> <span class="ident">fd</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fd_table</span>.<span class="ident">len</span>() {
@@ -185,6 +200,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_pipe</span>(<span class="ident">pipe</span>: <span class="kw-2">*mut</span> <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_pipe&quot;</span>);
     <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="ident">current_process</span>();
     <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
@@ -199,6 +215,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_dup</span>(<span class="ident">fd</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_dup&quot;</span>);
     <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="ident">current_process</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
     <span class="kw">if</span> <span class="ident">fd</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fd_table</span>.<span class="ident">len</span>() {
@@ -214,16 +231,19 @@
 
 <span class="doccomment">/// YOUR JOB: Implement fstat.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_fstat</span>(<span class="ident">_fd</span>: <span class="ident">usize</span>, <span class="ident">_st</span>: <span class="kw-2">*mut</span> <span class="ident">Stat</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_fstat NOT IMPLEMENTED&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="doccomment">/// YOUR JOB: Implement linkat.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_linkat</span>(<span class="ident">_old_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">_new_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_linkat NOT IMPLEMENTED&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="doccomment">/// YOUR JOB: Implement unlinkat.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_unlinkat</span>(<span class="ident">_name</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_unlinkat NOT IMPLEMENTED&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 </code></pre></div>

@@ -174,6 +174,9 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::File</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::UserBuffer</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
@@ -277,6 +280,7 @@
 
 <span class="doccomment">/// Return (read_end, write_end)</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_pipe</span>() -&gt; (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Pipe</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Pipe</span><span class="op">&gt;</span>) {
+	<span class="macro">trace!</span>(<span class="string">&quot;kernel: make_pipe&quot;</span>);
     <span class="kw">let</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="kw">unsafe</span> { <span class="ident">UPSafeCell::new</span>(<span class="ident">PipeRingBuffer::new</span>()) });
     <span class="kw">let</span> <span class="ident">read_end</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Pipe::read_end_with_buffer</span>(<span class="ident">buffer</span>.<span class="ident">clone</span>()));
     <span class="kw">let</span> <span class="ident">write_end</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Pipe::write_end_with_buffer</span>(<span class="ident">buffer</span>.<span class="ident">clone</span>()));
@@ -292,6 +296,7 @@
         <span class="self">self</span>.<span class="ident">writable</span>
     }
     <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Pipe::read&quot;</span>);
         <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">readable</span>());
         <span class="kw">let</span> <span class="ident">want_to_read</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_iter</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">into_iter</span>();
@@ -323,6 +328,7 @@
         }
     }
     <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Pipe::write&quot;</span>);
         <span class="macro">assert!</span>(<span class="self">self</span>.<span class="ident">writable</span>());
         <span class="kw">let</span> <span class="ident">want_to_write</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_iter</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">into_iter</span>();

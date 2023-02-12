@@ -48,6 +48,9 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">block_current_and_run_next</span>, <span class="ident">current_task</span>, <span class="ident">wakeup_task</span>, <span class="ident">TaskControlBlock</span>};
 <span class="kw">use</span> <span class="ident">alloc</span>::{<span class="ident">collections::VecDeque</span>, <span class="ident">sync::Arc</span>};
@@ -66,6 +69,7 @@
 <span class="kw">impl</span> <span class="ident">Semaphore</span> {
     <span class="doccomment">/// Create a new semaphore</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">res_count</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Semaphore::new&quot;</span>);
         <span class="self">Self</span> {
             <span class="ident">inner</span>: <span class="kw">unsafe</span> {
                 <span class="ident">UPSafeCell::new</span>(<span class="ident">SemaphoreInner</span> {
@@ -78,6 +82,7 @@
 
     <span class="doccomment">/// up operation of semaphore</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">up</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Semaphore::up&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
         <span class="ident">inner</span>.<span class="ident">count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         <span class="kw">if</span> <span class="ident">inner</span>.<span class="ident">count</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0</span> {
@@ -89,6 +94,7 @@
 
     <span class="doccomment">/// down operation of semaphore</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">down</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">trace!</span>(<span class="string">&quot;kernel: Semaphore::down&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
         <span class="ident">inner</span>.<span class="ident">count</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
         <span class="kw">if</span> <span class="ident">inner</span>.<span class="ident">count</span> <span class="op">&lt;</span> <span class="number">0</span> {

@@ -90,6 +90,10 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of [`TaskManager`]</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! It is only used to manage processes and schedule process based on ready queue.</span>
@@ -143,11 +147,13 @@
 
 <span class="doccomment">/// Add a task to ready queue</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_task</span>(<span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
+    <span class="comment">//trace!(&quot;kernel: TaskManager::add_task&quot;);</span>
     <span class="ident">TASK_MANAGER</span>.<span class="ident">exclusive_access</span>().<span class="ident">add</span>(<span class="ident">task</span>);
 }
 
 <span class="doccomment">/// Wake up a task</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wakeup_task</span>(<span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: TaskManager::wakeup_task&quot;</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">task_inner</span> <span class="op">=</span> <span class="ident">task</span>.<span class="ident">inner_exclusive_access</span>();
     <span class="ident">task_inner</span>.<span class="ident">task_status</span> <span class="op">=</span> <span class="ident">TaskStatus::Ready</span>;
     <span class="ident">drop</span>(<span class="ident">task_inner</span>);
@@ -156,11 +162,13 @@
 
 <span class="doccomment">/// Remove a task from the ready queue</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_task</span>(<span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
+	<span class="comment">//trace!(&quot;kernel: TaskManager::remove_task&quot;);</span>
     <span class="ident">TASK_MANAGER</span>.<span class="ident">exclusive_access</span>().<span class="ident">remove</span>(<span class="ident">task</span>);
 }
 
 <span class="doccomment">/// Fetch a task out of the ready queue</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fetch_task</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="comment">//trace!(&quot;kernel: TaskManager::fetch_task&quot;);</span>
     <span class="ident">TASK_MANAGER</span>.<span class="ident">exclusive_access</span>().<span class="ident">fetch</span>()
 }
 

@@ -149,6 +149,12 @@
 <span id="149">149</span>
 <span id="150">150</span>
 <span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of syscalls</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The single entry point to all system calls, [`syscall()`], is called</span>
@@ -183,12 +189,14 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_YIELD</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">124</span>;
 <span class="doccomment">/// kill syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_KILL</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">129</span>;
-<span class="doccomment">/// sigaction syscall</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_SIGACTION</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">134</span>;
-<span class="doccomment">/// sigprocmask syscall</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_SIGPROCMASK</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">135</span>;
-<span class="doccomment">/// sigreturn syscall</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_SIGRETURN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">139</span>;
+<span class="comment">/*
+/// sigaction syscall
+pub const SYSCALL_SIGACTION: usize = 134;
+/// sigprocmask syscall
+pub const SYSCALL_SIGPROCMASK: usize = 135;
+/// sigreturn syscall
+pub const SYSCALL_SIGRETURN: usize = 139;
+*/</span>
 <span class="doccomment">/// gettimeofday syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_GETTIMEOFDAY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">169</span>;
 <span class="doccomment">/// getpid syscall</span>
@@ -203,18 +211,22 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_WAITPID</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">260</span>;
 <span class="doccomment">/// set priority syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_SET_PRIORITY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">140</span>;
-<span class="doccomment">/// sbrk syscall</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_SBRK</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">214</span>;
+<span class="comment">/*
+/// sbrk syscall
+pub const SYSCALL_SBRK: usize = 214;
+*/</span>
 <span class="doccomment">/// munmap syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_MUNMAP</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">215</span>;
 <span class="doccomment">/// mmap syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_MMAP</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">222</span>;
 <span class="doccomment">/// spawn syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_SPAWN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">400</span>;
-<span class="doccomment">/// mail read syscall</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_MAIL_READ</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">401</span>;
-<span class="doccomment">/// mail write syscall</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_MAIL_WRITE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">402</span>;
+<span class="comment">/*
+/// mail read syscall
+pub const SYSCALL_MAIL_READ: usize = 401;
+/// mail write syscall
+pub const SYSCALL_MAIL_WRITE: usize = 402;
+*/</span>
 <span class="doccomment">/// dup syscall</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SYSCALL_DUP</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">24</span>;
 <span class="doccomment">/// pipe syscall</span>
