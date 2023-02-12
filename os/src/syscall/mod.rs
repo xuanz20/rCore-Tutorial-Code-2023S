@@ -32,12 +32,14 @@ pub const SYSCALL_SLEEP: usize = 101;
 pub const SYSCALL_YIELD: usize = 124;
 /// kill syscall
 pub const SYSCALL_KILL: usize = 129;
+/*
 /// sigaction syscall
 pub const SYSCALL_SIGACTION: usize = 134;
 /// sigprocmask syscall
 pub const SYSCALL_SIGPROCMASK: usize = 135;
 /// sigreturn syscall
 pub const SYSCALL_SIGRETURN: usize = 139;
+*/
 /// gettimeofday syscall
 pub const SYSCALL_GETTIMEOFDAY: usize = 169;
 /// getpid syscall
@@ -52,18 +54,22 @@ pub const SYSCALL_EXEC: usize = 221;
 pub const SYSCALL_WAITPID: usize = 260;
 /// set priority syscall
 pub const SYSCALL_SET_PRIORITY: usize = 140;
+/*
 /// sbrk syscall
 pub const SYSCALL_SBRK: usize = 214;
+*/
 /// munmap syscall
 pub const SYSCALL_MUNMAP: usize = 215;
 /// mmap syscall
 pub const SYSCALL_MMAP: usize = 222;
 /// spawn syscall
 pub const SYSCALL_SPAWN: usize = 400;
+/*
 /// mail read syscall
 pub const SYSCALL_MAIL_READ: usize = 401;
 /// mail write syscall
 pub const SYSCALL_MAIL_WRITE: usize = 402;
+*/
 /// dup syscall
 pub const SYSCALL_DUP: usize = 24;
 /// pipe syscall

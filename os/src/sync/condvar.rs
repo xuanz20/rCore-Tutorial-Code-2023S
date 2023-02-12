@@ -15,6 +15,7 @@ pub struct CondvarInner {
 impl Condvar {
     /// Create a new condition variable
     pub fn new() -> Self {
+        trace!("kernel: Condvar::new");
         Self {
             inner: unsafe {
                 UPSafeCell::new(CondvarInner {
@@ -34,6 +35,7 @@ impl Condvar {
 
     /// blocking current task, let it wait on the condition variable
     pub fn wait(&self, mutex: Arc<dyn Mutex>) {
+		trace!("kernel: Condvar::wait_with_mutex");
         mutex.unlock();
         let mut inner = self.inner.exclusive_access();
         inner.wait_queue.push_back(current_task().unwrap());
