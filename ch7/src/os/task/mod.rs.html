@@ -267,7 +267,7 @@
 <span class="kw">mod</span> <span class="ident">action</span>;
 <span class="kw">mod</span> <span class="ident">context</span>;
 <span class="kw">mod</span> <span class="ident">manager</span>;
-<span class="kw">mod</span> <span class="ident">pid</span>;
+<span class="kw">mod</span> <span class="ident">id</span>;
 <span class="kw">mod</span> <span class="ident">processor</span>;
 <span class="kw">mod</span> <span class="ident">signal</span>;
 <span class="kw">mod</span> <span class="ident">switch</span>;
@@ -285,7 +285,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">action</span>::{<span class="ident">SignalAction</span>, <span class="ident">SignalActions</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">manager</span>::{<span class="ident">add_task</span>, <span class="ident">pid2task</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pid</span>::{<span class="ident">pid_alloc</span>, <span class="ident">KernelStack</span>, <span class="ident">PidHandle</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">id</span>::{<span class="ident">kstack_alloc</span>, <span class="ident">pid_alloc</span>, <span class="ident">KernelStack</span>, <span class="ident">PidHandle</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">processor</span>::{
     <span class="ident">current_task</span>, <span class="ident">current_trap_cx</span>, <span class="ident">current_user_token</span>, <span class="ident">run_tasks</span>, <span class="ident">schedule</span>, <span class="ident">take_current_task</span>,
 };

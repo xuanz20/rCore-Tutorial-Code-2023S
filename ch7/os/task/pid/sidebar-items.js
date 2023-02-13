@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["kernel_stack_position","Return (bottom, top) of a kernel stack in kernel space."],["pid_alloc","Allocate a new PID"]],"struct":[["KernelStack","Kernel stack for a process"],["PID_ALLOCATOR",""],["PidAllocator",""],["PidHandle","Abstract structure of PID"]]};

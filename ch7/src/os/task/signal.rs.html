@@ -185,7 +185,7 @@
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">contains</span>(<span class="ident"><span class="self">Self</span>::SIGSEGV</span>) {
             <span class="prelude-val">Some</span>((<span class="op">-</span><span class="number">11</span>, <span class="string">&quot;Segmentation Fault, SIGSEGV=11&quot;</span>))
         } <span class="kw">else</span> {
-            <span class="comment">//println!(&quot;[K] signalflags check_error  {:?}&quot;, self);</span>
+            <span class="comment">// warn!(&quot;[kernel] signalflags check_error  {:?}&quot;, self);</span>
             <span class="prelude-val">None</span>
         }
     }

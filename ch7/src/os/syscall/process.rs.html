@@ -248,6 +248,23 @@
 <span id="248">248</span>
 <span id="249">249</span>
 <span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Process management syscalls</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -280,20 +297,24 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exit</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) -&gt; <span class="op">!</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_exit&quot;</span>,<span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="ident">exit_current_and_run_next</span>(<span class="ident">exit_code</span>);
     <span class="macro">panic!</span>(<span class="string">&quot;Unreachable in sys_exit!&quot;</span>);
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_yield</span>() -&gt; <span class="ident">isize</span> {
+    <span class="comment">//trace!(&quot;kernel: sys_yield&quot;);</span>
     <span class="ident">suspend_current_and_run_next</span>();
     <span class="number">0</span>
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_getpid</span>() -&gt; <span class="ident">isize</span> {
+	<span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_getpid pid:{}&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_fork</span>() -&gt; <span class="ident">isize</span> {
+	<span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_fork&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">current_task</span> <span class="op">=</span> <span class="ident">current_task</span>().<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">new_task</span> <span class="op">=</span> <span class="ident">current_task</span>.<span class="ident">fork</span>();
     <span class="kw">let</span> <span class="ident">new_pid</span> <span class="op">=</span> <span class="ident">new_task</span>.<span class="ident">pid</span>.<span class="number">0</span>;
@@ -308,6 +329,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exec</span>(<span class="ident">path</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="kw-2">*const</span> <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_exec&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">translated_str</span>(<span class="ident">token</span>, <span class="ident">path</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
@@ -336,6 +358,7 @@
 <span class="doccomment">/// If there is not a child process whose pid is same as given, return -1.</span>
 <span class="doccomment">/// Else if there is a child process but it is still running, return -2.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_waitpid</span>(<span class="ident">pid</span>: <span class="ident">isize</span>, <span class="ident">exit_code_ptr</span>: <span class="kw-2">*mut</span> <span class="ident">i32</span>) -&gt; <span class="ident">isize</span> {
+	<span class="comment">//trace!(&quot;kernel: sys_waitpid&quot;);</span>
     <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">current_task</span>().<span class="ident">unwrap</span>();
     <span class="comment">// find a child process</span>
 
@@ -371,6 +394,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_kill</span>(<span class="ident">pid</span>: <span class="ident">usize</span>, <span class="ident">signum</span>: <span class="ident">i32</span>) -&gt; <span class="ident">isize</span> {
+	<span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_kill&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>) <span class="op">=</span> <span class="ident">pid2task</span>(<span class="ident">pid</span>) {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">flag</span>) <span class="op">=</span> <span class="ident">SignalFlags::from_bits</span>(<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">signum</span>) {
             <span class="comment">// insert the signal if legal</span>
@@ -392,6 +416,7 @@
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TimeVal`] is splitted by two pages ?</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_get_time</span>(<span class="ident">_ts</span>: <span class="kw-2">*mut</span> <span class="ident">TimeVal</span>, <span class="ident">_tz</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_get_time NOT IMPLEMENTED&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
@@ -399,21 +424,25 @@
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TaskInfo`] is splitted by two pages ?</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_task_info</span>(<span class="ident">_ti</span>: <span class="kw-2">*mut</span> <span class="ident">TaskInfo</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_task_info NOT IMPLEMENTED&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="doccomment">/// YOUR JOB: Implement mmap.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_mmap</span>(<span class="ident">_start</span>: <span class="ident">usize</span>, <span class="ident">_len</span>: <span class="ident">usize</span>, <span class="ident">_port</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_mmap NOT IMPLEMENTED&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="doccomment">/// YOUR JOB: Implement munmap.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_munmap</span>(<span class="ident">_start</span>: <span class="ident">usize</span>, <span class="ident">_len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_munmap NOT IMPLEMENTED&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="doccomment">/// change data segment size</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_sbrk</span>(<span class="ident">size</span>: <span class="ident">i32</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_sbrk&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old_brk</span>) <span class="op">=</span> <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">change_program_brk</span>(<span class="ident">size</span>) {
         <span class="ident">old_brk</span> <span class="kw">as</span> <span class="ident">isize</span>
     } <span class="kw">else</span> {
@@ -424,15 +453,18 @@
 <span class="doccomment">/// YOUR JOB: Implement spawn.</span>
 <span class="doccomment">/// HINT: fork + exec =/= spawn</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_spawn</span>(<span class="ident">_path</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_spawn NOT IMPLEMENTED&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="comment">// YOUR JOB: Set task priority.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_set_priority</span>(<span class="ident">_prio</span>: <span class="ident">isize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_set_priority NOT IMPLEMENTED&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_sigprocmask</span>(<span class="ident">mask</span>: <span class="ident">u32</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_sigprocmask&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>) <span class="op">=</span> <span class="ident">current_task</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">task</span>.<span class="ident">inner_exclusive_access</span>();
         <span class="kw">let</span> <span class="ident">old_mask</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">signal_mask</span>;
@@ -448,6 +480,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_sigreturn</span>() -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_sigreturn&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">task</span>) <span class="op">=</span> <span class="ident">current_task</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">task</span>.<span class="ident">inner_exclusive_access</span>();
         <span class="ident">inner</span>.<span class="ident">handling_sig</span> <span class="op">=</span> <span class="op">-</span><span class="number">1</span>;
@@ -480,6 +513,7 @@
     <span class="ident">action</span>: <span class="kw-2">*const</span> <span class="ident">SignalAction</span>,
     <span class="ident">old_action</span>: <span class="kw-2">*mut</span> <span class="ident">SignalAction</span>,
 ) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_sigaction&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">current_task</span>().<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">task</span>.<span class="ident">inner_exclusive_access</span>();

@@ -162,7 +162,7 @@
 
 <span class="kw">mod</span> <span class="ident">context</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">TRAMPOLINE</span>, <span class="ident">TRAP_CONTEXT</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">TRAMPOLINE</span>, <span class="ident">TRAP_CONTEXT_BASE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::syscall::syscall</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{
     <span class="ident">check_signals_error_of_current</span>, <span class="ident">current_add_signal</span>, <span class="ident">current_trap_cx</span>, <span class="ident">current_user_token</span>,
@@ -208,6 +208,7 @@
     <span class="ident">set_kernel_trap_entry</span>();
     <span class="kw">let</span> <span class="ident">scause</span> <span class="op">=</span> <span class="ident">scause::read</span>();
     <span class="kw">let</span> <span class="ident">stval</span> <span class="op">=</span> <span class="ident">stval::read</span>();
+    <span class="comment">// trace!(&quot;into {:?}&quot;, scause.cause());</span>
     <span class="kw">match</span> <span class="ident">scause</span>.<span class="ident">cause</span>() {
         <span class="ident">Trap::Exception</span>(<span class="ident">Exception::UserEnvCall</span>) =&gt; {
             <span class="comment">// jump to next instruction anyway</span>
@@ -225,14 +226,12 @@
         <span class="op">|</span> <span class="ident">Trap::Exception</span>(<span class="ident">Exception::InstructionPageFault</span>)
         <span class="op">|</span> <span class="ident">Trap::Exception</span>(<span class="ident">Exception::LoadFault</span>)
         <span class="op">|</span> <span class="ident">Trap::Exception</span>(<span class="ident">Exception::LoadPageFault</span>) =&gt; {
-            <span class="comment">/*
-            println!(
-                &quot;[kernel] {:?} in application, bad addr = {:#x}, bad instruction = {:#x}, kernel killed it.&quot;,
-                scause.cause(),
-                stval,
-                current_trap_cx().sepc,
+            <span class="macro">error!</span>(
+                <span class="string">&quot;[kernel] trap_handler: {:?} in application, bad addr = {:#x}, bad instruction = {:#x}, kernel killed it.&quot;</span>,
+                <span class="ident">scause</span>.<span class="ident">cause</span>(),
+                <span class="ident">stval</span>,
+                <span class="ident">current_trap_cx</span>().<span class="ident">sepc</span>,
             );
-            */</span>
             <span class="ident">current_add_signal</span>(<span class="ident">SignalFlags::SIGSEGV</span>);
         }
         <span class="ident">Trap::Exception</span>(<span class="ident">Exception::IllegalInstruction</span>) =&gt; {
@@ -251,12 +250,12 @@
         }
     }
     <span class="comment">// handle signals (handle the sent signal)</span>
-    <span class="comment">//println!(&quot;[K] trap_handler:: handle_signals&quot;);</span>
+    <span class="comment">// trace!(&quot;[kernel] trap_handler:: handle_signals&quot;);</span>
     <span class="ident">handle_signals</span>();
 
     <span class="comment">// check error signals (if error then exit)</span>
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">errno</span>, <span class="ident">msg</span>)) <span class="op">=</span> <span class="ident">check_signals_error_of_current</span>() {
-        <span class="macro">println!</span>(<span class="string">&quot;[kernel] {}&quot;</span>, <span class="ident">msg</span>);
+        <span class="macro">trace!</span>(<span class="string">&quot;[kernel] trap_handler: .. check signals {}&quot;</span>, <span class="ident">msg</span>);
         <span class="ident">exit_current_and_run_next</span>(<span class="ident">errno</span>);
     }
     <span class="ident">trap_return</span>();
@@ -266,13 +265,14 @@
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trap_return</span>() -&gt; <span class="op">!</span> {
     <span class="ident">set_user_trap_entry</span>();
-    <span class="kw">let</span> <span class="ident">trap_cx_ptr</span> <span class="op">=</span> <span class="ident">TRAP_CONTEXT</span>;
+    <span class="kw">let</span> <span class="ident">trap_cx_ptr</span> <span class="op">=</span> <span class="ident">TRAP_CONTEXT_BASE</span>;
     <span class="kw">let</span> <span class="ident">user_satp</span> <span class="op">=</span> <span class="ident">current_user_token</span>();
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
         <span class="kw">fn</span> <span class="ident">__alltraps</span>();
         <span class="kw">fn</span> <span class="ident">__restore</span>();
     }
     <span class="kw">let</span> <span class="ident">restore_va</span> <span class="op">=</span> <span class="ident">__restore</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="ident">__alltraps</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="ident">TRAMPOLINE</span>;
+    <span class="comment">// trace!(&quot;[kernel] trap_return: ..before return&quot;);</span>
     <span class="kw">unsafe</span> {
         <span class="macro">asm!</span>(
             <span class="string">&quot;fence.i&quot;</span>,
@@ -289,7 +289,7 @@
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trap_from_kernel</span>() -&gt; <span class="op">!</span> {
     <span class="kw">use</span> <span class="ident">riscv::register::sepc</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;stval = {:#x}, sepc = {:#x}&quot;</span>, <span class="ident">stval::read</span>(), <span class="ident">sepc::read</span>());
+    <span class="macro">trace!</span>(<span class="string">&quot;stval = {:#x}, sepc = {:#x}&quot;</span>, <span class="ident">stval::read</span>(), <span class="ident">sepc::read</span>());
     <span class="macro">panic!</span>(<span class="string">&quot;a trap {:?} from kernel!&quot;</span>, <span class="ident">scause::read</span>().<span class="ident">cause</span>());
 }
 
