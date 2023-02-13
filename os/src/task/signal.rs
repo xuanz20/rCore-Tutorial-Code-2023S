@@ -89,7 +89,7 @@ impl SignalFlags {
         } else if self.contains(Self::SIGSEGV) {
             Some((-11, "Segmentation Fault, SIGSEGV=11"))
         } else {
-            //println!("[K] signalflags check_error  {:?}", self);
+            // warn!("[kernel] signalflags check_error  {:?}", self);
             None
         }
     }

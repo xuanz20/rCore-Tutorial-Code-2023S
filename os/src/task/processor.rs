@@ -59,6 +59,7 @@ pub fn run_tasks() {
             let mut task_inner = task.inner_exclusive_access();
             let next_task_cx_ptr = &task_inner.task_cx as *const TaskContext;
             task_inner.task_status = TaskStatus::Running;
+            // release coming task_inner manually
             drop(task_inner);
             // release coming task TCB manually
             processor.current = Some(task);
@@ -67,6 +68,8 @@ pub fn run_tasks() {
             unsafe {
                 __switch(idle_task_cx_ptr, next_task_cx_ptr);
             }
+        } else {
+            warn!("no tasks available in run_tasks");
         }
     }
 }
@@ -81,11 +84,10 @@ pub fn current_task() -> Option<Arc<TaskControlBlock>> {
     PROCESSOR.exclusive_access().current()
 }
 
-/// Get token of the address space of current task
+/// Get the current user token(addr of page table)
 pub fn current_user_token() -> usize {
     let task = current_task().unwrap();
-    let token = task.inner_exclusive_access().get_user_token();
-    token
+    task.get_user_token()
 }
 
 /// Get the mutable reference to trap context of current task

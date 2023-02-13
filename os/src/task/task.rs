@@ -1,8 +1,8 @@
 //! Types related to task management & Functions for completely changing TCB
 
-use super::{pid_alloc, KernelStack, PidHandle, SignalActions, SignalFlags, TaskContext};
+use super::{kstack_alloc, pid_alloc, KernelStack, PidHandle, SignalActions, SignalFlags, TaskContext};
 use crate::{
-    config::TRAP_CONTEXT,
+    config::TRAP_CONTEXT_BASE,
     fs::{File, Stdin, Stdout},
     mm::{translated_refmut, MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE},
     sync::UPSafeCell,
@@ -27,8 +27,20 @@ pub struct TaskControlBlock {
     /// Kernel stack corresponding to PID
     pub kernel_stack: KernelStack,
 
-    // Mutable
+    /// Mutable
     inner: UPSafeCell<TaskControlBlockInner>,
+}
+
+impl TaskControlBlock {
+    /// Get the mutable reference of the inner TCB
+    pub fn inner_exclusive_access(&self) -> RefMut<'_, TaskControlBlockInner> {
+        self.inner.exclusive_access()
+    }
+    /// Get the address of app's page table
+    pub fn get_user_token(&self) -> usize {
+        let inner = self.inner_exclusive_access();
+        inner.memory_set.token()
+    }
 }
 
 pub struct TaskControlBlockInner {
@@ -101,11 +113,6 @@ impl TaskControlBlockInner {
 }
 
 impl TaskControlBlock {
-    /// Get the mutex to get the RefMut [`TaskControlBlockInner`].
-    pub fn inner_exclusive_access(&self) -> RefMut<'_, TaskControlBlockInner> {
-        self.inner.exclusive_access()
-    }
-
     /// Create a new process
     ///
     /// At present, it is only used for the creation of initproc
@@ -113,12 +120,12 @@ impl TaskControlBlock {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
         // alloc a pid and a kernel stack in kernel space
         let pid_handle = pid_alloc();
-        let kernel_stack = KernelStack::new(&pid_handle);
+        let kernel_stack = kstack_alloc();
         let kernel_stack_top = kernel_stack.get_top();
         let task_control_block = Self {
             pid: pid_handle,
@@ -170,7 +177,7 @@ impl TaskControlBlock {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, mut user_sp, entry_point) = MemorySet::from_elf(elf_data);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
         // push arguments on user stack
@@ -225,12 +232,12 @@ impl TaskControlBlock {
         // copy user space(include trap context)
         let memory_set = MemorySet::from_existed_user(&parent_inner.memory_set);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
         // alloc a pid and a kernel stack in kernel space
         let pid_handle = pid_alloc();
-        let kernel_stack = KernelStack::new(&pid_handle);
+        let kernel_stack = kstack_alloc();
         let kernel_stack_top = kernel_stack.get_top();
         // copy fd table
         let mut new_fd_table: Vec<Option<Arc<dyn File + Send + Sync>>> = Vec::new();

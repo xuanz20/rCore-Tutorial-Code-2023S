@@ -30,20 +30,24 @@ pub struct TaskInfo {
 }
 
 pub fn sys_exit(exit_code: i32) -> ! {
+    trace!("kernel:pid[{}] sys_exit",current_task().unwrap().pid.0);
     exit_current_and_run_next(exit_code);
     panic!("Unreachable in sys_exit!");
 }
 
 pub fn sys_yield() -> isize {
+    //trace!("kernel: sys_yield");
     suspend_current_and_run_next();
     0
 }
 
 pub fn sys_getpid() -> isize {
+	trace!("kernel: sys_getpid pid:{}", current_task().unwrap().pid.0);
     current_task().unwrap().pid.0 as isize
 }
 
 pub fn sys_fork() -> isize {
+	trace!("kernel:pid[{}] sys_fork", current_task().unwrap().pid.0);
     let current_task = current_task().unwrap();
     let new_task = current_task.fork();
     let new_pid = new_task.pid.0;
@@ -58,6 +62,7 @@ pub fn sys_fork() -> isize {
 }
 
 pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
+    trace!("kernel:pid[{}] sys_exec", current_task().unwrap().pid.0);
     let token = current_user_token();
     let path = translated_str(token, path);
     let mut args_vec: Vec<String> = Vec::new();
@@ -86,6 +91,7 @@ pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
 /// If there is not a child process whose pid is same as given, return -1.
 /// Else if there is a child process but it is still running, return -2.
 pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
+	//trace!("kernel: sys_waitpid");
     let task = current_task().unwrap();
     // find a child process
 
@@ -121,6 +127,7 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
 }
 
 pub fn sys_kill(pid: usize, signum: i32) -> isize {
+	trace!("kernel:pid[{}] sys_kill", current_task().unwrap().pid.0);
     if let Some(task) = pid2task(pid) {
         if let Some(flag) = SignalFlags::from_bits(1 << signum) {
             // insert the signal if legal
@@ -142,6 +149,7 @@ pub fn sys_kill(pid: usize, signum: i32) -> isize {
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TimeVal`] is splitted by two pages ?
 pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
+    trace!("kernel:pid[{}] sys_get_time NOT IMPLEMENTED", current_task().unwrap().pid.0);
     -1
 }
 
@@ -149,21 +157,25 @@ pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TaskInfo`] is splitted by two pages ?
 pub fn sys_task_info(_ti: *mut TaskInfo) -> isize {
+    trace!("kernel:pid[{}] sys_task_info NOT IMPLEMENTED", current_task().unwrap().pid.0);
     -1
 }
 
 /// YOUR JOB: Implement mmap.
 pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
+    trace!("kernel:pid[{}] sys_mmap NOT IMPLEMENTED", current_task().unwrap().pid.0);
     -1
 }
 
 /// YOUR JOB: Implement munmap.
 pub fn sys_munmap(_start: usize, _len: usize) -> isize {
+    trace!("kernel:pid[{}] sys_munmap NOT IMPLEMENTED", current_task().unwrap().pid.0);
     -1
 }
 
 /// change data segment size
 pub fn sys_sbrk(size: i32) -> isize {
+    trace!("kernel:pid[{}] sys_sbrk", current_task().unwrap().pid.0);
     if let Some(old_brk) = current_task().unwrap().change_program_brk(size) {
         old_brk as isize
     } else {
@@ -174,15 +186,18 @@ pub fn sys_sbrk(size: i32) -> isize {
 /// YOUR JOB: Implement spawn.
 /// HINT: fork + exec =/= spawn
 pub fn sys_spawn(_path: *const u8) -> isize {
+    trace!("kernel:pid[{}] sys_spawn NOT IMPLEMENTED", current_task().unwrap().pid.0);
     -1
 }
 
 // YOUR JOB: Set task priority.
 pub fn sys_set_priority(_prio: isize) -> isize {
+    trace!("kernel:pid[{}] sys_set_priority NOT IMPLEMENTED", current_task().unwrap().pid.0);
     -1
 }
 
 pub fn sys_sigprocmask(mask: u32) -> isize {
+    trace!("kernel:pid[{}] sys_sigprocmask", current_task().unwrap().pid.0);
     if let Some(task) = current_task() {
         let mut inner = task.inner_exclusive_access();
         let old_mask = inner.signal_mask;
@@ -198,6 +213,7 @@ pub fn sys_sigprocmask(mask: u32) -> isize {
 }
 
 pub fn sys_sigreturn() -> isize {
+    trace!("kernel:pid[{}] sys_sigreturn", current_task().unwrap().pid.0);
     if let Some(task) = current_task() {
         let mut inner = task.inner_exclusive_access();
         inner.handling_sig = -1;
@@ -230,6 +246,7 @@ pub fn sys_sigaction(
     action: *const SignalAction,
     old_action: *mut SignalAction,
 ) -> isize {
+    trace!("kernel:pid[{}] sys_sigaction", current_task().unwrap().pid.0);
     let token = current_user_token();
     let task = current_task().unwrap();
     let mut inner = task.inner_exclusive_access();
