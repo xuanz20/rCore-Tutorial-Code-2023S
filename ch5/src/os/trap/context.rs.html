@@ -46,32 +46,34 @@
 <span id="46">46</span>
 <span id="47">47</span>
 <span id="48">48</span>
+<span id="49">49</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of [`TrapContext`]</span>
 <span class="kw">use</span> <span class="ident">riscv::register::sstatus</span>::{<span class="self">self</span>, <span class="ident">Sstatus</span>, <span class="ident">SPP</span>};
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">///trap context structure containing sstatus, sepc and registers</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TrapContext</span> {
-    <span class="doccomment">/// general regs[0..31]</span>
+    <span class="doccomment">/// General-Purpose Register x0-31</span>
     <span class="kw">pub</span> <span class="ident">x</span>: [<span class="ident">usize</span>; <span class="number">32</span>],
-    <span class="doccomment">/// CSR sstatus      </span>
+    <span class="doccomment">/// Supervisor Status Register</span>
     <span class="kw">pub</span> <span class="ident">sstatus</span>: <span class="ident">Sstatus</span>,
-    <span class="doccomment">/// CSR sepc</span>
+    <span class="doccomment">/// Supervisor Exception Program Counter</span>
     <span class="kw">pub</span> <span class="ident">sepc</span>: <span class="ident">usize</span>,
-    <span class="doccomment">/// Addr of Page Table</span>
+    <span class="doccomment">/// Token of kernel address space</span>
     <span class="kw">pub</span> <span class="ident">kernel_satp</span>: <span class="ident">usize</span>,
-    <span class="doccomment">/// kernel stack</span>
+    <span class="doccomment">/// Kernel stack pointer of the current application</span>
     <span class="kw">pub</span> <span class="ident">kernel_sp</span>: <span class="ident">usize</span>,
-    <span class="doccomment">/// Addr of trap_handler function</span>
+    <span class="doccomment">/// Virtual address of trap handler entry point in kernel</span>
     <span class="kw">pub</span> <span class="ident">trap_handler</span>: <span class="ident">usize</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">TrapContext</span> {
-    <span class="doccomment">///set stack pointer to x_2 reg (sp)</span>
+    <span class="doccomment">/// put the sp(stack pointer) into x\[2\] field of TrapContext</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_sp</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">sp</span>: <span class="ident">usize</span>) {
         <span class="self">self</span>.<span class="ident">x</span>[<span class="number">2</span>] <span class="op">=</span> <span class="ident">sp</span>;
     }
-    <span class="doccomment">///init app context</span>
+    <span class="doccomment">/// init the trap context of an application</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">app_init_context</span>(
         <span class="ident">entry</span>: <span class="ident">usize</span>,
         <span class="ident">sp</span>: <span class="ident">usize</span>,
@@ -85,13 +87,13 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cx</span> <span class="op">=</span> <span class="self">Self</span> {
             <span class="ident">x</span>: [<span class="number">0</span>; <span class="number">32</span>],
             <span class="ident">sstatus</span>,
-            <span class="ident">sepc</span>: <span class="ident">entry</span>,
-            <span class="ident">kernel_satp</span>,
-            <span class="ident">kernel_sp</span>,
-            <span class="ident">trap_handler</span>,
+            <span class="ident">sepc</span>: <span class="ident">entry</span>,  <span class="comment">// entry point of app</span>
+            <span class="ident">kernel_satp</span>,  <span class="comment">// addr of page table</span>
+            <span class="ident">kernel_sp</span>,    <span class="comment">// kernel stack</span>
+            <span class="ident">trap_handler</span>, <span class="comment">// addr of trap_handler function</span>
         };
-        <span class="ident">cx</span>.<span class="ident">set_sp</span>(<span class="ident">sp</span>);
-        <span class="ident">cx</span>
+        <span class="ident">cx</span>.<span class="ident">set_sp</span>(<span class="ident">sp</span>); <span class="comment">// app&#39;s user stack pointer</span>
+        <span class="ident">cx</span> <span class="comment">// return initial Trap Context of app</span>
     }
 }
 </code></pre></div>

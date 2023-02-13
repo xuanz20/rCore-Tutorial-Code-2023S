@@ -47,15 +47,20 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
 </pre><pre class="rust"><code><span class="doccomment">//! File and filesystem-related syscalls</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::translated_byte_buffer</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sbi::console_getchar</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_user_token</span>, <span class="ident">suspend_current_and_run_next</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_task</span>, <span class="ident">current_user_token</span>, <span class="ident">suspend_current_and_run_next</span>};
 
 <span class="kw">const</span> <span class="ident">FD_STDIN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 <span class="kw">const</span> <span class="ident">FD_STDOUT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1</span>;
 
+<span class="doccomment">/// write buf of length `len`  to a file with `fd`</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_write</span>(<span class="ident">fd</span>: <span class="ident">usize</span>, <span class="ident">buf</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_write&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">match</span> <span class="ident">fd</span> {
         <span class="ident">FD_STDOUT</span> =&gt; {
             <span class="kw">let</span> <span class="ident">buffers</span> <span class="op">=</span> <span class="ident">translated_byte_buffer</span>(<span class="ident">current_user_token</span>(), <span class="ident">buf</span>, <span class="ident">len</span>);
@@ -71,6 +76,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_read</span>(<span class="ident">fd</span>: <span class="ident">usize</span>, <span class="ident">buf</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel:pid[{}] sys_read&quot;</span>, <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">pid</span>.<span class="number">0</span>);
     <span class="kw">match</span> <span class="ident">fd</span> {
         <span class="ident">FD_STDIN</span> =&gt; {
             <span class="macro">assert_eq!</span>(<span class="ident">len</span>, <span class="number">1</span>, <span class="string">&quot;Only support len = 1 in sys_read!&quot;</span>);

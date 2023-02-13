@@ -53,7 +53,7 @@
             <span class="ident">inner</span>: <span class="ident">RefCell::new</span>(<span class="ident">value</span>),
         }
     }
-    <span class="doccomment">/// Exclusive access inner data in UPSafeCell. Panic if the data has been borrowed.</span>
+    <span class="doccomment">/// Panic if the data has been borrowed.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exclusive_access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RefMut</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">borrow_mut</span>()
     }

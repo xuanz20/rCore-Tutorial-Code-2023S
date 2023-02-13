@@ -113,6 +113,8 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Task management implementation</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Everything about task management, like starting and switching tasks is</span>
@@ -124,14 +126,13 @@
 <span class="doccomment">//! A single global instance of [`Processor`] called `PROCESSOR` monitors running</span>
 <span class="doccomment">//! task(s) for each core.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! A single global instance of [`PidAllocator`] called `PID_ALLOCATOR` allocates</span>
-<span class="doccomment">//! pid for user apps.</span>
+<span class="doccomment">//! A single global instance of `PID_ALLOCATOR` allocates pid for user apps.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Be careful when you see `__switch` ASM function in `switch.S`. Control flow around this function</span>
 <span class="doccomment">//! might not be what you expect.</span>
 <span class="kw">mod</span> <span class="ident">context</span>;
+<span class="kw">mod</span> <span class="ident">id</span>;
 <span class="kw">mod</span> <span class="ident">manager</span>;
-<span class="kw">mod</span> <span class="ident">pid</span>;
 <span class="kw">mod</span> <span class="ident">processor</span>;
 <span class="kw">mod</span> <span class="ident">switch</span>;
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::module_inception</span>)]</span>
@@ -145,8 +146,8 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">task</span>::{<span class="ident">TaskControlBlock</span>, <span class="ident">TaskStatus</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">context::TaskContext</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">id</span>::{<span class="ident">kstack_alloc</span>, <span class="ident">pid_alloc</span>, <span class="ident">KernelStack</span>, <span class="ident">PidHandle</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">manager::add_task</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pid</span>::{<span class="ident">pid_alloc</span>, <span class="ident">KernelStack</span>, <span class="ident">PidAllocator</span>, <span class="ident">PidHandle</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">processor</span>::{
     <span class="ident">current_task</span>, <span class="ident">current_trap_cx</span>, <span class="ident">current_user_token</span>, <span class="ident">run_tasks</span>, <span class="ident">schedule</span>, <span class="ident">take_current_task</span>,
     <span class="ident">Processor</span>,
@@ -218,7 +219,10 @@
 }
 
 <span class="macro">lazy_static!</span> {
-    <span class="doccomment">///Globle process that init user shell</span>
+    <span class="doccomment">/// Creation of initial process</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// the name &quot;initproc&quot; may be changed to any other app name like &quot;usertests&quot;,</span>
+    <span class="doccomment">/// but we have user_shell, so we don&#39;t need to change it.</span>
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">INITPROC</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">TaskControlBlock::new</span>(
         <span class="ident">get_app_data_by_name</span>(<span class="string">&quot;ch5b_initproc&quot;</span>).<span class="ident">unwrap</span>()
     ));

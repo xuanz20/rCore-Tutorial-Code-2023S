@@ -51,19 +51,19 @@
     <span class="ident">Stdout</span>.<span class="ident">write_fmt</span>(<span class="ident">args</span>).<span class="ident">unwrap</span>();
 }
 
+<span class="doccomment">/// Print! to the host console using the format string and arguments.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="doccomment">/// print string macro</span>
 <span class="macro">macro_rules!</span> <span class="ident">print</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fmt</span>: <span class="ident">literal</span> $(, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>: <span class="ident">tt</span>)<span class="op">+</span>)<span class="question-mark">?</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::console::print</span>(<span class="macro">format_args!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fmt</span> $(, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="op">+</span>)<span class="question-mark">?</span>));
+        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::console::print</span>(<span class="macro">format_args!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fmt</span> $(, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="op">+</span>)<span class="question-mark">?</span>))
     }
 }
 
+<span class="doccomment">/// Println! to the host console using the format string and arguments.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="doccomment">/// println string macro</span>
 <span class="macro">macro_rules!</span> <span class="ident">println</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fmt</span>: <span class="ident">literal</span> $(, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>: <span class="ident">tt</span>)<span class="op">+</span>)<span class="question-mark">?</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::console::print</span>(<span class="macro">format_args!</span>(<span class="macro">concat!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fmt</span>, <span class="string">&quot;\n&quot;</span>) $(, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="op">+</span>)<span class="question-mark">?</span>));
+        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::console::print</span>(<span class="macro">format_args!</span>(<span class="macro">concat!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fmt</span>, <span class="string">&quot;\n&quot;</span>) $(, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="op">+</span>)<span class="question-mark">?</span>))
     }
 }
 </code></pre></div>
