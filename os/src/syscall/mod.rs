@@ -14,6 +14,7 @@ const SYSCALL_WRITE: usize = 64;
 const SYSCALL_EXIT: usize = 93;
 /// yield syscall
 const SYSCALL_YIELD: usize = 124;
+/// gettime syscall
 const SYSCALL_GET_TIME: usize = 169;
 /// sbrk syscall
 const SYSCALL_SBRK: usize = 214;
