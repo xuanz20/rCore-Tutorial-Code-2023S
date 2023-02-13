@@ -36,16 +36,16 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="doccomment">/// task context structure containing some registers</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TaskContext</span> {
-    <span class="doccomment">/// return address ( e.g. __restore ) of __switch ASM function</span>
+    <span class="doccomment">/// Ret position after task switching</span>
     <span class="ident">ra</span>: <span class="ident">usize</span>,
-    <span class="doccomment">/// kernel stack pointer of app</span>
+    <span class="doccomment">/// Stack pointer</span>
     <span class="ident">sp</span>: <span class="ident">usize</span>,
-    <span class="doccomment">/// callee saved registers:  s 0..11</span>
+    <span class="doccomment">/// s0-11 register, callee saved</span>
     <span class="ident">s</span>: [<span class="ident">usize</span>; <span class="number">12</span>],
 }
 
 <span class="kw">impl</span> <span class="ident">TaskContext</span> {
-    <span class="doccomment">/// init task context</span>
+    <span class="doccomment">/// Create a new empty task context</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">zero_init</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">ra</span>: <span class="number">0</span>,
@@ -53,7 +53,7 @@
             <span class="ident">s</span>: [<span class="number">0</span>; <span class="number">12</span>],
         }
     }
-    <span class="doccomment">/// set Task Context{__restore ASM funciton: trap_return, sp: kstack_ptr, s: s_0..12}</span>
+    <span class="doccomment">/// Create a new task context with a trap return addr and a kernel stack pointer</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">goto_trap_return</span>(<span class="ident">kstack_ptr</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">ra</span>: <span class="ident">trap_return</span> <span class="kw">as</span> <span class="ident">usize</span>,

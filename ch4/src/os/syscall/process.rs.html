@@ -68,6 +68,7 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
+<span id="71">71</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Process management syscalls</span>
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">config::MAX_SYSCALL_NUM</span>,
@@ -95,14 +96,15 @@
 }
 
 <span class="doccomment">/// task exits and submit an exit code</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exit</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) -&gt; <span class="op">!</span> {
-    <span class="macro">println!</span>(<span class="string">&quot;[kernel] Application exited with code {}&quot;</span>, <span class="ident">exit_code</span>);
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exit</span>(<span class="ident">_exit_code</span>: <span class="ident">i32</span>) -&gt; <span class="op">!</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_exit&quot;</span>);
     <span class="ident">exit_current_and_run_next</span>();
     <span class="macro">panic!</span>(<span class="string">&quot;Unreachable in sys_exit!&quot;</span>);
 }
 
 <span class="doccomment">/// current task gives up resources for other tasks</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_yield</span>() -&gt; <span class="ident">isize</span> {
+    <span class="comment">//trace!(&quot;kernel: sys_yield&quot;);</span>
     <span class="ident">suspend_current_and_run_next</span>();
     <span class="number">0</span>
 }
