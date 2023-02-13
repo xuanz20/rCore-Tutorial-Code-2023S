@@ -11,7 +11,7 @@
 
 <span class="doccomment">/// task exits and submit an exit code</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exit</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) -&gt; <span class="op">!</span> {
-    <span class="macro">println!</span>(<span class="string">&quot;[kernel] Application exited with code {}&quot;</span>, <span class="ident">exit_code</span>);
+    <span class="macro">trace!</span>(<span class="string">&quot;[kernel] Application exited with code {}&quot;</span>, <span class="ident">exit_code</span>);
     <span class="ident">run_next_app</span>()
 }
 </code></pre></div>
