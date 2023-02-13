@@ -13,6 +13,8 @@ use alloc::vec::Vec;
 use bitflags::*;
 use easy_fs::{EasyFileSystem, Inode};
 use lazy_static::*;
+
+/// inode in memory
 /// A wrapper around a filesystem inode
 /// to implement File trait atop
 pub struct OSInode {
@@ -27,7 +29,7 @@ pub struct OSInodeInner {
 }
 
 impl OSInode {
-    /// Construct an OS inode from a inode
+    /// create a new inode in memory
     pub fn new(readable: bool, writable: bool, inode: Arc<Inode>) -> Self {
         Self {
             readable,
@@ -35,7 +37,7 @@ impl OSInode {
             inner: unsafe { UPSafeCell::new(OSInodeInner { offset: 0, inode }) },
         }
     }
-    /// Read all data inside a inode into vector
+    /// read all data from the inode
     pub fn read_all(&self) -> Vec<u8> {
         let mut inner = self.inner.exclusive_access();
         let mut buffer = [0u8; 512];
@@ -58,7 +60,8 @@ lazy_static! {
         Arc::new(EasyFileSystem::root_inode(&efs))
     };
 }
-/// List all files in the filesystems
+
+/// List all apps in the root directory
 pub fn list_apps() {
     println!("/**** APPS ****");
     for app in ROOT_INODE.ls() {
@@ -68,17 +71,17 @@ pub fn list_apps() {
 }
 
 bitflags! {
-    ///Open file flags
+    ///  The flags argument to the open() system call is constructed by ORing together zero or more of the following values:
     pub struct OpenFlags: u32 {
-        ///Read only
+        /// readyonly
         const RDONLY = 0;
-        ///Write only
+        /// writeonly
         const WRONLY = 1 << 0;
-        ///Read & Write
+        /// read and write
         const RDWR = 1 << 1;
-        ///Allow create
+        /// create new file
         const CREATE = 1 << 9;
-        ///Clear file and return an empty one
+        /// truncate file size to 0
         const TRUNC = 1 << 10;
     }
 }
@@ -96,7 +99,8 @@ impl OpenFlags {
         }
     }
 }
-///Open file with flags
+
+/// Open a file
 pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
     let (readable, writable) = flags.read_write();
     if flags.contains(OpenFlags::CREATE) {
@@ -106,9 +110,9 @@ pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
             Some(Arc::new(OSInode::new(readable, writable, inode)))
         } else {
             // create file
-            ROOT_INODE.create(name).map(|inode| {
-                Arc::new(OSInode::new(readable, writable, inode))
-            })
+            ROOT_INODE
+                .create(name)
+                .map(|inode| Arc::new(OSInode::new(readable, writable, inode)))
         }
     } else {
         ROOT_INODE.find(name).map(|inode| {

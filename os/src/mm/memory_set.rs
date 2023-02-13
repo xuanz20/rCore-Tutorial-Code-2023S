@@ -3,7 +3,7 @@ use super::{frame_alloc, FrameTracker};
 use super::{PTEFlags, PageTable, PageTableEntry};
 use super::{PhysAddr, PhysPageNum, VirtAddr, VirtPageNum};
 use super::{StepByOne, VPNRange};
-use crate::config::{MEMORY_END, MMIO, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT, USER_STACK_SIZE};
+use crate::config::{MEMORY_END, MMIO, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT_BASE, USER_STACK_SIZE};
 use crate::sync::UPSafeCell;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
@@ -26,29 +26,31 @@ extern "C" {
 }
 
 lazy_static! {
-    /// a memory set instance through lazy_static! managing kernel space
+    /// The kernel's initial memory mapping(kernel address space)
     pub static ref KERNEL_SPACE: Arc<UPSafeCell<MemorySet>> =
         Arc::new(unsafe { UPSafeCell::new(MemorySet::new_kernel()) });
 }
-///Get kernelspace root ppn
+
+/// the kernel token
 pub fn kernel_token() -> usize {
     KERNEL_SPACE.exclusive_access().token()
 }
-/// memory set structure, controls virtual-memory space
+
+/// address space
 pub struct MemorySet {
     page_table: PageTable,
     areas: Vec<MapArea>,
 }
 
 impl MemorySet {
-    ///Create an empty `MemorySet`
+    /// Create a new empty `MemorySet`.
     pub fn new_bare() -> Self {
         Self {
             page_table: PageTable::new(),
             areas: Vec::new(),
         }
     }
-    ///Get pagetable `root_ppn`
+    /// Get the page table token
     pub fn token(&self) -> usize {
         self.page_table.token()
     }
@@ -64,7 +66,7 @@ impl MemorySet {
             None,
         );
     }
-    ///Remove `MapArea` that starts with `start_vpn`
+    /// remove a area
     pub fn remove_area_with_start_vpn(&mut self, start_vpn: VirtPageNum) {
         if let Some((idx, area)) = self
             .areas
@@ -76,6 +78,9 @@ impl MemorySet {
             self.areas.remove(idx);
         }
     }
+    /// Add a new MapArea into this MemorySet.
+    /// Assuming that there are no conflicts in the virtual address
+    /// space.
     fn push(&mut self, mut map_area: MapArea, data: Option<&[u8]>) {
         map_area.map(&mut self.page_table);
         if let Some(data) = data {
@@ -169,7 +174,7 @@ impl MemorySet {
         memory_set
     }
     /// Include sections in elf and trampoline and TrapContext and user stack,
-    /// also returns user_sp and entry point.
+    /// also returns user_sp_base and entry point.
     pub fn from_elf(elf_data: &[u8]) -> (Self, usize, usize) {
         let mut memory_set = Self::new_bare();
         // map trampoline
@@ -233,7 +238,7 @@ impl MemorySet {
         // map TrapContext
         memory_set.push(
             MapArea::new(
-                TRAP_CONTEXT.into(),
+                TRAP_CONTEXT_BASE.into(),
                 TRAMPOLINE.into(),
                 MapType::Framed,
                 MapPermission::R | MapPermission::W,
@@ -246,7 +251,7 @@ impl MemorySet {
             elf.header.pt2.entry_point() as usize,
         )
     }
-    ///Clone a same `MemorySet`
+    /// Create a new address space by copy code&data from a exited process's address space.
     pub fn from_existed_user(user_space: &MemorySet) -> MemorySet {
         let mut memory_set = Self::new_bare();
         // map trampoline
@@ -266,7 +271,7 @@ impl MemorySet {
         }
         memory_set
     }
-    ///Refresh TLB with `sfence.vma`
+    /// Change page table by writing satp CSR Register.
     pub fn activate(&self) {
         let satp = self.page_table.token();
         unsafe {
@@ -274,7 +279,7 @@ impl MemorySet {
             asm!("sfence.vma");
         }
     }
-    ///Translate throuth pagetable
+    /// Translate a virtual page number to a page table entry
     pub fn translate(&self, vpn: VirtPageNum) -> Option<PageTableEntry> {
         self.page_table.translate(vpn)
     }
@@ -436,8 +441,8 @@ bitflags! {
     }
 }
 
+/// remap test in kernel space
 #[allow(unused)]
-///Check PageTable running correctly
 pub fn remap_test() {
     let mut kernel_space = KERNEL_SPACE.exclusive_access();
     let mid_text: VirtAddr = ((stext as usize + etext as usize) / 2).into();

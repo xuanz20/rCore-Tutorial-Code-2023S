@@ -1,4 +1,9 @@
 //!Implementation of [`Processor`] and Intersection of control flow
+//!
+//! Here, the continuous operation of user apps in CPU is maintained,
+//! the current running state of CPU is recorded,
+//! and the replacement and transfer of control flow of different applications are executed.
+
 use super::__switch;
 use super::{fetch_task, TaskStatus};
 use super::{TaskContext, TaskControlBlock};
@@ -56,6 +61,7 @@ pub fn run_tasks() {
             let mut task_inner = task.inner_exclusive_access();
             let next_task_cx_ptr = &task_inner.task_cx as *const TaskContext;
             task_inner.task_status = TaskStatus::Running;
+            // release coming task_inner manually
             drop(task_inner);
             // release coming task TCB manually
             processor.current = Some(task);
@@ -64,24 +70,26 @@ pub fn run_tasks() {
             unsafe {
                 __switch(idle_task_cx_ptr, next_task_cx_ptr);
             }
+        } else {
+            warn!("no tasks available in run_tasks");
         }
     }
 }
-///Take the current task,leaving a None in its place
+
+/// Get current task through take, leaving a None in its place
 pub fn take_current_task() -> Option<Arc<TaskControlBlock>> {
     PROCESSOR.exclusive_access().take_current()
 }
 
-///Get running task
+/// Get a copy of the current task
 pub fn current_task() -> Option<Arc<TaskControlBlock>> {
     PROCESSOR.exclusive_access().current()
 }
 
-///Get token of the address space of current task
+/// Get the current user token(addr of page table)
 pub fn current_user_token() -> usize {
     let task = current_task().unwrap();
-    let token = task.inner_exclusive_access().get_user_token();
-    token
+    task.get_user_token()
 }
 
 ///Get the mutable reference to trap context of current task

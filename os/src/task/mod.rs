@@ -16,7 +16,7 @@
 //! might not be what you expect.
 mod context;
 mod manager;
-mod pid;
+mod id;
 mod processor;
 mod switch;
 #[allow(clippy::module_inception)]
@@ -32,7 +32,7 @@ use switch::__switch;
 pub use task::{TaskControlBlock, TaskStatus};
 
 pub use manager::add_task;
-pub use pid::{pid_alloc, KernelStack, PidAllocator, PidHandle};
+pub use id::{kstack_alloc, pid_alloc, KernelStack, PidHandle};
 pub use processor::{
     current_task, current_trap_cx, current_user_token, run_tasks, schedule, take_current_task,
     Processor,
@@ -94,6 +94,8 @@ pub fn exit_current_and_run_next(exit_code: i32) {
     inner.children.clear();
     // deallocate user space
     inner.memory_set.recycle_data_pages();
+    // drop file descriptors
+    inner.fd_table.clear();
     drop(inner);
     // **** release current PCB
     // drop task manually to maintain rc correctly

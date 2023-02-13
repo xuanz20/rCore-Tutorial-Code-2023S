@@ -1,17 +1,19 @@
-//! File system in os
+//! File trait & inode(dir, file, pipe, stdin, stdout)
+
 mod inode;
 mod stdio;
 
 use crate::mm::UserBuffer;
-/// File trait
+
+/// trait File for all file types
 pub trait File: Send + Sync {
-    /// If readable
+    /// the file readable?
     fn readable(&self) -> bool;
-    /// If writable
+    /// the file writable?
     fn writable(&self) -> bool;
-    /// Read file to `UserBuffer`
+    /// read from the file to buf, return the number of bytes read
     fn read(&self, buf: UserBuffer) -> usize;
-    /// Write `UserBuffer` to file
+    /// write to the file from buf, return the number of bytes written
     fn write(&self, buf: UserBuffer) -> usize;
 }
 

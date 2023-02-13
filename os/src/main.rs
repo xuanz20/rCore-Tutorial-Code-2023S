@@ -34,11 +34,11 @@ extern crate alloc;
 
 #[macro_use]
 mod console;
-mod config;
-mod drivers;
+pub mod config;
+pub mod drivers;
 pub mod fs;
 pub mod lang_items;
-mod logging;
+pub mod logging;
 pub mod mm;
 pub mod sbi;
 pub mod sync;
