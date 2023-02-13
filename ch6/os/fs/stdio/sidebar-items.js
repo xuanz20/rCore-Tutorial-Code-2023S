@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Stdin","Standard input"],["Stdout","Standard output"]]};
+window.SIDEBAR_ITEMS = {"struct":[["Stdin","stdin file for getting chars from console"],["Stdout","stdout file for putting chars to console"]]};
