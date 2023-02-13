@@ -26,10 +26,24 @@
 <span id="26">26</span>
 <span id="27">27</span>
 <span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
 </pre><pre class="rust"><code><span class="comment">//use crate::drivers::{KEYBOARD_DEVICE,MOUSE_DEVICE,INPUT_CONDVAR,read_input_event};</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers</span>::{<span class="ident">KEYBOARD_DEVICE</span>, <span class="ident">MOUSE_DEVICE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task::current_task</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_event_get</span>() -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(
+        <span class="string">&quot;kernel:pid[{}] sys_event_get&quot;</span>,
+        <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">getpid</span>()
+    );
     <span class="kw">let</span> <span class="ident">kb</span> <span class="op">=</span> <span class="ident">KEYBOARD_DEVICE</span>.<span class="ident">clone</span>();
     <span class="kw">let</span> <span class="ident">mouse</span> <span class="op">=</span> <span class="ident">MOUSE_DEVICE</span>.<span class="ident">clone</span>();
     <span class="comment">//let input=INPUT_CONDVAR.clone();</span>
@@ -47,6 +61,10 @@
 
 <span class="doccomment">/// check UART&#39;s read-buffer is empty or not</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_key_pressed</span>() -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(
+        <span class="string">&quot;kernel:pid[{}] sys_key_pressed&quot;</span>,
+        <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">getpid</span>()
+    );
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="op">!</span><span class="ident">UART</span>.<span class="ident">read_buffer_is_empty</span>();
     <span class="kw">if</span> <span class="ident">res</span> {
         <span class="number">1</span>
