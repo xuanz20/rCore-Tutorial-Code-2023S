@@ -69,6 +69,11 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Process management syscalls</span>
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">config::MAX_SYSCALL_NUM</span>,
@@ -104,7 +109,7 @@
 
 <span class="doccomment">/// current task gives up resources for other tasks</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_yield</span>() -&gt; <span class="ident">isize</span> {
-    <span class="comment">//trace!(&quot;kernel: sys_yield&quot;);</span>
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_yield&quot;</span>);
     <span class="ident">suspend_current_and_run_next</span>();
     <span class="number">0</span>
 }
@@ -113,6 +118,7 @@
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TimeVal`] is splitted by two pages ?</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_get_time</span>(<span class="ident">_ts</span>: <span class="kw-2">*mut</span> <span class="ident">TimeVal</span>, <span class="ident">_tz</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_get_time&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
@@ -120,20 +126,24 @@
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TaskInfo`] is splitted by two pages ?</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_task_info</span>(<span class="ident">_ti</span>: <span class="kw-2">*mut</span> <span class="ident">TaskInfo</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_task_info NOT IMPLEMENTED YET!&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="comment">// YOUR JOB: Implement mmap.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_mmap</span>(<span class="ident">_start</span>: <span class="ident">usize</span>, <span class="ident">_len</span>: <span class="ident">usize</span>, <span class="ident">_port</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_mmap NOT IMPLEMENTED YET!&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 
 <span class="comment">// YOUR JOB: Implement munmap.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_munmap</span>(<span class="ident">_start</span>: <span class="ident">usize</span>, <span class="ident">_len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_munmap NOT IMPLEMENTED YET!&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 <span class="doccomment">/// change data segment size</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_sbrk</span>(<span class="ident">size</span>: <span class="ident">i32</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_sbrk&quot;</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old_brk</span>) <span class="op">=</span> <span class="ident">change_program_brk</span>(<span class="ident">size</span>) {
         <span class="ident">old_brk</span> <span class="kw">as</span> <span class="ident">isize</span>
     } <span class="kw">else</span> {
