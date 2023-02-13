@@ -66,7 +66,7 @@ pub fn wakeup_task(task: Arc<TaskControlBlock>) {
 
 /// Remove a task from the ready queue
 pub fn remove_task(task: Arc<TaskControlBlock>) {
-	//trace!("kernel: TaskManager::remove_task");
+    //trace!("kernel: TaskManager::remove_task");
     TASK_MANAGER.exclusive_access().remove(task);
 }
 

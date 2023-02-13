@@ -101,7 +101,7 @@ impl PipeRingBuffer {
 
 /// Return (read_end, write_end)
 pub fn make_pipe() -> (Arc<Pipe>, Arc<Pipe>) {
-	trace!("kernel: make_pipe");
+    trace!("kernel: make_pipe");
     let buffer = Arc::new(unsafe { UPSafeCell::new(PipeRingBuffer::new()) });
     let read_end = Arc::new(Pipe::read_end_with_buffer(buffer.clone()));
     let write_end = Arc::new(Pipe::write_end_with_buffer(buffer.clone()));

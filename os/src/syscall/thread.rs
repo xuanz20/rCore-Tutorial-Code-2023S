@@ -6,7 +6,17 @@ use crate::{
 use alloc::sync::Arc;
 
 pub fn sys_thread_create(entry: usize, arg: usize) -> isize {
-    trace!("kernel: sys_thread_create");
+    trace!(
+        "kernel:pid[{}] tid[{}] sys_thread_create",
+        current_task().unwrap().process.upgrade().unwrap().getpid(),
+        current_task()
+            .unwrap()
+            .inner_exclusive_access()
+            .res
+            .as_ref()
+            .unwrap()
+            .tid
+    );
     let task = current_task().unwrap();
     let process = task.process.upgrade().unwrap();
     // create a new thread
@@ -44,7 +54,17 @@ pub fn sys_thread_create(entry: usize, arg: usize) -> isize {
 }
 
 pub fn sys_gettid() -> isize {
-    trace!("kernel: sys_gettid");
+    trace!(
+        "kernel:pid[{}] tid[{}] sys_gettid",
+        current_task().unwrap().process.upgrade().unwrap().getpid(),
+        current_task()
+            .unwrap()
+            .inner_exclusive_access()
+            .res
+            .as_ref()
+            .unwrap()
+            .tid
+    );
     current_task()
         .unwrap()
         .inner_exclusive_access()
@@ -58,7 +78,17 @@ pub fn sys_gettid() -> isize {
 /// thread has not exited yet, return -2
 /// otherwise, return thread's exit code
 pub fn sys_waittid(tid: usize) -> i32 {
-    trace!("kernel: sys_waittid");
+    trace!(
+        "kernel:pid[{}] tid[{}] sys_waittid",
+        current_task().unwrap().process.upgrade().unwrap().getpid(),
+        current_task()
+            .unwrap()
+            .inner_exclusive_access()
+            .res
+            .as_ref()
+            .unwrap()
+            .tid
+    );
     let task = current_task().unwrap();
     let process = task.process.upgrade().unwrap();
     let task_inner = task.inner_exclusive_access();

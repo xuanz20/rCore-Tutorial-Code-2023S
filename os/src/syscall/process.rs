@@ -28,7 +28,10 @@ pub struct TaskInfo {
 }
 
 pub fn sys_exit(exit_code: i32) -> ! {
-    trace!("kernel: sys_exit");
+    trace!(
+        "kernel:pid[{}] sys_exit",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     exit_current_and_run_next(exit_code);
     panic!("Unreachable in sys_exit!");
 }
@@ -40,12 +43,18 @@ pub fn sys_yield() -> isize {
 }
 
 pub fn sys_getpid() -> isize {
-    trace!("kernel: sys_getpid");
+    trace!(
+        "kernel: sys_getpid pid:{}",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     current_task().unwrap().process.upgrade().unwrap().getpid() as isize
 }
 
 pub fn sys_fork() -> isize {
-    trace!("kernel: sys_fork");
+    trace!(
+        "kernel:pid[{}] sys_fork",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let current_process = current_process();
     let new_process = current_process.fork();
     let new_pid = new_process.getpid();
@@ -60,7 +69,10 @@ pub fn sys_fork() -> isize {
 }
 
 pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
-    trace!("kernel: sys_exec");
+    trace!(
+        "kernel:pid[{}] sys_exec",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let token = current_user_token();
     let path = translated_str(token, path);
     let mut args_vec: Vec<String> = Vec::new();
@@ -124,7 +136,10 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
 }
 
 pub fn sys_kill(pid: usize, signal: u32) -> isize {
-    trace!("kernel: sys_kill");
+    trace!(
+        "kernel:pid[{}] sys_kill",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     if let Some(process) = pid2process(pid) {
         if let Some(flag) = SignalFlags::from_bits(signal) {
             process.inner_exclusive_access().signals |= flag;
@@ -141,7 +156,10 @@ pub fn sys_kill(pid: usize, signal: u32) -> isize {
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TimeVal`] is splitted by two pages ?
 pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
-    trace!("kernel: sys_get_time NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_get_time NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
 
@@ -149,31 +167,55 @@ pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TaskInfo`] is splitted by two pages ?
 pub fn sys_task_info(_ti: *mut TaskInfo) -> isize {
-    trace!("kernel: sys_task_info NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_task_info NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
 
 /// YOUR JOB: Implement mmap.
 pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
-    trace!("kernel: sys_mmap NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_mmap NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
 
 /// YOUR JOB: Implement munmap.
 pub fn sys_munmap(_start: usize, _len: usize) -> isize {
-    trace!("kernel: sys_munmap NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_munmap NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
+
+/// change data segment size
+// pub fn sys_sbrk(size: i32) -> isize {
+//     trace!("kernel:pid[{}] sys_sbrk", current_task().unwrap().process.upgrade().unwrap().getpid());
+//     if let Some(old_brk) = current_task().unwrap().change_program_brk(size) {
+//         old_brk as isize
+//     } else {
+//     -1
+// }
 
 /// YOUR JOB: Implement spawn.
 /// HINT: fork + exec =/= spawn
 pub fn sys_spawn(_path: *const u8) -> isize {
-    trace!("kernel: sys_spawn NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_spawn NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
 
 /// YOUR JOB: Set task priority
 pub fn sys_set_priority(_prio: isize) -> isize {
-    trace!("kernel: sys_set_priority NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_set_priority NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }

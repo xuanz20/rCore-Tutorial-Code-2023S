@@ -59,6 +59,7 @@ pub fn pid_alloc() -> PidHandle {
 
 impl Drop for PidHandle {
     fn drop(&mut self) {
+        // trace!("drop pid {}", self.0);
         PID_ALLOCATOR.exclusive_access().dealloc(self.0);
     }
 }

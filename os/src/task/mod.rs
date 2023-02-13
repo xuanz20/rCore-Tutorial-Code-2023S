@@ -71,7 +71,10 @@ use crate::board::QEMUExit;
 
 /// Exit the current 'Running' task and run the next task in task list.
 pub fn exit_current_and_run_next(exit_code: i32) {
-    trace!("kernel: exit_current_and_run_next");
+    trace!(
+        "kernel: pid[{}] exit_current_and_run_next",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     // take from Processor
     let task = take_current_task().unwrap();
     let mut task_inner = task.inner_exclusive_access();
@@ -129,6 +132,7 @@ pub fn exit_current_and_run_next(exit_code: i32) {
             // Mention that we do not need to consider Mutex/Semaphore since they
             // are limited in a single process. Therefore, the blocked tasks are
             // removed when the PCB is deallocated.
+            trace!("kernel: exit_current_and_run_next .. remove_inactive_task");
             remove_inactive_task(Arc::clone(&task));
             let mut task_inner = task.inner_exclusive_access();
             if let Some(res) = task_inner.res.take() {
@@ -190,5 +194,6 @@ pub fn current_add_signal(signal: SignalFlags) {
 /// the inactive(blocked) tasks are removed when the PCB is deallocated.(called by exit_current_and_run_next)
 pub fn remove_inactive_task(task: Arc<TaskControlBlock>) {
     remove_task(Arc::clone(&task));
+    trace!("kernel: remove_inactive_task .. remove_timer");
     remove_timer(Arc::clone(&task));
 }
