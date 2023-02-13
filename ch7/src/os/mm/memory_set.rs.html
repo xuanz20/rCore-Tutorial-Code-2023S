@@ -463,6 +463,7 @@
 <span id="463">463</span>
 <span id="464">464</span>
 <span id="465">465</span>
+<span id="466">466</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">frame_alloc</span>, <span class="ident">FrameTracker</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PTEFlags</span>, <span class="ident">PageTable</span>, <span class="ident">PageTableEntry</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PhysAddr</span>, <span class="ident">PhysPageNum</span>, <span class="ident">VirtAddr</span>, <span class="ident">VirtPageNum</span>};
@@ -514,7 +515,7 @@
             <span class="ident">areas</span>: <span class="ident">Vec::new</span>(),
         }
     }
-    <span class="doccomment">/// Get he page table token</span>
+    <span class="doccomment">/// Get the page table token</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">page_table</span>.<span class="ident">token</span>()
     }
@@ -783,7 +784,7 @@
         }
     }
 }
-
+<span class="doccomment">/// map area structure, controls a contiguous piece of virtual memory</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MapArea</span> {
     <span class="ident">vpn_range</span>: <span class="ident">VPNRange</span>,
     <span class="ident">data_frames</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">VirtPageNum</span>, <span class="ident">FrameTracker</span><span class="op">&gt;</span>,
@@ -885,6 +886,7 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
+<span class="doccomment">/// map type for memory set: identical or framed</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MapType</span> {
     <span class="ident">Identical</span>,
     <span class="ident">Framed</span>,

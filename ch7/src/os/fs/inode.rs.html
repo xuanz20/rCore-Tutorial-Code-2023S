@@ -148,7 +148,21 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::File</span>;
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+</pre><pre class="rust"><code><span class="doccomment">//! `Arc&lt;Inode&gt;` -&gt; `OSInodeInner`: In order to open files concurrently</span>
+<span class="doccomment">//! we need to wrap `Inode` into `Arc`,but `Mutex` in `Inode` prevents</span>
+<span class="doccomment">//! file systems from being accessed simultaneously</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! `UPSafeCell&lt;OSInodeInner&gt;` -&gt; `OSInode`: for static `ROOT_INODE`,we</span>
+<span class="doccomment">//! need to wrap `OSInodeInner` into `UPSafeCell`</span>
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::File</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers::BLOCK_DEVICE</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::UserBuffer</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
@@ -159,12 +173,14 @@
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// inode in memory</span>
+<span class="doccomment">/// A wrapper around a filesystem inode</span>
+<span class="doccomment">/// to implement File trait atop</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OSInode</span> {
     <span class="ident">readable</span>: <span class="ident">bool</span>,
     <span class="ident">writable</span>: <span class="ident">bool</span>,
     <span class="ident">inner</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">OSInodeInner</span><span class="op">&gt;</span>,
 }
-
+<span class="doccomment">/// The OS inode inner in &#39;UPSafeCell&#39;</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OSInodeInner</span> {
     <span class="ident">offset</span>: <span class="ident">usize</span>,
     <span class="ident">inode</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Inode</span><span class="op">&gt;</span>,
