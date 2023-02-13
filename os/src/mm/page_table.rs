@@ -87,6 +87,7 @@ impl PageTable {
             frames: Vec::new(),
         }
     }
+    /// Find PageTableEntry by VirtPageNum, create a frame for a 4KB page table if not exist
     fn find_pte_create(&mut self, vpn: VirtPageNum) -> Option<&mut PageTableEntry> {
         let idxs = vpn.indexes();
         let mut ppn = self.root_ppn;
@@ -106,6 +107,7 @@ impl PageTable {
         }
         result
     }
+    /// Find PageTableEntry by VirtPageNum
     fn find_pte(&self, vpn: VirtPageNum) -> Option<&mut PageTableEntry> {
         let idxs = vpn.indexes();
         let mut ppn = self.root_ppn;
@@ -156,7 +158,7 @@ impl PageTable {
     }
 }
 
-/// translate a pointer to a mutable u8 Vec through page table
+/// Translate&Copy a ptr[u8] array with LENGTH len to a mutable u8 Vec through page table
 pub fn translated_byte_buffer(token: usize, ptr: *const u8, len: usize) -> Vec<&'static mut [u8]> {
     let page_table = PageTable::from_token(token);
     let mut start = ptr as usize;
@@ -179,7 +181,7 @@ pub fn translated_byte_buffer(token: usize, ptr: *const u8, len: usize) -> Vec<&
     v
 }
 
-/// Load a string from other address spaces into kernel space without an end `\0`.
+/// Translate&Copy a ptr[u8] array end with `\0` to a `String` Vec through page table
 pub fn translated_str(token: usize, ptr: *const u8) -> String {
     let page_table = PageTable::from_token(token);
     let mut string = String::new();
@@ -198,7 +200,7 @@ pub fn translated_str(token: usize, ptr: *const u8) -> String {
     string
 }
 
-/// translate a pointer to a mutable u8 slice through page table
+/// Translate a ptr[u8] array through page table and return a reference of T
 pub fn translated_ref<T>(token: usize, ptr: *const T) -> &'static T {
     let page_table = PageTable::from_token(token);
     page_table
@@ -206,8 +208,7 @@ pub fn translated_ref<T>(token: usize, ptr: *const T) -> &'static T {
         .unwrap()
         .get_ref()
 }
-
-/// translate a pointer to a mutable u8 slice through page table
+/// Translate a ptr[u8] array through page table and return a mutable reference of T
 pub fn translated_refmut<T>(token: usize, ptr: *mut T) -> &'static mut T {
     let page_table = PageTable::from_token(token);
     let va = ptr as usize;

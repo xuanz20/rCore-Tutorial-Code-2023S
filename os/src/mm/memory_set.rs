@@ -49,7 +49,7 @@ impl MemorySet {
             areas: Vec::new(),
         }
     }
-    /// Get he page table token
+    /// Get the page table token
     pub fn token(&self) -> usize {
         self.page_table.token()
     }
@@ -318,7 +318,7 @@ impl MemorySet {
         }
     }
 }
-
+/// map area structure, controls a contiguous piece of virtual memory
 pub struct MapArea {
     vpn_range: VPNRange,
     data_frames: BTreeMap<VirtPageNum, FrameTracker>,
@@ -420,6 +420,7 @@ impl MapArea {
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
+/// map type for memory set: identical or framed
 pub enum MapType {
     Identical,
     Framed,

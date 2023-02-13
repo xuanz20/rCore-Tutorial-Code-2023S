@@ -113,8 +113,11 @@ pub fn trap_handler() -> ! {
     trap_return();
 }
 
-/// return to user space
 #[no_mangle]
+/// return to user space
+/// set the new addr of __restore asm function in TRAMPOLINE page,
+/// set the reg a0 = trap_cx_ptr, reg a1 = phy addr of usr page table,
+/// finally, jump to new addr of __restore asm function
 pub fn trap_return() -> ! {
     set_user_trap_entry();
     let trap_cx_ptr = TRAP_CONTEXT_BASE;
@@ -137,8 +140,10 @@ pub fn trap_return() -> ! {
     }
 }
 
-/// handle trap from kernel
 #[no_mangle]
+/// handle trap from kernel
+/// Unimplement: traps/interrupts/exceptions from kernel mode
+/// Todo: Chapter 9: I/O device
 pub fn trap_from_kernel() -> ! {
     use riscv::register::sepc;
     trace!("stval = {:#x}, sepc = {:#x}", stval::read(), sepc::read());

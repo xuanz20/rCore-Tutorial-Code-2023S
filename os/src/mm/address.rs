@@ -15,11 +15,13 @@ pub struct PhysAddr(pub usize);
 /// Virtual Address
 #[repr(C)]
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+///virtual address
 pub struct VirtAddr(pub usize);
 
 /// Physical Page Number PPN
 #[repr(C)]
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+///phiscal page number
 pub struct PhysPageNum(pub usize);
 
 /// Virtual Page Number VPN
@@ -98,7 +100,7 @@ impl From<VirtPageNum> for usize {
         v.0
     }
 }
-
+/// virtual address impl
 impl VirtAddr {
     /// Get the (floor) virtual page number
     pub fn floor(&self) -> VirtPageNum {
@@ -219,6 +221,7 @@ impl StepByOne for PhysPageNum {
 }
 
 #[derive(Copy, Clone)]
+/// a simple range structure for type T
 pub struct SimpleRange<T>
 where
     T: StepByOne + Copy + PartialEq + PartialOrd + Debug,
@@ -251,6 +254,7 @@ where
         SimpleRangeIterator::new(self.l, self.r)
     }
 }
+/// iterator for the simple range structure
 pub struct SimpleRangeIterator<T>
 where
     T: StepByOne + Copy + PartialEq + PartialOrd + Debug,
@@ -281,4 +285,5 @@ where
         }
     }
 }
+/// a simple range structure for virtual page number
 pub type VPNRange = SimpleRange<VirtPageNum>;

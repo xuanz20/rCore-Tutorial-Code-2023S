@@ -1,3 +1,9 @@
+//! `Arc<Inode>` -> `OSInodeInner`: In order to open files concurrently
+//! we need to wrap `Inode` into `Arc`,but `Mutex` in `Inode` prevents
+//! file systems from being accessed simultaneously
+//!
+//! `UPSafeCell<OSInodeInner>` -> `OSInode`: for static `ROOT_INODE`,we
+//! need to wrap `OSInodeInner` into `UPSafeCell`
 use super::File;
 use crate::drivers::BLOCK_DEVICE;
 use crate::mm::UserBuffer;
@@ -9,12 +15,14 @@ use easy_fs::{EasyFileSystem, Inode};
 use lazy_static::*;
 
 /// inode in memory
+/// A wrapper around a filesystem inode
+/// to implement File trait atop
 pub struct OSInode {
     readable: bool,
     writable: bool,
     inner: UPSafeCell<OSInodeInner>,
 }
-
+/// The OS inode inner in 'UPSafeCell'
 pub struct OSInodeInner {
     offset: usize,
     inode: Arc<Inode>,
