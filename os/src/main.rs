@@ -19,6 +19,8 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
+#[macro_use]
+extern crate log;
 
 use core::arch::global_asm;
 #[path = "boards/qemu.rs"]
@@ -27,10 +29,10 @@ use log::*;
 #[macro_use]
 mod console;
 pub mod batch;
-mod lang_items;
-mod logging;
-mod sbi;
-mod sync;
+pub mod lang_items;
+pub mod logging;
+pub mod sbi;
+pub mod sync;
 pub mod syscall;
 pub mod trap;
 
