@@ -15,8 +15,8 @@
 //! Be careful when you see `__switch` ASM function in `switch.S`. Control flow around this function
 //! might not be what you expect.
 mod context;
-mod manager;
 mod id;
+mod manager;
 mod processor;
 mod switch;
 #[allow(clippy::module_inception)]
@@ -31,8 +31,8 @@ pub use manager::{fetch_task, TaskManager};
 use switch::__switch;
 pub use task::{TaskControlBlock, TaskStatus};
 
-pub use manager::add_task;
 pub use id::{kstack_alloc, pid_alloc, KernelStack, PidHandle};
+pub use manager::add_task;
 pub use processor::{
     current_task, current_trap_cx, current_user_token, run_tasks, schedule, take_current_task,
     Processor,

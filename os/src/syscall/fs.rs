@@ -47,7 +47,7 @@ pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
 }
 
 pub fn sys_open(path: *const u8, flags: u32) -> isize {
-	trace!("kernel:pid[{}] sys_open", current_task().unwrap().pid.0);
+    trace!("kernel:pid[{}] sys_open", current_task().unwrap().pid.0);
     let task = current_task().unwrap();
     let token = current_user_token();
     let path = translated_str(token, path);
@@ -62,7 +62,7 @@ pub fn sys_open(path: *const u8, flags: u32) -> isize {
 }
 
 pub fn sys_close(fd: usize) -> isize {
-	trace!("kernel:pid[{}] sys_close", current_task().unwrap().pid.0);
+    trace!("kernel:pid[{}] sys_close", current_task().unwrap().pid.0);
     let task = current_task().unwrap();
     let mut inner = task.inner_exclusive_access();
     if fd >= inner.fd_table.len() {
@@ -77,18 +77,27 @@ pub fn sys_close(fd: usize) -> isize {
 
 /// YOUR JOB: Implement fstat.
 pub fn sys_fstat(_fd: usize, _st: *mut Stat) -> isize {
-    trace!("kernel:pid[{}] sys_fstat NOT IMPLEMENTED", current_task().unwrap().pid.0);
+    trace!(
+        "kernel:pid[{}] sys_fstat NOT IMPLEMENTED",
+        current_task().unwrap().pid.0
+    );
     -1
 }
 
 /// YOUR JOB: Implement linkat.
 pub fn sys_linkat(_old_name: *const u8, _new_name: *const u8) -> isize {
-    trace!("kernel:pid[{}] sys_linkat NOT IMPLEMENTED", current_task().unwrap().pid.0);
+    trace!(
+        "kernel:pid[{}] sys_linkat NOT IMPLEMENTED",
+        current_task().unwrap().pid.0
+    );
     -1
 }
 
 /// YOUR JOB: Implement unlinkat.
 pub fn sys_unlinkat(_name: *const u8) -> isize {
-    trace!("kernel:pid[{}] sys_unlinkat NOT IMPLEMENTED", current_task().unwrap().pid.0);
+    trace!(
+        "kernel:pid[{}] sys_unlinkat NOT IMPLEMENTED",
+        current_task().unwrap().pid.0
+    );
     -1
 }
