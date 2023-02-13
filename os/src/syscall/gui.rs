@@ -1,10 +1,14 @@
 use crate::drivers::GPU_DEVICE;
 use crate::mm::{MapArea, MapPermission, MapType, PhysAddr, VirtAddr};
-use crate::task::current_process;
+use crate::task::{current_process, current_task};
 
 const FB_VADDR: usize = 0x10000000;
 
 pub fn sys_framebuffer() -> isize {
+    trace!(
+        "kernel:pid[{}] sys_framebuffer",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let fb = GPU_DEVICE.get_framebuffer();
     let len = fb.len();
     // println!("[kernel] FrameBuffer: addr 0x{:X}, len {}", fb.as_ptr() as usize , len);
@@ -29,6 +33,10 @@ pub fn sys_framebuffer() -> isize {
 }
 
 pub fn sys_framebuffer_flush() -> isize {
+    trace!(
+        "kernel:pid[{}] sys_framebuffer_flush",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     GPU_DEVICE.flush();
     0
 }

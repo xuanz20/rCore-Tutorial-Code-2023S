@@ -5,12 +5,12 @@ use core::cmp::Ordering;
 use crate::config::CLOCK_FREQ;
 use crate::sbi::set_timer;
 use crate::sync::UPIntrFreeCell;
-use crate::task::{wakeup_task, TaskControlBlock};
+use crate::task::{current_task, wakeup_task, TaskControlBlock};
 use alloc::collections::BinaryHeap;
 use alloc::sync::Arc;
 use lazy_static::*;
 use riscv::register::time;
-
+/// The number of ticks per second
 const TICKS_PER_SEC: usize = 100;
 /// The number of milliseconds per second
 const MSEC_PER_SEC: usize = 1000;
@@ -65,13 +65,17 @@ lazy_static! {
 
 /// Add a timer
 pub fn add_timer(expire_ms: usize, task: Arc<TaskControlBlock>) {
-    trace!("kernel: add_timer");
+    trace!(
+        "kernel:pid[{}] add_timer",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let mut timers = TIMERS.exclusive_access();
     timers.push(TimerCondVar { expire_ms, task });
 }
 
 /// Remove a timer
 pub fn remove_timer(task: Arc<TaskControlBlock>) {
+    //trace!("kernel:pid[{}] remove_timer", current_task().unwrap().process.upgrade().unwrap().getpid());
     trace!("kernel: remove_timer");
     let mut timers = TIMERS.exclusive_access();
     let mut temp = BinaryHeap::<TimerCondVar>::new();
@@ -82,11 +86,15 @@ pub fn remove_timer(task: Arc<TaskControlBlock>) {
     }
     timers.clear();
     timers.append(&mut temp);
+    trace!("kernel: remove_timer END");
 }
 
 /// Check if the timer has expired
 pub fn check_timer() {
-    trace!("kernel: check_timer");
+    trace!(
+        "kernel:pid[{}] check_timer",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let current_ms = get_time_ms();
     TIMERS.exclusive_session(|timers| {
         while let Some(timer) = timers.peek() {

@@ -1,10 +1,13 @@
 use crate::fs::{make_pipe, open_file, OpenFlags, Stat};
 use crate::mm::{translated_byte_buffer, translated_refmut, translated_str, UserBuffer};
-use crate::task::{current_process, current_user_token};
+use crate::task::{current_process, current_task, current_user_token};
 use alloc::sync::Arc;
 
 pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
-    trace!("kernel: sys_write");
+    trace!(
+        "kernel:pid[{}] sys_write",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let token = current_user_token();
     let process = current_process();
     let inner = process.inner_exclusive_access();
@@ -25,7 +28,10 @@ pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
 }
 
 pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
-    trace!("kernel: sys_read");
+    trace!(
+        "kernel:pid[{}] sys_read",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let token = current_user_token();
     let process = current_process();
     let inner = process.inner_exclusive_access();
@@ -47,7 +53,10 @@ pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
 }
 
 pub fn sys_open(path: *const u8, flags: u32) -> isize {
-    trace!("kernel: sys_open");
+    trace!(
+        "kernel:pid[{}] sys_open",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let process = current_process();
     let token = current_user_token();
     let path = translated_str(token, path);
@@ -62,7 +71,10 @@ pub fn sys_open(path: *const u8, flags: u32) -> isize {
 }
 
 pub fn sys_close(fd: usize) -> isize {
-    trace!("kernel: sys_close");
+    trace!(
+        "kernel:pid[{}] sys_close",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let process = current_process();
     let mut inner = process.inner_exclusive_access();
     if fd >= inner.fd_table.len() {
@@ -76,7 +88,10 @@ pub fn sys_close(fd: usize) -> isize {
 }
 
 pub fn sys_pipe(pipe: *mut usize) -> isize {
-    trace!("kernel: sys_pipe");
+    trace!(
+        "kernel:pid[{}] sys_pipe",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let process = current_process();
     let token = current_user_token();
     let mut inner = process.inner_exclusive_access();
@@ -91,7 +106,10 @@ pub fn sys_pipe(pipe: *mut usize) -> isize {
 }
 
 pub fn sys_dup(fd: usize) -> isize {
-    trace!("kernel: sys_dup");
+    trace!(
+        "kernel:pid[{}] sys_dup",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     let process = current_process();
     let mut inner = process.inner_exclusive_access();
     if fd >= inner.fd_table.len() {
@@ -107,18 +125,27 @@ pub fn sys_dup(fd: usize) -> isize {
 
 /// YOUR JOB: Implement fstat.
 pub fn sys_fstat(_fd: usize, _st: *mut Stat) -> isize {
-    trace!("kernel: sys_fstat NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_fstat NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
 
 /// YOUR JOB: Implement linkat.
 pub fn sys_linkat(_old_name: *const u8, _new_name: *const u8) -> isize {
-    trace!("kernel: sys_linkat NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_linkat NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
 
 /// YOUR JOB: Implement unlinkat.
 pub fn sys_unlinkat(_name: *const u8) -> isize {
-    trace!("kernel: sys_unlinkat NOT IMPLEMENTED");
+    trace!(
+        "kernel:pid[{}] sys_unlinkat NOT IMPLEMENTED",
+        current_task().unwrap().process.upgrade().unwrap().getpid()
+    );
     -1
 }
