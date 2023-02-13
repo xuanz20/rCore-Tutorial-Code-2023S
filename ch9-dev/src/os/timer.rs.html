@@ -99,6 +99,14 @@
 <span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
 </pre><pre class="rust"><code><span class="doccomment">//! RISC-V timer-related functionality</span>
 
 <span class="kw">use</span> <span class="ident">core::cmp::Ordering</span>;
@@ -106,12 +114,12 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::CLOCK_FREQ</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sbi::set_timer</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPIntrFreeCell</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">wakeup_task</span>, <span class="ident">TaskControlBlock</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_task</span>, <span class="ident">wakeup_task</span>, <span class="ident">TaskControlBlock</span>};
 <span class="kw">use</span> <span class="ident">alloc::collections::BinaryHeap</span>;
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">riscv::register::time</span>;
-
+<span class="doccomment">/// The number of ticks per second</span>
 <span class="kw">const</span> <span class="ident">TICKS_PER_SEC</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100</span>;
 <span class="doccomment">/// The number of milliseconds per second</span>
 <span class="kw">const</span> <span class="ident">MSEC_PER_SEC</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1000</span>;
@@ -166,13 +174,17 @@
 
 <span class="doccomment">/// Add a timer</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_timer</span>(<span class="ident">expire_ms</span>: <span class="ident">usize</span>, <span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
-    <span class="macro">trace!</span>(<span class="string">&quot;kernel: add_timer&quot;</span>);
+    <span class="macro">trace!</span>(
+        <span class="string">&quot;kernel:pid[{}] add_timer&quot;</span>,
+        <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">getpid</span>()
+    );
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">timers</span> <span class="op">=</span> <span class="ident">TIMERS</span>.<span class="ident">exclusive_access</span>();
     <span class="ident">timers</span>.<span class="ident">push</span>(<span class="ident">TimerCondVar</span> { <span class="ident">expire_ms</span>, <span class="ident">task</span> });
 }
 
 <span class="doccomment">/// Remove a timer</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_timer</span>(<span class="ident">task</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span>) {
+    <span class="comment">//trace!(&quot;kernel:pid[{}] remove_timer&quot;, current_task().unwrap().process.upgrade().unwrap().getpid());</span>
     <span class="macro">trace!</span>(<span class="string">&quot;kernel: remove_timer&quot;</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">timers</span> <span class="op">=</span> <span class="ident">TIMERS</span>.<span class="ident">exclusive_access</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">temp</span> <span class="op">=</span> <span class="ident">BinaryHeap</span>::<span class="op">&lt;</span><span class="ident">TimerCondVar</span><span class="op">&gt;</span><span class="ident">::new</span>();
@@ -183,11 +195,15 @@
     }
     <span class="ident">timers</span>.<span class="ident">clear</span>();
     <span class="ident">timers</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">temp</span>);
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: remove_timer END&quot;</span>);
 }
 
 <span class="doccomment">/// Check if the timer has expired</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_timer</span>() {
-    <span class="macro">trace!</span>(<span class="string">&quot;kernel: check_timer&quot;</span>);
+    <span class="macro">trace!</span>(
+        <span class="string">&quot;kernel:pid[{}] check_timer&quot;</span>,
+        <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">getpid</span>()
+    );
     <span class="kw">let</span> <span class="ident">current_ms</span> <span class="op">=</span> <span class="ident">get_time_ms</span>();
     <span class="ident">TIMERS</span>.<span class="ident">exclusive_session</span>(<span class="op">|</span><span class="ident">timers</span><span class="op">|</span> {
         <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">timer</span>) <span class="op">=</span> <span class="ident">timers</span>.<span class="ident">peek</span>() {
