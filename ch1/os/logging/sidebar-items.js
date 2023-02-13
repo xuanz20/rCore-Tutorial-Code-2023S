@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["init",""]],"struct":[["SimpleLogger",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["init","initiate logger"]],"struct":[["SimpleLogger","a simple logger"]]};
