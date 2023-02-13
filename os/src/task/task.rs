@@ -1,24 +1,32 @@
 //! Types related to task management
 use super::TaskContext;
-use crate::config::{kernel_stack_position, TRAP_CONTEXT};
-use crate::mm::{MapPermission, MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE};
+use crate::config::TRAP_CONTEXT_BASE;
+use crate::mm::{
+    kernel_stack_position, MapPermission, MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE,
+};
 use crate::trap::{trap_handler, TrapContext};
 
 /// The task control block (TCB) of a task.
 pub struct TaskControlBlock {
-    /// The task status in lifecycle
-    pub task_status: TaskStatus,
-    /// The task context
+    /// Save task context
     pub task_cx: TaskContext,
-    /// The task address space
+
+    /// Maintain the execution status of the current process
+    pub task_status: TaskStatus,
+
+    /// Application address space
     pub memory_set: MemorySet,
+
     /// The phys page number of trap context
     pub trap_cx_ppn: PhysPageNum,
+
     /// The size(top addr) of program which is loaded from elf file
     pub base_size: usize,
-    /// The bottom addr of heap
+
+    /// Heap bottom
     pub heap_bottom: usize,
-    /// the top addr of heap
+
+    /// Program break
     pub program_brk: usize,
 }
 
@@ -36,7 +44,7 @@ impl TaskControlBlock {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
         let task_status = TaskStatus::Ready;

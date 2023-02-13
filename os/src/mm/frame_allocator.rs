@@ -8,12 +8,14 @@ use alloc::vec::Vec;
 use core::fmt::{self, Debug, Formatter};
 use lazy_static::*;
 
-/// manage a frame which has the same lifecycle as the tracker
+/// tracker for physical page frame allocation and deallocation
 pub struct FrameTracker {
+    /// physical page number
     pub ppn: PhysPageNum,
 }
 
 impl FrameTracker {
+    /// Create a new FrameTracker
     pub fn new(ppn: PhysPageNum) -> Self {
         // page cleaning
         let bytes_array = ppn.get_bytes_array();
@@ -41,7 +43,6 @@ trait FrameAllocator {
     fn alloc(&mut self) -> Option<PhysPageNum>;
     fn dealloc(&mut self, ppn: PhysPageNum);
 }
-
 /// an implementation for frame allocator
 pub struct StackFrameAllocator {
     current: usize,
@@ -53,6 +54,7 @@ impl StackFrameAllocator {
     pub fn init(&mut self, l: PhysPageNum, r: PhysPageNum) {
         self.current = l.0;
         self.end = r.0;
+        // trace!("last {} Physical Frames.", self.end - self.current);
     }
 }
 impl FrameAllocator for StackFrameAllocator {
@@ -91,7 +93,6 @@ lazy_static! {
     pub static ref FRAME_ALLOCATOR: UPSafeCell<FrameAllocatorImpl> =
         unsafe { UPSafeCell::new(FrameAllocatorImpl::new()) };
 }
-
 /// initiate the frame allocator using `ekernel` and `MEMORY_END`
 pub fn init_frame_allocator() {
     extern "C" {
@@ -103,7 +104,7 @@ pub fn init_frame_allocator() {
     );
 }
 
-/// allocate a frame
+/// Allocate a physical page frame in FrameTracker style
 pub fn frame_alloc() -> Option<FrameTracker> {
     FRAME_ALLOCATOR
         .exclusive_access()
@@ -111,8 +112,8 @@ pub fn frame_alloc() -> Option<FrameTracker> {
         .map(FrameTracker::new)
 }
 
-/// deallocate a frame
-fn frame_dealloc(ppn: PhysPageNum) {
+/// Deallocate a physical page frame with a given ppn
+pub fn frame_dealloc(ppn: PhysPageNum) {
     FRAME_ALLOCATOR.exclusive_access().dealloc(ppn);
 }
 
