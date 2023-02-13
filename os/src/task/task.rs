@@ -1,7 +1,7 @@
 //! Types related to task management & Functions for completely changing TCB
 use super::TaskContext;
-use super::{pid_alloc, KernelStack, PidHandle};
-use crate::config::TRAP_CONTEXT;
+use super::{kstack_alloc, pid_alloc, KernelStack, PidHandle};
+use crate::config::TRAP_CONTEXT_BASE;
 use crate::mm::{MemorySet, PhysPageNum, VirtAddr, KERNEL_SPACE};
 use crate::sync::UPSafeCell;
 use crate::trap::{trap_handler, TrapContext};
@@ -20,8 +20,20 @@ pub struct TaskControlBlock {
     /// Kernel stack corresponding to PID
     pub kernel_stack: KernelStack,
 
-    // Mutable
+    /// Mutable
     inner: UPSafeCell<TaskControlBlockInner>,
+}
+
+impl TaskControlBlock {
+    /// Get the mutable reference of the inner TCB
+    pub fn inner_exclusive_access(&self) -> RefMut<'_, TaskControlBlockInner> {
+        self.inner.exclusive_access()
+    }
+    /// Get the address of app's page table
+    pub fn get_user_token(&self) -> usize {
+        let inner = self.inner_exclusive_access();
+        inner.memory_set.token()
+    }
 }
 
 pub struct TaskControlBlockInner {
@@ -74,11 +86,6 @@ impl TaskControlBlockInner {
 }
 
 impl TaskControlBlock {
-    /// Get the mutex to get the RefMut [`TaskControlBlockInner`].
-    pub fn inner_exclusive_access(&self) -> RefMut<'_, TaskControlBlockInner> {
-        self.inner.exclusive_access()
-    }
-
     /// Create a new process
     ///
     /// At present, it is only used for the creation of initproc
@@ -86,12 +93,12 @@ impl TaskControlBlock {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
         // alloc a pid and a kernel stack in kernel space
         let pid_handle = pid_alloc();
-        let kernel_stack = KernelStack::new(&pid_handle);
+        let kernel_stack = kstack_alloc();
         let kernel_stack_top = kernel_stack.get_top();
         // push a task context which goes to trap_return to the top of kernel stack
         let task_control_block = Self {
@@ -124,16 +131,16 @@ impl TaskControlBlock {
         task_control_block
     }
 
-    /// Load a new elf to replace the original application address space and start execution.
+    /// Load a new elf to replace the original application address space and start execution
     pub fn exec(&self, elf_data: &[u8]) {
         // memory_set with elf program headers/trampoline/trap context/user stack
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
 
-        // **** access inner exclusively
+        // **** access current TCB exclusively
         let mut inner = self.inner_exclusive_access();
         // substitute memory_set
         inner.memory_set = memory_set;
@@ -153,19 +160,19 @@ impl TaskControlBlock {
         // **** release inner automatically
     }
 
-    /// Fork from parent to child
+    /// parent process fork the child process
     pub fn fork(self: &Arc<Self>) -> Arc<Self> {
         // ---- access parent PCB exclusively
         let mut parent_inner = self.inner_exclusive_access();
         // copy user space(include trap context)
         let memory_set = MemorySet::from_existed_user(&parent_inner.memory_set);
         let trap_cx_ppn = memory_set
-            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .translate(VirtAddr::from(TRAP_CONTEXT_BASE).into())
             .unwrap()
             .ppn();
         // alloc a pid and a kernel stack in kernel space
         let pid_handle = pid_alloc();
-        let kernel_stack = KernelStack::new(&pid_handle);
+        let kernel_stack = kstack_alloc();
         let kernel_stack_top = kernel_stack.get_top();
         let task_control_block = Arc::new(TaskControlBlock {
             pid: pid_handle,
@@ -188,16 +195,16 @@ impl TaskControlBlock {
         // add child
         parent_inner.children.push(task_control_block.clone());
         // modify kernel_sp in trap_cx
-        // **** access children PCB exclusively
+        // **** access child PCB exclusively
         let trap_cx = task_control_block.inner_exclusive_access().get_trap_cx();
         trap_cx.kernel_sp = kernel_stack_top;
         // return
         task_control_block
-        // ---- release parent PCB automatically
-        // **** release children PCB automatically
+        // **** release child PCB
+        // ---- release parent PCB
     }
 
-    /// Get the pid of the process
+    /// get pid of process
     pub fn getpid(&self) -> usize {
         self.pid.0
     }

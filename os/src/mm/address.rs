@@ -92,21 +92,24 @@ impl From<VirtPageNum> for usize {
         v.0
     }
 }
-///
+/// virtual address impl
 impl VirtAddr {
-    ///`VirtAddr`->`VirtPageNum`
+    /// Get the (floor) virtual page number
     pub fn floor(&self) -> VirtPageNum {
         VirtPageNum(self.0 / PAGE_SIZE)
     }
-    ///`VirtAddr`->`VirtPageNum`
+
+    /// Get the (ceil) virtual page number
     pub fn ceil(&self) -> VirtPageNum {
         VirtPageNum((self.0 - 1 + PAGE_SIZE) / PAGE_SIZE)
     }
-    ///Get page offset
+
+    /// Get the page offset of virtual address
     pub fn page_offset(&self) -> usize {
         self.0 & (PAGE_SIZE - 1)
     }
-    ///Check page aligned
+
+    /// Check if the virtual address is aligned by page size
     pub fn aligned(&self) -> bool {
         self.page_offset() == 0
     }
@@ -123,19 +126,19 @@ impl From<VirtPageNum> for VirtAddr {
     }
 }
 impl PhysAddr {
-    ///`PhysAddr`->`PhysPageNum`
+    /// Get the (floor) physical page number
     pub fn floor(&self) -> PhysPageNum {
         PhysPageNum(self.0 / PAGE_SIZE)
     }
-    ///`PhysAddr`->`PhysPageNum`
+    /// Get the (ceil) physical page number
     pub fn ceil(&self) -> PhysPageNum {
         PhysPageNum((self.0 - 1 + PAGE_SIZE) / PAGE_SIZE)
     }
-    ///Get page offset
+    /// Get the page offset of physical address
     pub fn page_offset(&self) -> usize {
         self.0 & (PAGE_SIZE - 1)
     }
-    ///Check page aligned
+    /// Check if the physical address is aligned by page size
     pub fn aligned(&self) -> bool {
         self.page_offset() == 0
     }
@@ -153,7 +156,7 @@ impl From<PhysPageNum> for PhysAddr {
 }
 
 impl VirtPageNum {
-    ///Return VPN 3 level index
+    /// Get the indexes of the page table entry
     pub fn indexes(&self) -> [usize; 3] {
         let mut vpn = self.0;
         let mut idx = [0usize; 3];
@@ -167,29 +170,32 @@ impl VirtPageNum {
 
 impl PhysAddr {
     ///Get mutable reference to `PhysAddr` value
+    /// Get the mutable reference of physical address
     pub fn get_mut<T>(&self) -> &'static mut T {
         unsafe { (self.0 as *mut T).as_mut().unwrap() }
     }
 }
 impl PhysPageNum {
-    ///Get `PageTableEntry` on `PhysPageNum`
+    /// Get the reference of page table(array of ptes)
     pub fn get_pte_array(&self) -> &'static mut [PageTableEntry] {
         let pa: PhysAddr = (*self).into();
         unsafe { core::slice::from_raw_parts_mut(pa.0 as *mut PageTableEntry, 512) }
     }
-    ///
+    /// Get the reference of page(array of bytes)
     pub fn get_bytes_array(&self) -> &'static mut [u8] {
         let pa: PhysAddr = (*self).into();
         unsafe { core::slice::from_raw_parts_mut(pa.0 as *mut u8, 4096) }
     }
-    ///
+    /// Get the mutable reference of physical address
     pub fn get_mut<T>(&self) -> &'static mut T {
         let pa: PhysAddr = (*self).into();
         pa.get_mut()
     }
 }
 
+/// iterator for phy/virt page number
 pub trait StepByOne {
+    /// step by one element(page number)
     fn step(&mut self);
 }
 impl StepByOne for VirtPageNum {

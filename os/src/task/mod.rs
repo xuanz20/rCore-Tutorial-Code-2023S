@@ -15,8 +15,8 @@
 //! Be careful when you see `__switch` ASM function in `switch.S`. Control flow around this function
 //! might not be what you expect.
 mod context;
+mod id;
 mod manager;
-mod pid;
 mod processor;
 mod switch;
 #[allow(clippy::module_inception)]
@@ -30,8 +30,8 @@ use switch::__switch;
 pub use task::{TaskControlBlock, TaskStatus};
 
 pub use context::TaskContext;
+pub use id::{kstack_alloc, pid_alloc, KernelStack, PidHandle};
 pub use manager::add_task;
-pub use pid::{pid_alloc, KernelStack, PidAllocator, PidHandle};
 pub use processor::{
     current_task, current_trap_cx, current_user_token, run_tasks, schedule, take_current_task,
     Processor,
@@ -103,7 +103,10 @@ pub fn exit_current_and_run_next(exit_code: i32) {
 }
 
 lazy_static! {
-    ///Globle process that init user shell
+    /// Creation of initial process
+    ///
+    /// the name "initproc" may be changed to any other app name like "usertests",
+    /// but we have user_shell, so we don't need to change it.
     pub static ref INITPROC: Arc<TaskControlBlock> = Arc::new(TaskControlBlock::new(
         get_app_data_by_name("ch5b_initproc").unwrap()
     ));

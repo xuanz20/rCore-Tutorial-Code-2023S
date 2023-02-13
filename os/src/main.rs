@@ -33,16 +33,16 @@ extern crate alloc;
 
 #[macro_use]
 mod console;
-mod config;
-mod lang_items;
+pub mod config;
+pub mod lang_items;
 mod loader;
-mod logging;
-mod mm;
-mod sbi;
+pub mod logging;
+pub mod mm;
+pub mod sbi;
 pub mod sync;
 pub mod syscall;
 pub mod task;
-mod timer;
+pub mod timer;
 pub mod trap;
 
 use core::arch::global_asm;

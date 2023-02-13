@@ -2,28 +2,29 @@
 use riscv::register::sstatus::{self, Sstatus, SPP};
 
 #[repr(C)]
+#[derive(Debug)]
 ///trap context structure containing sstatus, sepc and registers
 pub struct TrapContext {
-    /// general regs[0..31]
+    /// General-Purpose Register x0-31
     pub x: [usize; 32],
-    /// CSR sstatus      
+    /// Supervisor Status Register
     pub sstatus: Sstatus,
-    /// CSR sepc
+    /// Supervisor Exception Program Counter
     pub sepc: usize,
-    /// Addr of Page Table
+    /// Token of kernel address space
     pub kernel_satp: usize,
-    /// kernel stack
+    /// Kernel stack pointer of the current application
     pub kernel_sp: usize,
-    /// Addr of trap_handler function
+    /// Virtual address of trap handler entry point in kernel
     pub trap_handler: usize,
 }
 
 impl TrapContext {
-    ///set stack pointer to x_2 reg (sp)
+    /// put the sp(stack pointer) into x\[2\] field of TrapContext
     pub fn set_sp(&mut self, sp: usize) {
         self.x[2] = sp;
     }
-    ///init app context
+    /// init the trap context of an application
     pub fn app_init_context(
         entry: usize,
         sp: usize,
