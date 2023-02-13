@@ -9,8 +9,7 @@
 //! A single global instance of [`Processor`] called `PROCESSOR` monitors running
 //! task(s) for each core.
 //!
-//! A single global instance of [`PidAllocator`] called `PID_ALLOCATOR` allocates
-//! pid for user apps.
+//! A single global instance of `PID_ALLOCATOR` allocates pid for user apps.
 //!
 //! Be careful when you see `__switch` ASM function in `switch.S`. Control flow around this function
 //! might not be what you expect.
