@@ -182,7 +182,6 @@
 
 <span class="kw">mod</span> <span class="ident">context</span>;
 <span class="kw">mod</span> <span class="ident">switch</span>;
-
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::module_inception</span>)]</span>
 <span class="kw">mod</span> <span class="ident">task</span>;
 
@@ -309,33 +308,34 @@
     }
 }
 
-<span class="doccomment">/// run first task</span>
+<span class="doccomment">/// Run the first task in task list.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_first_task</span>() {
     <span class="ident">TASK_MANAGER</span>.<span class="ident">run_first_task</span>();
 }
 
-<span class="doccomment">/// rust next task</span>
+<span class="doccomment">/// Switch current `Running` task to the task we have found,</span>
+<span class="doccomment">/// or there is no `Ready` task and we can exit with all applications completed</span>
 <span class="kw">fn</span> <span class="ident">run_next_task</span>() {
     <span class="ident">TASK_MANAGER</span>.<span class="ident">run_next_task</span>();
 }
 
-<span class="doccomment">/// suspend current task</span>
+<span class="doccomment">/// Change the status of current `Running` task into `Ready`.</span>
 <span class="kw">fn</span> <span class="ident">mark_current_suspended</span>() {
     <span class="ident">TASK_MANAGER</span>.<span class="ident">mark_current_suspended</span>();
 }
 
-<span class="doccomment">/// exit current task</span>
+<span class="doccomment">/// Change the status of current `Running` task into `Exited`.</span>
 <span class="kw">fn</span> <span class="ident">mark_current_exited</span>() {
     <span class="ident">TASK_MANAGER</span>.<span class="ident">mark_current_exited</span>();
 }
 
-<span class="doccomment">/// suspend current task, then run next task</span>
+<span class="doccomment">/// Suspend the current &#39;Running&#39; task and run the next task in task list.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">suspend_current_and_run_next</span>() {
     <span class="ident">mark_current_suspended</span>();
     <span class="ident">run_next_task</span>();
 }
 
-<span class="doccomment">/// exit current task,  then run next task</span>
+<span class="doccomment">/// Exit the current &#39;Running&#39; task and run the next task in task list.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exit_current_and_run_next</span>() {
     <span class="ident">mark_current_exited</span>();
     <span class="ident">run_next_task</span>();

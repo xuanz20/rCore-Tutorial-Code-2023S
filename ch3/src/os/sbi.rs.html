@@ -46,7 +46,7 @@
 <span class="kw">const</span> <span class="ident">SBI_CONSOLE_PUTCHAR</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1</span>;
 <span class="kw">const</span> <span class="ident">SBI_SHUTDOWN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
 
-<span class="doccomment">///  handle SBI call with `which` SBI_id and other arguments</span>
+<span class="doccomment">/// general sbi call</span>
 <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
 <span class="kw">fn</span> <span class="ident">sbi_call</span>(<span class="ident">which</span>: <span class="ident">usize</span>, <span class="ident">arg0</span>: <span class="ident">usize</span>, <span class="ident">arg1</span>: <span class="ident">usize</span>, <span class="ident">arg2</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span>;
@@ -77,5 +77,6 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shutdown</span>() -&gt; <span class="op">!</span> {
     <span class="ident">sbi_call</span>(<span class="ident">SBI_SHUTDOWN</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
     <span class="macro">panic!</span>(<span class="string">&quot;It should shutdown!&quot;</span>);
-}</code></pre></div>
+}
+</code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="os" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (f6f9d5e73 2022-08-04)" ></div></body></html>

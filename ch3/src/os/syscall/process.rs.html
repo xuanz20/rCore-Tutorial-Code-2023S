@@ -48,6 +48,11 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Process management syscalls</span>
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">config::MAX_SYSCALL_NUM</span>,
@@ -62,22 +67,27 @@
     <span class="kw">pub</span> <span class="ident">usec</span>: <span class="ident">usize</span>,
 }
 
+<span class="doccomment">/// Task information</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TaskInfo</span> {
+    <span class="doccomment">/// Task status in it&#39;s life cycle</span>
     <span class="ident">status</span>: <span class="ident">TaskStatus</span>,
+    <span class="doccomment">/// The numbers of syscall called by task</span>
     <span class="ident">syscall_times</span>: [<span class="ident">u32</span>; <span class="ident">MAX_SYSCALL_NUM</span>],
+    <span class="doccomment">/// Total running time of task</span>
     <span class="ident">time</span>: <span class="ident">usize</span>,
 }
 
 <span class="doccomment">/// task exits and submit an exit code</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exit</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) -&gt; <span class="op">!</span> {
-    <span class="macro">println!</span>(<span class="string">&quot;[kernel] Application exited with code {}&quot;</span>, <span class="ident">exit_code</span>);
+    <span class="macro">trace!</span>(<span class="string">&quot;[kernel] Application exited with code {}&quot;</span>, <span class="ident">exit_code</span>);
     <span class="ident">exit_current_and_run_next</span>();
     <span class="macro">panic!</span>(<span class="string">&quot;Unreachable in sys_exit!&quot;</span>);
 }
 
 <span class="doccomment">/// current task gives up resources for other tasks</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_yield</span>() -&gt; <span class="ident">isize</span> {
+    <span class="comment">//trace!(&quot;kernel: sys_yield&quot;);</span>
     <span class="ident">suspend_current_and_run_next</span>();
     <span class="number">0</span>
 }
