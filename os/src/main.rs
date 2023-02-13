@@ -29,16 +29,16 @@ extern crate alloc;
 
 #[macro_use]
 mod console;
-mod config;
+pub mod config;
 mod heap_alloc;
-mod lang_items;
+pub mod lang_items;
 mod loader;
-mod logging;
-mod sbi;
-mod sync;
+pub mod logging;
+pub mod sbi;
+pub mod sync;
 pub mod syscall;
 pub mod task;
-mod timer;
+pub mod timer;
 pub mod trap;
 
 core::arch::global_asm!(include_str!("entry.asm"));
@@ -92,8 +92,8 @@ fn kernel_log_info() {
     error!("[kernel] .bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
 }
 
-/// the rust entry-point of os
 #[no_mangle]
+/// the rust entry-point of os
 pub fn rust_main() -> ! {
     clear_bss();
     kernel_log_info();

@@ -11,7 +11,6 @@
 
 mod context;
 mod switch;
-
 #[allow(clippy::module_inception)]
 mod task;
 
@@ -138,33 +137,34 @@ impl TaskManager {
     }
 }
 
-/// run first task
+/// Run the first task in task list.
 pub fn run_first_task() {
     TASK_MANAGER.run_first_task();
 }
 
-/// rust next task
+/// Switch current `Running` task to the task we have found,
+/// or there is no `Ready` task and we can exit with all applications completed
 fn run_next_task() {
     TASK_MANAGER.run_next_task();
 }
 
-/// suspend current task
+/// Change the status of current `Running` task into `Ready`.
 fn mark_current_suspended() {
     TASK_MANAGER.mark_current_suspended();
 }
 
-/// exit current task
+/// Change the status of current `Running` task into `Exited`.
 fn mark_current_exited() {
     TASK_MANAGER.mark_current_exited();
 }
 
-/// suspend current task, then run next task
+/// Suspend the current 'Running' task and run the next task in task list.
 pub fn suspend_current_and_run_next() {
     mark_current_suspended();
     run_next_task();
 }
 
-/// exit current task,  then run next task
+/// Exit the current 'Running' task and run the next task in task list.
 pub fn exit_current_and_run_next() {
     mark_current_exited();
     run_next_task();

@@ -12,22 +12,27 @@ pub struct TimeVal {
     pub usec: usize,
 }
 
+/// Task information
 #[allow(dead_code)]
 pub struct TaskInfo {
+    /// Task status in it's life cycle
     status: TaskStatus,
+    /// The numbers of syscall called by task
     syscall_times: [u32; MAX_SYSCALL_NUM],
+    /// Total running time of task
     time: usize,
 }
 
 /// task exits and submit an exit code
 pub fn sys_exit(exit_code: i32) -> ! {
-    println!("[kernel] Application exited with code {}", exit_code);
+    trace!("[kernel] Application exited with code {}", exit_code);
     exit_current_and_run_next();
     panic!("Unreachable in sys_exit!");
 }
 
 /// current task gives up resources for other tasks
 pub fn sys_yield() -> isize {
+    //trace!("kernel: sys_yield");
     suspend_current_and_run_next();
     0
 }

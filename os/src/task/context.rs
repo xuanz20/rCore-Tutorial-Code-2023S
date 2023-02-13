@@ -1,19 +1,19 @@
 //! Implementation of [`TaskContext`]
 
-/// Task Context
 #[derive(Copy, Clone)]
 #[repr(C)]
+/// task context structure containing some registers
 pub struct TaskContext {
-    /// return address ( e.g. __restore ) of __switch ASM function
+    /// Ret position after task switching
     ra: usize,
-    /// kernel stack pointer of app
+    /// Stack pointer
     sp: usize,
-    /// callee saved registers:  s 0..11
+    /// s0-11 register, callee saved
     s: [usize; 12],
 }
 
 impl TaskContext {
-    /// init task context
+    /// Create a new empty task context
     pub fn zero_init() -> Self {
         Self {
             ra: 0,
@@ -21,8 +21,7 @@ impl TaskContext {
             s: [0; 12],
         }
     }
-
-    /// set task context {__restore ASM funciton, kernel stack, s_0..12 }
+    /// Create a new task context with a trap return addr and a kernel stack pointer
     pub fn goto_restore(kstack_ptr: usize) -> Self {
         extern "C" {
             fn __restore();
