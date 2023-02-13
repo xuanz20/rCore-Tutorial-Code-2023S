@@ -53,6 +53,8 @@
 <span id="53">53</span>
 <span id="54">54</span>
 <span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Process management syscalls</span>
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">config::MAX_SYSCALL_NUM</span>,
@@ -87,13 +89,14 @@
 
 <span class="doccomment">/// current task gives up resources for other tasks</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_yield</span>() -&gt; <span class="ident">isize</span> {
-    <span class="comment">//trace!(&quot;kernel: sys_yield&quot;);</span>
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_yield&quot;</span>);
     <span class="ident">suspend_current_and_run_next</span>();
     <span class="number">0</span>
 }
 
 <span class="doccomment">/// get time with second and microsecond</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_get_time</span>(<span class="ident">ts</span>: <span class="kw-2">*mut</span> <span class="ident">TimeVal</span>, <span class="ident">_tz</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_get_time&quot;</span>);
     <span class="kw">let</span> <span class="ident">us</span> <span class="op">=</span> <span class="ident">get_time_us</span>();
     <span class="kw">unsafe</span> {
         <span class="kw-2">*</span><span class="ident">ts</span> <span class="op">=</span> <span class="ident">TimeVal</span> {
@@ -106,6 +109,7 @@
 
 <span class="doccomment">/// YOUR JOB: Finish sys_task_info to pass testcases</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_task_info</span>(<span class="ident">_ti</span>: <span class="kw-2">*mut</span> <span class="ident">TaskInfo</span>) -&gt; <span class="ident">isize</span> {
+    <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_task_info&quot;</span>);
     <span class="op">-</span><span class="number">1</span>
 }
 </code></pre></div>
