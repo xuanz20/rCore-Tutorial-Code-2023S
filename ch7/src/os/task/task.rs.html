@@ -331,6 +331,7 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
+<span id="334">334</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Types related to task management &amp; Functions for completely changing TCB</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">kstack_alloc</span>, <span class="ident">pid_alloc</span>, <span class="ident">KernelStack</span>, <span class="ident">PidHandle</span>, <span class="ident">SignalActions</span>, <span class="ident">SignalFlags</span>, <span class="ident">TaskContext</span>};
@@ -460,6 +461,7 @@
         <span class="kw">let</span> <span class="ident">pid_handle</span> <span class="op">=</span> <span class="ident">pid_alloc</span>();
         <span class="kw">let</span> <span class="ident">kernel_stack</span> <span class="op">=</span> <span class="ident">kstack_alloc</span>();
         <span class="kw">let</span> <span class="ident">kernel_stack_top</span> <span class="op">=</span> <span class="ident">kernel_stack</span>.<span class="ident">get_top</span>();
+        <span class="comment">// push a task context which goes to trap_return to the top of kernel stack</span>
         <span class="kw">let</span> <span class="ident">task_control_block</span> <span class="op">=</span> <span class="self">Self</span> {
             <span class="ident">pid</span>: <span class="ident">pid_handle</span>,
             <span class="ident">kernel_stack</span>,
