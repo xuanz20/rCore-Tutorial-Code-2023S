@@ -1,3 +1,5 @@
+//! Block Cache Layer
+//! Implements about the disk block cache functionality
 use super::{BlockDevice, BLOCK_SZ};
 use alloc::collections::VecDeque;
 use alloc::sync::Arc;

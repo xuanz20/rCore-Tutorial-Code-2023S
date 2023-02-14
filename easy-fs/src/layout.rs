@@ -1,3 +1,13 @@
+//! Disk layout & data structure layer
+//!
+//! In the easy-fs disk layout, the disk is divided into five contiguous regions:
+//!
+//!  - [`SuperBlock`]
+//!  - inode bitmap
+//!  - inode area with [`DiskInode`]
+//!  - data bitmap
+//!  - data area with [`DataBlock`]
+
 use super::{get_block_cache, BlockDevice, BLOCK_SZ};
 use alloc::sync::Arc;
 use alloc::vec::Vec;
@@ -79,7 +89,7 @@ pub enum DiskInodeType {
 type IndirectBlock = [u32; BLOCK_SZ / 4];
 type DataBlock = [u8; BLOCK_SZ];
 
-/// Disk Inode of easy-fs
+/// Inode struct in disk
 #[repr(C)]
 pub struct DiskInode {
     /// file size

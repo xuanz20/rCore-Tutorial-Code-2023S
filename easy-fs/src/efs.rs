@@ -1,3 +1,8 @@
+//! Disk block manager layer
+//!
+//! Disk block manager  knows the disk location of each layout area, and the allocation and reclamation of disk blocks need to be completed through it.
+//!
+//! NOYIFE: that from this level, all data structures are in memory.
 use super::{
     block_cache_sync_all, get_block_cache, Bitmap, BlockDevice, DiskInode, DiskInodeType, Inode,
     SuperBlock,

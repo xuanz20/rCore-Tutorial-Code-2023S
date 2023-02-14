@@ -1,3 +1,8 @@
+//! index node(inode, namely file control block) layer
+//!
+//! The data struct and functions for the inode layer that service file-related system calls
+//!
+//! NOTICE: The difference between [`Inode`] and [`DiskInode`]  can be seen from their names: DiskInode in a relatively fixed location within the disk block, while Inode Is a data structure placed in memory that records file inode information.
 use super::{
     block_cache_sync_all, get_block_cache, BlockDevice, DirEntry, DiskInode, DiskInodeType,
     EasyFileSystem, DIRENT_SZ,
@@ -7,7 +12,7 @@ use alloc::sync::Arc;
 use alloc::vec::Vec;
 use spin::{Mutex, MutexGuard};
 
-/// Disk Inode struct
+/// Inode struct in memory
 pub struct Inode {
     /// The block id of the inode
     block_id: usize,
@@ -21,7 +26,7 @@ pub struct Inode {
 
 impl Inode {
     /// Create a new Disk Inode
-    /// 
+    ///
     /// We should not acquire efs lock here.
     pub fn new(
         block_id: u32,
@@ -48,7 +53,7 @@ impl Inode {
             .lock()
             .modify(self.block_offset, f)
     }
-    /// find the disk inode id according to the file with 'name' by search the directory entries in the disk inode with Directory type 
+    /// find the disk inode id according to the file with 'name' by search the directory entries in the disk inode with Directory type
     fn find_inode_id(&self, name: &str, disk_inode: &DiskInode) -> Option<u32> {
         // assert it is a directory
         assert!(disk_inode.is_dir());
@@ -65,7 +70,7 @@ impl Inode {
         }
         None
     }
-    /// find the disk inode of the file with 'name' 
+    /// find the disk inode of the file with 'name'
     pub fn find(&self, name: &str) -> Option<Arc<Inode>> {
         let fs = self.fs.lock();
         self.read_disk_inode(|disk_inode| {
@@ -146,7 +151,7 @@ impl Inode {
         // release efs lock automatically by compiler
     }
     /// create a directory with 'name' in the root directory
-    /// 
+    ///
     /// list the file names in the root directory
     pub fn ls(&self) -> Vec<String> {
         let _fs = self.fs.lock();
