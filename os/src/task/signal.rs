@@ -1,3 +1,5 @@
+//! Signal flags and function for convert signal flag to integer & string
+
 use bitflags::*;
 
 bitflags! {
@@ -17,7 +19,7 @@ bitflags! {
 }
 
 impl SignalFlags {
-    /// Check if there is an error in the signal flags
+    /// convert signal flag to integer & string
     pub fn check_error(&self) -> Option<(i32, &'static str)> {
         if self.contains(Self::SIGINT) {
             Some((-2, "Killed, SIGINT=2"))

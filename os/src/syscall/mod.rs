@@ -98,7 +98,7 @@ pub const SYSCALL_SEMAPHORE_DOWN: usize = 470;
 pub const SYSCALL_CONDVAR_CREATE: usize = 471;
 /// condvar_signal syscall
 pub const SYSCALL_CONDVAR_SIGNAL: usize = 472;
-///
+/// condvar_wait syscallca
 pub const SYSCALL_CONDVAR_WAIT: usize = 473;
 
 mod fs;

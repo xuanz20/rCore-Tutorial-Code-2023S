@@ -149,7 +149,7 @@ pub fn sys_semaphore_up(sem_id: usize) -> isize {
     sem.up();
     0
 }
-/// s
+/// semaphore down syscall
 pub fn sys_semaphore_down(sem_id: usize) -> isize {
     trace!(
         "kernel:pid[{}] tid[{}] sys_semaphore_down",

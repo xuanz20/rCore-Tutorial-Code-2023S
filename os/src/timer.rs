@@ -67,6 +67,7 @@ impl Ord for TimerCondVar {
 }
 
 lazy_static! {
+    /// TIMERS: global instance: set of timer condvars
     static ref TIMERS: UPSafeCell<BinaryHeap<TimerCondVar>> =
         unsafe { UPSafeCell::new(BinaryHeap::<TimerCondVar>::new()) };
 }

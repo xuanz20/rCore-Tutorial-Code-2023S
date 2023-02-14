@@ -1,3 +1,5 @@
+//! Implementation of  [`ProcessControlBlock`]
+
 use super::id::RecycleAllocator;
 use super::manager::insert_into_pid2process;
 use super::TaskControlBlock;
@@ -21,27 +23,41 @@ pub struct ProcessControlBlock {
     inner: UPSafeCell<ProcessControlBlockInner>,
 }
 
+/// Inner of Process Control Block
 pub struct ProcessControlBlockInner {
+    /// is zombie?
     pub is_zombie: bool,
+    /// memory set(address space)
     pub memory_set: MemorySet,
+    /// parent process
     pub parent: Option<Weak<ProcessControlBlock>>,
+    /// children process
     pub children: Vec<Arc<ProcessControlBlock>>,
+    /// exit code
     pub exit_code: i32,
+    /// file descriptor table
     pub fd_table: Vec<Option<Arc<dyn File + Send + Sync>>>,
+    /// signal flags
     pub signals: SignalFlags,
+    /// tasks(also known as threads)
     pub tasks: Vec<Option<Arc<TaskControlBlock>>>,
+    /// task resource allocator
     pub task_res_allocator: RecycleAllocator,
+    /// mutex list
     pub mutex_list: Vec<Option<Arc<dyn Mutex>>>,
+    /// semaphore list
     pub semaphore_list: Vec<Option<Arc<Semaphore>>>,
+    /// condvar list
     pub condvar_list: Vec<Option<Arc<Condvar>>>,
 }
 
 impl ProcessControlBlockInner {
     #[allow(unused)]
+    /// get the address of app's page table
     pub fn get_user_token(&self) -> usize {
         self.memory_set.token()
     }
-
+    /// allocate a new file descriptor
     pub fn alloc_fd(&mut self) -> usize {
         if let Some(fd) = (0..self.fd_table.len()).find(|fd| self.fd_table[*fd].is_none()) {
             fd
@@ -50,19 +66,19 @@ impl ProcessControlBlockInner {
             self.fd_table.len() - 1
         }
     }
-
+    /// allocate a new task id
     pub fn alloc_tid(&mut self) -> usize {
         self.task_res_allocator.alloc()
     }
-
+    /// deallocate a task id
     pub fn dealloc_tid(&mut self, tid: usize) {
         self.task_res_allocator.dealloc(tid)
     }
-
+    /// the count of tasks(threads) in this process
     pub fn thread_count(&self) -> usize {
         self.tasks.len()
     }
-
+    /// get a task with tid in this process
     pub fn get_task(&self, tid: usize) -> Arc<TaskControlBlock> {
         self.tasks[tid].as_ref().unwrap().clone()
     }

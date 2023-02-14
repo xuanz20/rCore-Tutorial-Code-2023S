@@ -1,3 +1,5 @@
+//! Mutex (spin-like and blocking(sleep))
+
 use super::UPSafeCell;
 use crate::task::TaskControlBlock;
 use crate::task::{block_current_and_run_next, suspend_current_and_run_next};
@@ -12,7 +14,7 @@ pub trait Mutex: Sync + Send {
     fn unlock(&self);
 }
 
-/// Spinlock Mutex
+/// Spinlock Mutex struct
 pub struct MutexSpin {
     locked: UPSafeCell<bool>,
 }
@@ -50,7 +52,7 @@ impl Mutex for MutexSpin {
     }
 }
 
-/// Blocking Mutex
+/// Blocking Mutex struct
 pub struct MutexBlocking {
     inner: UPSafeCell<MutexBlockingInner>,
 }

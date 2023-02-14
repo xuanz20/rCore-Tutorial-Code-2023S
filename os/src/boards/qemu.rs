@@ -1,3 +1,5 @@
+//! QEMU riscv-64 virt machine
+
 /// clock frequency
 pub const CLOCK_FREQ: usize = 12500000;
 //pub const MEMORY_END: usize = 0x801000000;

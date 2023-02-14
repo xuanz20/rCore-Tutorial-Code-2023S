@@ -1,3 +1,5 @@
+//! Physical page frame allocator
+
 use super::{PhysAddr, PhysPageNum};
 use crate::config::MEMORY_END;
 use crate::sync::UPSafeCell;

@@ -1,3 +1,5 @@
+//! Allocator for pid, task user resource, kernel stack using a simple recycle strategy.
+
 use super::ProcessControlBlock;
 use crate::config::{KERNEL_STACK_SIZE, PAGE_SIZE, TRAMPOLINE, TRAP_CONTEXT_BASE, USER_STACK_SIZE};
 use crate::mm::{MapPermission, PhysPageNum, VirtAddr, KERNEL_SPACE};
@@ -8,18 +10,21 @@ use alloc::{
 };
 use lazy_static::*;
 
+/// Allocator with a simple recycle strategy
 pub struct RecycleAllocator {
     current: usize,
     recycled: Vec<usize>,
 }
 
 impl RecycleAllocator {
+    /// Create a new allocator
     pub fn new() -> Self {
         RecycleAllocator {
             current: 0,
             recycled: Vec::new(),
         }
     }
+    /// allocate a new item
     pub fn alloc(&mut self) -> usize {
         if let Some(id) = self.recycled.pop() {
             id
@@ -28,6 +33,7 @@ impl RecycleAllocator {
             self.current - 1
         }
     }
+    /// deallocate an item
     pub fn dealloc(&mut self, id: usize) {
         assert!(id < self.current);
         assert!(
@@ -40,8 +46,10 @@ impl RecycleAllocator {
 }
 
 lazy_static! {
+    /// Glocal allocator for pid
     static ref PID_ALLOCATOR: UPSafeCell<RecycleAllocator> =
         unsafe { UPSafeCell::new(RecycleAllocator::new()) };
+    /// Global allocator for kernel stack
     static ref KSTACK_ALLOCATOR: UPSafeCell<RecycleAllocator> =
         unsafe { UPSafeCell::new(RecycleAllocator::new()) };
 }
@@ -118,21 +126,26 @@ impl KernelStack {
     }
 }
 
+/// User Resource for a task
 pub struct TaskUserRes {
+    /// task id
     pub tid: usize,
+    /// user stack base
     pub ustack_base: usize,
+    /// process belongs to
     pub process: Weak<ProcessControlBlock>,
 }
-
+/// Return the bottom addr (low addr) of the trap context for a task
 fn trap_cx_bottom_from_tid(tid: usize) -> usize {
     TRAP_CONTEXT_BASE - tid * PAGE_SIZE
 }
-
+/// Return the bottom addr (high addr) of the user stack for a task
 fn ustack_bottom_from_tid(ustack_base: usize, tid: usize) -> usize {
     ustack_base + tid * (PAGE_SIZE + USER_STACK_SIZE)
 }
 
 impl TaskUserRes {
+    /// Create a new TaskUserRes (Task User Resource)
     pub fn new(
         process: Arc<ProcessControlBlock>,
         ustack_base: usize,
@@ -149,7 +162,7 @@ impl TaskUserRes {
         }
         task_user_res
     }
-
+    /// Allocate user resource for a task
     pub fn alloc_user_res(&self) {
         let process = self.process.upgrade().unwrap();
         let mut process_inner = process.inner_exclusive_access();
@@ -170,7 +183,7 @@ impl TaskUserRes {
             MapPermission::R | MapPermission::W,
         );
     }
-
+    /// Deallocate user resource for a task
     fn dealloc_user_res(&self) {
         // dealloc tid
         let process = self.process.upgrade().unwrap();
@@ -188,6 +201,7 @@ impl TaskUserRes {
     }
 
     #[allow(unused)]
+    /// alloc task id
     pub fn alloc_tid(&mut self) {
         self.tid = self
             .process
@@ -196,17 +210,17 @@ impl TaskUserRes {
             .inner_exclusive_access()
             .alloc_tid();
     }
-
+    /// dealloc task id
     pub fn dealloc_tid(&self) {
         let process = self.process.upgrade().unwrap();
         let mut process_inner = process.inner_exclusive_access();
         process_inner.dealloc_tid(self.tid);
     }
-
+    /// The bottom usr vaddr (low addr) of the trap context for a task with tid
     pub fn trap_cx_user_va(&self) -> usize {
         trap_cx_bottom_from_tid(self.tid)
     }
-
+    /// The physical page number(ppn) of the trap context for a task with tid
     pub fn trap_cx_ppn(&self) -> PhysPageNum {
         let process = self.process.upgrade().unwrap();
         let process_inner = process.inner_exclusive_access();
@@ -217,10 +231,11 @@ impl TaskUserRes {
             .unwrap()
             .ppn()
     }
-
+    /// the bottom addr (low addr) of the user stack for a task
     pub fn ustack_base(&self) -> usize {
         self.ustack_base
     }
+    /// the top addr (high addr) of the user stack for a task
     pub fn ustack_top(&self) -> usize {
         ustack_bottom_from_tid(self.ustack_base, self.tid) + USER_STACK_SIZE
     }

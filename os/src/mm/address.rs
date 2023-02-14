@@ -1,3 +1,5 @@
+//! PhysAddr, VirtAddr, PhysPageNum, VirtPageNum, raw address
+
 use super::PageTableEntry;
 use crate::config::{PAGE_SIZE, PAGE_SIZE_BITS};
 use core::fmt::{self, Debug, Formatter};

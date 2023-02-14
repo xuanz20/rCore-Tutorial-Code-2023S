@@ -34,13 +34,13 @@ global_asm!(include_str!("trap.S"));
 pub fn init() {
     set_kernel_trap_entry();
 }
-
+/// set trap entry for traps happen in kernel(supervisor) mode
 fn set_kernel_trap_entry() {
     unsafe {
         stvec::write(trap_from_kernel as usize, TrapMode::Direct);
     }
 }
-
+/// set trap entry for traps happen in user mode
 fn set_user_trap_entry() {
     unsafe {
         stvec::write(TRAMPOLINE as usize, TrapMode::Direct);
