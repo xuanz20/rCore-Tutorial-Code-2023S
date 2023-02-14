@@ -16,7 +16,7 @@ jobs:
           git clone https://github.com/LearningOS/rCore-Tutorial-Test-2023S.git user
           cd os
           make
-          cargo doc --no-deps --verbose
+          cargo doc --document-private-items --verbose
       - name: Push to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
