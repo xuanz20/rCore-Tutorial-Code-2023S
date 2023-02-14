@@ -4,7 +4,7 @@ use crate::{
     trap::{trap_handler, TrapContext},
 };
 use alloc::sync::Arc;
-
+/// thread create syscall
 pub fn sys_thread_create(entry: usize, arg: usize) -> isize {
     trace!(
         "kernel:pid[{}] tid[{}] sys_thread_create",
@@ -52,7 +52,7 @@ pub fn sys_thread_create(entry: usize, arg: usize) -> isize {
     (*new_task_trap_cx).x[10] = arg;
     new_task_tid as isize
 }
-
+/// get current thread id syscall
 pub fn sys_gettid() -> isize {
     trace!(
         "kernel:pid[{}] tid[{}] sys_gettid",
@@ -74,6 +74,8 @@ pub fn sys_gettid() -> isize {
         .tid as isize
 }
 
+/// wait for a thread to exit syscall
+///
 /// thread does not exist, return -1
 /// thread has not exited yet, return -2
 /// otherwise, return thread's exit code

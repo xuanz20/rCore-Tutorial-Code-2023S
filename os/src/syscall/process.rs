@@ -26,7 +26,9 @@ pub struct TaskInfo {
     /// Total running time of task
     time: usize,
 }
-
+/// exit syscall
+///
+/// exit the current task and run the next task in task list
 pub fn sys_exit(exit_code: i32) -> ! {
     trace!(
         "kernel:pid[{}] sys_exit",
@@ -35,13 +37,13 @@ pub fn sys_exit(exit_code: i32) -> ! {
     exit_current_and_run_next(exit_code);
     panic!("Unreachable in sys_exit!");
 }
-
+/// yield syscall
 pub fn sys_yield() -> isize {
     //trace!("kernel: sys_yield");
     suspend_current_and_run_next();
     0
 }
-
+/// getpid syscall
 pub fn sys_getpid() -> isize {
     trace!(
         "kernel: sys_getpid pid:{}",
@@ -49,7 +51,7 @@ pub fn sys_getpid() -> isize {
     );
     current_task().unwrap().process.upgrade().unwrap().getpid() as isize
 }
-
+/// fork child process syscall
 pub fn sys_fork() -> isize {
     trace!(
         "kernel:pid[{}] sys_fork",
@@ -67,7 +69,7 @@ pub fn sys_fork() -> isize {
     trap_cx.x[10] = 0;
     new_pid as isize
 }
-
+/// exec syscall
 pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
     trace!(
         "kernel:pid[{}] sys_exec",
@@ -98,6 +100,8 @@ pub fn sys_exec(path: *const u8, mut args: *const usize) -> isize {
     }
 }
 
+/// waitpid syscall
+///
 /// If there is not a child process whose pid is same as given, return -1.
 /// Else if there is a child process but it is still running, return -2.
 pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
@@ -135,6 +139,7 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
     // ---- release current PCB automatically
 }
 
+/// kill syscall
 pub fn sys_kill(pid: usize, signal: u32) -> isize {
     trace!(
         "kernel:pid[{}] sys_kill",
@@ -152,6 +157,8 @@ pub fn sys_kill(pid: usize, signal: u32) -> isize {
     }
 }
 
+/// get_time syscall
+///
 /// YOUR JOB: get time with second and microsecond
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TimeVal`] is splitted by two pages ?
@@ -163,6 +170,8 @@ pub fn sys_get_time(_ts: *mut TimeVal, _tz: usize) -> isize {
     -1
 }
 
+/// task_info syscall
+///
 /// YOUR JOB: Finish sys_task_info to pass testcases
 /// HINT: You might reimplement it with virtual memory management.
 /// HINT: What if [`TaskInfo`] is splitted by two pages ?
@@ -174,6 +183,8 @@ pub fn sys_task_info(_ti: *mut TaskInfo) -> isize {
     -1
 }
 
+/// mmap syscall
+///
 /// YOUR JOB: Implement mmap.
 pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
     trace!(
@@ -183,6 +194,8 @@ pub fn sys_mmap(_start: usize, _len: usize, _port: usize) -> isize {
     -1
 }
 
+/// munmap syscall
+///
 /// YOUR JOB: Implement munmap.
 pub fn sys_munmap(_start: usize, _len: usize) -> isize {
     trace!(
@@ -201,6 +214,7 @@ pub fn sys_munmap(_start: usize, _len: usize) -> isize {
 //     -1
 // }
 
+/// spawn syscall
 /// YOUR JOB: Implement spawn.
 /// HINT: fork + exec =/= spawn
 pub fn sys_spawn(_path: *const u8) -> isize {
@@ -211,6 +225,8 @@ pub fn sys_spawn(_path: *const u8) -> isize {
     -1
 }
 
+/// set priority syscall
+///
 /// YOUR JOB: Set task priority
 pub fn sys_set_priority(_prio: isize) -> isize {
     trace!(

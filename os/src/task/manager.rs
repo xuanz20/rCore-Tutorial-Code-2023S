@@ -8,13 +8,14 @@ use crate::sync::UPSafeCell;
 use alloc::collections::{BTreeMap, VecDeque};
 use alloc::sync::Arc;
 use lazy_static::*;
-
+///A array of `TaskControlBlock` that is thread-safe
 pub struct TaskManager {
     ready_queue: VecDeque<Arc<TaskControlBlock>>,
 }
 
 /// A simple FIFO scheduler.
 impl TaskManager {
+    ///Creat an empty TaskManager
     pub fn new() -> Self {
         Self {
             ready_queue: VecDeque::new(),

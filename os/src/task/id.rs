@@ -98,8 +98,8 @@ impl Drop for KernelStack {
 }
 
 impl KernelStack {
+    /// Push a variable of type T into the top of the KernelStack and return its raw pointer
     #[allow(unused)]
-    /// push a value of type T on the top of the kernel stack
     pub fn push_on_top<T>(&self, value: T) -> *mut T
     where
         T: Sized,

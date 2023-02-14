@@ -13,10 +13,11 @@ use alloc::vec;
 use alloc::vec::Vec;
 use core::cell::RefMut;
 
+/// Process Control Block
 pub struct ProcessControlBlock {
-    // immutable
+    /// immutable
     pub pid: PidHandle,
-    // mutable
+    /// mutable
     inner: UPSafeCell<ProcessControlBlockInner>,
 }
 
@@ -68,10 +69,11 @@ impl ProcessControlBlockInner {
 }
 
 impl ProcessControlBlock {
+    /// inner_exclusive_access
     pub fn inner_exclusive_access(&self) -> RefMut<'_, ProcessControlBlockInner> {
         self.inner.exclusive_access()
     }
-
+    /// new process from elf file
     pub fn new(elf_data: &[u8]) -> Arc<Self> {
         trace!("kernel: ProcessControlBlock::new");
         // memory_set with elf program headers/trampoline/trap context/user stack
@@ -260,7 +262,7 @@ impl ProcessControlBlock {
         add_task(task);
         child
     }
-
+    /// get pid
     pub fn getpid(&self) -> usize {
         self.pid.0
     }

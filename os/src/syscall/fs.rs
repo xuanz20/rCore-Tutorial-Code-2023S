@@ -2,7 +2,7 @@ use crate::fs::{make_pipe, open_file, OpenFlags, Stat};
 use crate::mm::{translated_byte_buffer, translated_refmut, translated_str, UserBuffer};
 use crate::task::{current_process, current_task, current_user_token};
 use alloc::sync::Arc;
-
+/// write syscall
 pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
     trace!(
         "kernel:pid[{}] sys_write",
@@ -26,7 +26,7 @@ pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
         -1
     }
 }
-
+/// read syscall
 pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
     trace!(
         "kernel:pid[{}] sys_read",
@@ -51,7 +51,7 @@ pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
         -1
     }
 }
-
+/// open sys
 pub fn sys_open(path: *const u8, flags: u32) -> isize {
     trace!(
         "kernel:pid[{}] sys_open",
@@ -69,7 +69,7 @@ pub fn sys_open(path: *const u8, flags: u32) -> isize {
         -1
     }
 }
-
+/// close syscall
 pub fn sys_close(fd: usize) -> isize {
     trace!(
         "kernel:pid[{}] sys_close",
@@ -86,7 +86,7 @@ pub fn sys_close(fd: usize) -> isize {
     inner.fd_table[fd].take();
     0
 }
-
+/// pipe syscall
 pub fn sys_pipe(pipe: *mut usize) -> isize {
     trace!(
         "kernel:pid[{}] sys_pipe",
@@ -104,7 +104,7 @@ pub fn sys_pipe(pipe: *mut usize) -> isize {
     *translated_refmut(token, unsafe { pipe.add(1) }) = write_fd;
     0
 }
-
+/// dup syscall
 pub fn sys_dup(fd: usize) -> isize {
     trace!(
         "kernel:pid[{}] sys_dup",

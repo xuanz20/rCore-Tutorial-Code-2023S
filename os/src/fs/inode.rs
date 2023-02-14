@@ -14,7 +14,7 @@ pub struct OSInode {
     writable: bool,
     inner: UPSafeCell<OSInodeInner>,
 }
-
+/// inner of inode in memory
 pub struct OSInodeInner {
     offset: usize,
     inode: Arc<Inode>,
@@ -30,7 +30,7 @@ impl OSInode {
             inner: unsafe { UPSafeCell::new(OSInodeInner { offset: 0, inode }) },
         }
     }
-    /// read all data from the inode
+    /// read all data from the inode in memory
     pub fn read_all(&self) -> Vec<u8> {
         trace!("kernel: OSInode::read_all");
         let mut inner = self.inner.exclusive_access();
@@ -120,12 +120,15 @@ pub fn open_file(name: &str, flags: OpenFlags) -> Option<Arc<OSInode>> {
 }
 
 impl File for OSInode {
+    /// file readable?
     fn readable(&self) -> bool {
         self.readable
     }
+    /// file writable?
     fn writable(&self) -> bool {
         self.writable
     }
+    /// read file data into buffer
     fn read(&self, mut buf: UserBuffer) -> usize {
         trace!("kernel: OSInode::read");
         let mut inner = self.inner.exclusive_access();
@@ -140,6 +143,7 @@ impl File for OSInode {
         }
         total_read_size
     }
+    /// write buffer data into file
     fn write(&self, buf: UserBuffer) -> usize {
         trace!("kernel: OSInode::write");
         let mut inner = self.inner.exclusive_access();
