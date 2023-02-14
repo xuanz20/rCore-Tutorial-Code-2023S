@@ -373,7 +373,7 @@ impl DiskInode {
 #[repr(C)]
 pub struct DirEntry {
     name: [u8; NAME_LENGTH_LIMIT + 1],
-    inode_number: u32,
+    inode_id: u32,
 }
 
 pub const DIRENT_SZ: usize = 32;
@@ -382,15 +382,16 @@ impl DirEntry {
     pub fn empty() -> Self {
         Self {
             name: [0u8; NAME_LENGTH_LIMIT + 1],
-            inode_number: 0,
+            inode_id: 0,
         }
     }
-    pub fn new(name: &str, inode_number: u32) -> Self {
+    /// Crate a directory entry from name and inode number
+    pub fn new(name: &str, inode_id: u32) -> Self {
         let mut bytes = [0u8; NAME_LENGTH_LIMIT + 1];
         bytes[..name.len()].copy_from_slice(name.as_bytes());
         Self {
             name: bytes,
-            inode_number,
+            inode_id,
         }
     }
     pub fn as_bytes(&self) -> &[u8] {
@@ -403,7 +404,8 @@ impl DirEntry {
         let len = (0usize..).find(|i| self.name[*i] == 0).unwrap();
         core::str::from_utf8(&self.name[..len]).unwrap()
     }
-    pub fn inode_number(&self) -> u32 {
-        self.inode_number
+    /// Get inode number of the entry
+    pub fn inode_id(&self) -> u32 {
+        self.inode_id
     }
 }
