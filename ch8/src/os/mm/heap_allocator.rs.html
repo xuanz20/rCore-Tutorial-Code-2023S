@@ -43,7 +43,11 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::KERNEL_HEAP_SIZE</span>;
+<span id="46">46</span>
+<span id="47">47</span>
+</pre><pre class="rust"><code><span class="doccomment">//! The heap allocator.</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::KERNEL_HEAP_SIZE</span>;
 <span class="kw">use</span> <span class="ident">buddy_system_allocator::LockedHeap</span>;
 
 <span class="attribute">#[<span class="ident">global_allocator</span>]</span>

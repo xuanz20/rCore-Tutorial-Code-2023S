@@ -51,7 +51,11 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
+<span id="54">54</span>
+<span id="55">55</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Semaphore</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">block_current_and_run_next</span>, <span class="ident">current_task</span>, <span class="ident">wakeup_task</span>, <span class="ident">TaskControlBlock</span>};
 <span class="kw">use</span> <span class="ident">alloc</span>::{<span class="ident">collections::VecDeque</span>, <span class="ident">sync::Arc</span>};
 

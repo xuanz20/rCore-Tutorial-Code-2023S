@@ -180,13 +180,13 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>() {
     <span class="ident">set_kernel_trap_entry</span>();
 }
-
+<span class="doccomment">/// set trap entry for traps happen in kernel(supervisor) mode</span>
 <span class="kw">fn</span> <span class="ident">set_kernel_trap_entry</span>() {
     <span class="kw">unsafe</span> {
         <span class="ident">stvec::write</span>(<span class="ident">trap_from_kernel</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">TrapMode::Direct</span>);
     }
 }
-
+<span class="doccomment">/// set trap entry for traps happen in user mode</span>
 <span class="kw">fn</span> <span class="ident">set_user_trap_entry</span>() {
     <span class="kw">unsafe</span> {
         <span class="ident">stvec::write</span>(<span class="ident">TRAMPOLINE</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">TrapMode::Direct</span>);

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["BLOCK_SZ",""]],"struct":[["EasyFileSystem","EasyFileSystem struct"],["Inode","Disk Inode struct"]],"trait":[["BlockDevice",""]]};

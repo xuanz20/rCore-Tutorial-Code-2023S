@@ -114,6 +114,7 @@
 <span id="114">114</span>
 <span id="115">115</span>
 <span id="116">116</span>
+<span id="117">117</span>
 </pre><pre class="rust"><code><span class="doccomment">//! RISC-V timer-related functionality</span>
 
 <span class="kw">use</span> <span class="ident">core::cmp::Ordering</span>;
@@ -183,6 +184,7 @@
 }
 
 <span class="macro">lazy_static!</span> {
+    <span class="doccomment">/// TIMERS: global instance: set of timer condvars</span>
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TIMERS</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">BinaryHeap</span><span class="op">&lt;</span><span class="ident">TimerCondVar</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
         <span class="kw">unsafe</span> { <span class="ident">UPSafeCell::new</span>(<span class="ident">BinaryHeap</span>::<span class="op">&lt;</span><span class="ident">TimerCondVar</span><span class="op">&gt;</span><span class="ident">::new</span>()) };
 }

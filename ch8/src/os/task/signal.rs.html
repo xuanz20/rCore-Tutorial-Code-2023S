@@ -35,7 +35,11 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">bitflags</span>::<span class="kw-2">*</span>;
+<span id="38">38</span>
+<span id="39">39</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Signal flags and function for convert signal flag to integer &amp; string</span>
+
+<span class="kw">use</span> <span class="ident">bitflags</span>::<span class="kw-2">*</span>;
 
 <span class="macro">bitflags!</span> {
     <span class="doccomment">/// Signal flags</span>
@@ -54,7 +58,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">SignalFlags</span> {
-    <span class="doccomment">/// Check if there is an error in the signal flags</span>
+    <span class="doccomment">/// convert signal flag to integer &amp; string</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_error</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>)<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">contains</span>(<span class="ident"><span class="self">Self</span>::SIGINT</span>) {
             <span class="prelude-val">Some</span>((<span class="op">-</span><span class="number">2</span>, <span class="string">&quot;Killed, SIGINT=2&quot;</span>))

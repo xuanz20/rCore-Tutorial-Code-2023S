@@ -101,7 +101,11 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::UPSafeCell</span>;
+<span id="104">104</span>
+<span id="105">105</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Mutex (spin-like and blocking(sleep))</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::UPSafeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task::TaskControlBlock</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">block_current_and_run_next</span>, <span class="ident">suspend_current_and_run_next</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_task</span>, <span class="ident">wakeup_task</span>};
@@ -115,7 +119,7 @@
     <span class="kw">fn</span> <span class="ident">unlock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>);
 }
 
-<span class="doccomment">/// Spinlock Mutex</span>
+<span class="doccomment">/// Spinlock Mutex struct</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MutexSpin</span> {
     <span class="ident">locked</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
 }
@@ -153,7 +157,7 @@
     }
 }
 
-<span class="doccomment">/// Blocking Mutex</span>
+<span class="doccomment">/// Blocking Mutex struct</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MutexBlocking</span> {
     <span class="ident">inner</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">MutexBlockingInner</span><span class="op">&gt;</span>,
 }

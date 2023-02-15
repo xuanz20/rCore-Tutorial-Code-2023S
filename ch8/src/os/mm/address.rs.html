@@ -282,7 +282,11 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::PageTableEntry</span>;
+<span id="285">285</span>
+<span id="286">286</span>
+</pre><pre class="rust"><code><span class="doccomment">//! PhysAddr, VirtAddr, PhysPageNum, VirtPageNum, raw address</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::PageTableEntry</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">PAGE_SIZE</span>, <span class="ident">PAGE_SIZE_BITS</span>};
 <span class="kw">use</span> <span class="ident">core::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
 

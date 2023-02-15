@@ -232,7 +232,24 @@
 <span id="232">232</span>
 <span id="233">233</span>
 <span id="234">234</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ProcessControlBlock</span>;
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Allocator for pid, task user resource, kernel stack using a simple recycle strategy.</span>
+
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ProcessControlBlock</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">KERNEL_STACK_SIZE</span>, <span class="ident">PAGE_SIZE</span>, <span class="ident">TRAMPOLINE</span>, <span class="ident">TRAP_CONTEXT_BASE</span>, <span class="ident">USER_STACK_SIZE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">MapPermission</span>, <span class="ident">PhysPageNum</span>, <span class="ident">VirtAddr</span>, <span class="ident">KERNEL_SPACE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync::UPSafeCell</span>;
@@ -242,18 +259,21 @@
 };
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
 
+<span class="doccomment">/// Allocator with a simple recycle strategy</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RecycleAllocator</span> {
     <span class="ident">current</span>: <span class="ident">usize</span>,
     <span class="ident">recycled</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">RecycleAllocator</span> {
+    <span class="doccomment">/// Create a new allocator</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">RecycleAllocator</span> {
             <span class="ident">current</span>: <span class="number">0</span>,
             <span class="ident">recycled</span>: <span class="ident">Vec::new</span>(),
         }
     }
+    <span class="doccomment">/// allocate a new item</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">alloc</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">recycled</span>.<span class="ident">pop</span>() {
             <span class="ident">id</span>
@@ -262,6 +282,7 @@
             <span class="self">self</span>.<span class="ident">current</span> <span class="op">-</span> <span class="number">1</span>
         }
     }
+    <span class="doccomment">/// deallocate an item</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dealloc</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">usize</span>) {
         <span class="macro">assert!</span>(<span class="ident">id</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">current</span>);
         <span class="macro">assert!</span>(
@@ -274,8 +295,10 @@
 }
 
 <span class="macro">lazy_static!</span> {
+    <span class="doccomment">/// Glocal allocator for pid</span>
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">PID_ALLOCATOR</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">RecycleAllocator</span><span class="op">&gt;</span> <span class="op">=</span>
         <span class="kw">unsafe</span> { <span class="ident">UPSafeCell::new</span>(<span class="ident">RecycleAllocator::new</span>()) };
+    <span class="doccomment">/// Global allocator for kernel stack</span>
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">KSTACK_ALLOCATOR</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">RecycleAllocator</span><span class="op">&gt;</span> <span class="op">=</span>
         <span class="kw">unsafe</span> { <span class="ident">UPSafeCell::new</span>(<span class="ident">RecycleAllocator::new</span>()) };
 }
@@ -352,21 +375,26 @@
     }
 }
 
+<span class="doccomment">/// User Resource for a task</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TaskUserRes</span> {
+    <span class="doccomment">/// task id</span>
     <span class="kw">pub</span> <span class="ident">tid</span>: <span class="ident">usize</span>,
+    <span class="doccomment">/// user stack base</span>
     <span class="kw">pub</span> <span class="ident">ustack_base</span>: <span class="ident">usize</span>,
+    <span class="doccomment">/// process belongs to</span>
     <span class="kw">pub</span> <span class="ident">process</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">ProcessControlBlock</span><span class="op">&gt;</span>,
 }
-
+<span class="doccomment">/// Return the bottom addr (low addr) of the trap context for a task</span>
 <span class="kw">fn</span> <span class="ident">trap_cx_bottom_from_tid</span>(<span class="ident">tid</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
     <span class="ident">TRAP_CONTEXT_BASE</span> <span class="op">-</span> <span class="ident">tid</span> <span class="op">*</span> <span class="ident">PAGE_SIZE</span>
 }
-
+<span class="doccomment">/// Return the bottom addr (high addr) of the user stack for a task</span>
 <span class="kw">fn</span> <span class="ident">ustack_bottom_from_tid</span>(<span class="ident">ustack_base</span>: <span class="ident">usize</span>, <span class="ident">tid</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
     <span class="ident">ustack_base</span> <span class="op">+</span> <span class="ident">tid</span> <span class="op">*</span> (<span class="ident">PAGE_SIZE</span> <span class="op">+</span> <span class="ident">USER_STACK_SIZE</span>)
 }
 
 <span class="kw">impl</span> <span class="ident">TaskUserRes</span> {
+    <span class="doccomment">/// Create a new TaskUserRes (Task User Resource)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
         <span class="ident">process</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ProcessControlBlock</span><span class="op">&gt;</span>,
         <span class="ident">ustack_base</span>: <span class="ident">usize</span>,
@@ -383,7 +411,7 @@
         }
         <span class="ident">task_user_res</span>
     }
-
+    <span class="doccomment">/// Allocate user resource for a task</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">alloc_user_res</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">process_inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
@@ -404,7 +432,7 @@
             <span class="ident">MapPermission::R</span> <span class="op">|</span> <span class="ident">MapPermission::W</span>,
         );
     }
-
+    <span class="doccomment">/// Deallocate user resource for a task</span>
     <span class="kw">fn</span> <span class="ident">dealloc_user_res</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="comment">// dealloc tid</span>
         <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
@@ -422,6 +450,7 @@
     }
 
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
+    <span class="doccomment">/// alloc task id</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">alloc_tid</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">tid</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">process</span>
@@ -430,17 +459,17 @@
             .<span class="ident">inner_exclusive_access</span>()
             .<span class="ident">alloc_tid</span>();
     }
-
+    <span class="doccomment">/// dealloc task id</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dealloc_tid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">process_inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
         <span class="ident">process_inner</span>.<span class="ident">dealloc_tid</span>(<span class="self">self</span>.<span class="ident">tid</span>);
     }
-
+    <span class="doccomment">/// The bottom usr vaddr (low addr) of the trap context for a task with tid</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trap_cx_user_va</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="ident">trap_cx_bottom_from_tid</span>(<span class="self">self</span>.<span class="ident">tid</span>)
     }
-
+    <span class="doccomment">/// The physical page number(ppn) of the trap context for a task with tid</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trap_cx_ppn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">PhysPageNum</span> {
         <span class="kw">let</span> <span class="ident">process</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">process_inner</span> <span class="op">=</span> <span class="ident">process</span>.<span class="ident">inner_exclusive_access</span>();
@@ -451,10 +480,11 @@
             .<span class="ident">unwrap</span>()
             .<span class="ident">ppn</span>()
     }
-
+    <span class="doccomment">/// the bottom addr (low addr) of the user stack for a task</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ustack_base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">ustack_base</span>
     }
+    <span class="doccomment">/// the top addr (high addr) of the user stack for a task</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ustack_top</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="ident">ustack_bottom_from_tid</span>(<span class="self">self</span>.<span class="ident">ustack_base</span>, <span class="self">self</span>.<span class="ident">tid</span>) <span class="op">+</span> <span class="ident">USER_STACK_SIZE</span>
     }

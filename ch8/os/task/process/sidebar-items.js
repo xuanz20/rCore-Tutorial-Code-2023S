@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["ProcessControlBlock","Process Control Block"],["ProcessControlBlockInner",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["ProcessControlBlock","Process Control Block"],["ProcessControlBlockInner","Inner of Process Control Block"]]};

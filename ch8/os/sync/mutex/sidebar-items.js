@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["MutexBlocking","Blocking Mutex"],["MutexBlockingInner",""],["MutexSpin","Spinlock Mutex"]],"trait":[["Mutex","Mutex trait"]]};
+window.SIDEBAR_ITEMS = {"struct":[["MutexBlocking","Blocking Mutex struct"],["MutexBlockingInner",""],["MutexSpin","Spinlock Mutex struct"]],"trait":[["Mutex","Mutex trait"]]};
