@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["BLOCK_SZ",""]],"struct":[["EasyFileSystem","EasyFileSystem struct"],["Inode","Disk Inode struct"]],"trait":[["BlockDevice",""]]};
+window.SIDEBAR_ITEMS = {"constant":[["BLOCK_SZ",""]],"mod":[["bitmap","Disk layout & data structure layer: about bitmaps"],["block_cache","Block Cache Layer Implements about the disk block cache functionality"],["block_dev","Block device interface."],["efs","Disk block manager layer"],["layout","Disk layout & data structure layer"],["vfs","index node(inode, namely file control block) layer"]]};

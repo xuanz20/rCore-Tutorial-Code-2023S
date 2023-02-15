@@ -153,7 +153,17 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Disk block manager layer</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Disk block manager  knows the disk location of each layout area, and the allocation and reclamation of disk blocks need to be completed through it.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! NOYIFE: that from this level, all data structures are in memory.</span>
+<span class="kw">use</span> <span class="kw">super</span>::{
     <span class="ident">block_cache_sync_all</span>, <span class="ident">get_block_cache</span>, <span class="ident">Bitmap</span>, <span class="ident">BlockDevice</span>, <span class="ident">DiskInode</span>, <span class="ident">DiskInodeType</span>, <span class="ident">Inode</span>,
     <span class="ident">SuperBlock</span>,
 };

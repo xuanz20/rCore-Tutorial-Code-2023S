@@ -144,7 +144,11 @@
 <span id="144">144</span>
 <span id="145">145</span>
 <span id="146">146</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">BlockDevice</span>, <span class="ident">BLOCK_SZ</span>};
+<span id="147">147</span>
+<span id="148">148</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Block Cache Layer</span>
+<span class="doccomment">//! Implements about the disk block cache functionality</span>
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">BlockDevice</span>, <span class="ident">BLOCK_SZ</span>};
 <span class="kw">use</span> <span class="ident">alloc::collections::VecDeque</span>;
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
 <span class="kw">use</span> <span class="ident">alloc::vec</span>;
