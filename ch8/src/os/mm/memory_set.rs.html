@@ -432,6 +432,8 @@
 <span id="432">432</span>
 <span id="433">433</span>
 <span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">frame_alloc</span>, <span class="ident">FrameTracker</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PTEFlags</span>, <span class="ident">PageTable</span>, <span class="ident">PageTableEntry</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">PhysAddr</span>, <span class="ident">PhysPageNum</span>, <span class="ident">VirtAddr</span>, <span class="ident">VirtPageNum</span>};
@@ -471,8 +473,10 @@
 
 <span class="doccomment">/// address space</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MemorySet</span> {
-    <span class="ident">page_table</span>: <span class="ident">PageTable</span>,
-    <span class="ident">areas</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MapArea</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// page table</span>
+    <span class="kw">pub</span> <span class="ident">page_table</span>: <span class="ident">PageTable</span>,
+    <span class="doccomment">/// areas</span>
+    <span class="kw">pub</span> <span class="ident">areas</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MapArea</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MemorySet</span> {
@@ -723,10 +727,10 @@
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MapArea</span> {
-    <span class="ident">vpn_range</span>: <span class="ident">VPNRange</span>,
-    <span class="ident">data_frames</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">VirtPageNum</span>, <span class="ident">FrameTracker</span><span class="op">&gt;</span>,
-    <span class="ident">map_type</span>: <span class="ident">MapType</span>,
-    <span class="ident">map_perm</span>: <span class="ident">MapPermission</span>,
+    <span class="kw">pub</span> <span class="ident">vpn_range</span>: <span class="ident">VPNRange</span>,
+    <span class="kw">pub</span> <span class="ident">data_frames</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">VirtPageNum</span>, <span class="ident">FrameTracker</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">map_type</span>: <span class="ident">MapType</span>,
+    <span class="kw">pub</span> <span class="ident">map_perm</span>: <span class="ident">MapPermission</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MapArea</span> {

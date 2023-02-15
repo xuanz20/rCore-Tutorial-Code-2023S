@@ -272,10 +272,10 @@
     <span class="kw">unsafe</span> {
         <span class="macro">asm!</span>(
             <span class="string">&quot;fence.i&quot;</span>,
-            <span class="string">&quot;jr {restore_va}&quot;</span>,
+            <span class="string">&quot;jr {restore_va}&quot;</span>,         <span class="comment">// jump to new addr of __restore asm function</span>
             <span class="ident">restore_va</span> <span class="op">=</span> <span class="kw">in</span>(<span class="ident">reg</span>) <span class="ident">restore_va</span>,
-            <span class="kw">in</span>(<span class="string">&quot;a0&quot;</span>) <span class="ident">trap_cx_user_va</span>,
-            <span class="kw">in</span>(<span class="string">&quot;a1&quot;</span>) <span class="ident">user_satp</span>,
+            <span class="kw">in</span>(<span class="string">&quot;a0&quot;</span>) <span class="ident">trap_cx_user_va</span>,      <span class="comment">// a0 = virt addr of Trap Context</span>
+            <span class="kw">in</span>(<span class="string">&quot;a1&quot;</span>) <span class="ident">user_satp</span>,        <span class="comment">// a1 = phy addr of usr page table</span>
             <span class="ident">options</span>(<span class="ident">noreturn</span>)
         );
     }

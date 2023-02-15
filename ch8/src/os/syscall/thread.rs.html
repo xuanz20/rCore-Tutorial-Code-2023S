@@ -116,13 +116,15 @@
 <span id="116">116</span>
 <span id="117">117</span>
 <span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">mm::kernel_token</span>,
     <span class="ident">task</span>::{<span class="ident">add_task</span>, <span class="ident">current_task</span>, <span class="ident">TaskControlBlock</span>},
     <span class="ident">trap</span>::{<span class="ident">trap_handler</span>, <span class="ident">TrapContext</span>},
 };
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
-
+<span class="doccomment">/// thread create syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_thread_create</span>(<span class="ident">entry</span>: <span class="ident">usize</span>, <span class="ident">arg</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_thread_create&quot;</span>,
@@ -170,7 +172,7 @@
     (<span class="kw-2">*</span><span class="ident">new_task_trap_cx</span>).<span class="ident">x</span>[<span class="number">10</span>] <span class="op">=</span> <span class="ident">arg</span>;
     <span class="ident">new_task_tid</span> <span class="kw">as</span> <span class="ident">isize</span>
 }
-
+<span class="doccomment">/// get current thread id syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_gettid</span>() -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_gettid&quot;</span>,
@@ -192,6 +194,8 @@
         .<span class="ident">tid</span> <span class="kw">as</span> <span class="ident">isize</span>
 }
 
+<span class="doccomment">/// wait for a thread to exit syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// thread does not exist, return -1</span>
 <span class="doccomment">/// thread has not exited yet, return -2</span>
 <span class="doccomment">/// otherwise, return thread&#39;s exit code</span>

@@ -219,6 +219,22 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">config::MAX_SYSCALL_NUM</span>,
     <span class="ident">fs</span>::{<span class="ident">open_file</span>, <span class="ident">OpenFlags</span>},
@@ -247,7 +263,9 @@
     <span class="doccomment">/// Total running time of task</span>
     <span class="ident">time</span>: <span class="ident">usize</span>,
 }
-
+<span class="doccomment">/// exit syscall</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// exit the current task and run the next task in task list</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exit</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) -&gt; <span class="op">!</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_exit&quot;</span>,
@@ -256,13 +274,13 @@
     <span class="ident">exit_current_and_run_next</span>(<span class="ident">exit_code</span>);
     <span class="macro">panic!</span>(<span class="string">&quot;Unreachable in sys_exit!&quot;</span>);
 }
-
+<span class="doccomment">/// yield syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_yield</span>() -&gt; <span class="ident">isize</span> {
     <span class="comment">//trace!(&quot;kernel: sys_yield&quot;);</span>
     <span class="ident">suspend_current_and_run_next</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// getpid syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_getpid</span>() -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel: sys_getpid pid:{}&quot;</span>,
@@ -270,7 +288,7 @@
     );
     <span class="ident">current_task</span>().<span class="ident">unwrap</span>().<span class="ident">process</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">getpid</span>() <span class="kw">as</span> <span class="ident">isize</span>
 }
-
+<span class="doccomment">/// fork child process syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_fork</span>() -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_fork&quot;</span>,
@@ -288,7 +306,7 @@
     <span class="ident">trap_cx</span>.<span class="ident">x</span>[<span class="number">10</span>] <span class="op">=</span> <span class="number">0</span>;
     <span class="ident">new_pid</span> <span class="kw">as</span> <span class="ident">isize</span>
 }
-
+<span class="doccomment">/// exec syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_exec</span>(<span class="ident">path</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="kw-2">*const</span> <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_exec&quot;</span>,
@@ -319,6 +337,8 @@
     }
 }
 
+<span class="doccomment">/// waitpid syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// If there is not a child process whose pid is same as given, return -1.</span>
 <span class="doccomment">/// Else if there is a child process but it is still running, return -2.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_waitpid</span>(<span class="ident">pid</span>: <span class="ident">isize</span>, <span class="ident">exit_code_ptr</span>: <span class="kw-2">*mut</span> <span class="ident">i32</span>) -&gt; <span class="ident">isize</span> {
@@ -356,6 +376,7 @@
     <span class="comment">// ---- release current PCB automatically</span>
 }
 
+<span class="doccomment">/// kill syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_kill</span>(<span class="ident">pid</span>: <span class="ident">usize</span>, <span class="ident">signal</span>: <span class="ident">u32</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_kill&quot;</span>,
@@ -373,6 +394,8 @@
     }
 }
 
+<span class="doccomment">/// get_time syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// YOUR JOB: get time with second and microsecond</span>
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TimeVal`] is splitted by two pages ?</span>
@@ -384,6 +407,8 @@
     <span class="op">-</span><span class="number">1</span>
 }
 
+<span class="doccomment">/// task_info syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// YOUR JOB: Finish sys_task_info to pass testcases</span>
 <span class="doccomment">/// HINT: You might reimplement it with virtual memory management.</span>
 <span class="doccomment">/// HINT: What if [`TaskInfo`] is splitted by two pages ?</span>
@@ -395,6 +420,8 @@
     <span class="op">-</span><span class="number">1</span>
 }
 
+<span class="doccomment">/// mmap syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// YOUR JOB: Implement mmap.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_mmap</span>(<span class="ident">_start</span>: <span class="ident">usize</span>, <span class="ident">_len</span>: <span class="ident">usize</span>, <span class="ident">_port</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
@@ -404,6 +431,8 @@
     <span class="op">-</span><span class="number">1</span>
 }
 
+<span class="doccomment">/// munmap syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// YOUR JOB: Implement munmap.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_munmap</span>(<span class="ident">_start</span>: <span class="ident">usize</span>, <span class="ident">_len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
@@ -422,6 +451,7 @@
 <span class="comment">//     -1</span>
 <span class="comment">// }</span>
 
+<span class="doccomment">/// spawn syscall</span>
 <span class="doccomment">/// YOUR JOB: Implement spawn.</span>
 <span class="doccomment">/// HINT: fork + exec =/= spawn</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_spawn</span>(<span class="ident">_path</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>) -&gt; <span class="ident">isize</span> {
@@ -432,6 +462,8 @@
     <span class="op">-</span><span class="number">1</span>
 }
 
+<span class="doccomment">/// set priority syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// YOUR JOB: Set task priority</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_set_priority</span>(<span class="ident">_prio</span>: <span class="ident">isize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(

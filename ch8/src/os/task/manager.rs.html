@@ -94,6 +94,7 @@
 <span id="94">94</span>
 <span id="95">95</span>
 <span id="96">96</span>
+<span id="97">97</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of [`TaskManager`]</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! It is only used to manage processes and schedule process based on ready queue.</span>
@@ -104,13 +105,14 @@
 <span class="kw">use</span> <span class="ident">alloc::collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">VecDeque</span>};
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
-
+<span class="doccomment">///A array of `TaskControlBlock` that is thread-safe</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TaskManager</span> {
     <span class="ident">ready_queue</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TaskControlBlock</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// A simple FIFO scheduler.</span>
 <span class="kw">impl</span> <span class="ident">TaskManager</span> {
+    <span class="doccomment">///Creat an empty TaskManager</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">ready_queue</span>: <span class="ident">VecDeque::new</span>(),

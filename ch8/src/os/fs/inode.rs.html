@@ -153,6 +153,10 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::File</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::drivers::BLOCK_DEVICE</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm::UserBuffer</span>;
@@ -169,7 +173,7 @@
     <span class="ident">writable</span>: <span class="ident">bool</span>,
     <span class="ident">inner</span>: <span class="ident">UPSafeCell</span><span class="op">&lt;</span><span class="ident">OSInodeInner</span><span class="op">&gt;</span>,
 }
-
+<span class="doccomment">/// inner of inode in memory</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OSInodeInner</span> {
     <span class="ident">offset</span>: <span class="ident">usize</span>,
     <span class="ident">inode</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Inode</span><span class="op">&gt;</span>,
@@ -185,7 +189,7 @@
             <span class="ident">inner</span>: <span class="kw">unsafe</span> { <span class="ident">UPSafeCell::new</span>(<span class="ident">OSInodeInner</span> { <span class="ident">offset</span>: <span class="number">0</span>, <span class="ident">inode</span> }) },
         }
     }
-    <span class="doccomment">/// read all data from the inode</span>
+    <span class="doccomment">/// read all data from the inode in memory</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
         <span class="macro">trace!</span>(<span class="string">&quot;kernel: OSInode::read_all&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
@@ -275,12 +279,15 @@
 }
 
 <span class="kw">impl</span> <span class="ident">File</span> <span class="kw">for</span> <span class="ident">OSInode</span> {
+    <span class="doccomment">/// file readable?</span>
     <span class="kw">fn</span> <span class="ident">readable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">readable</span>
     }
+    <span class="doccomment">/// file writable?</span>
     <span class="kw">fn</span> <span class="ident">writable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">writable</span>
     }
+    <span class="doccomment">/// read file data into buffer</span>
     <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span> {
         <span class="macro">trace!</span>(<span class="string">&quot;kernel: OSInode::read&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();
@@ -295,6 +302,7 @@
         }
         <span class="ident">total_read_size</span>
     }
+    <span class="doccomment">/// write buffer data into file</span>
     <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="ident">UserBuffer</span>) -&gt; <span class="ident">usize</span> {
         <span class="macro">trace!</span>(<span class="string">&quot;kernel: OSInode::write&quot;</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">exclusive_access</span>();

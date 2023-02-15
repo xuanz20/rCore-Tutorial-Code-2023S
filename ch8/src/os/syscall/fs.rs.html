@@ -153,7 +153,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mm</span>::{<span class="ident">translated_byte_buffer</span>, <span class="ident">translated_refmut</span>, <span class="ident">translated_str</span>, <span class="ident">UserBuffer</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">current_process</span>, <span class="ident">current_task</span>, <span class="ident">current_user_token</span>};
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
-
+<span class="doccomment">/// write syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_write</span>(<span class="ident">fd</span>: <span class="ident">usize</span>, <span class="ident">buf</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_write&quot;</span>,
@@ -177,7 +177,7 @@
         <span class="op">-</span><span class="number">1</span>
     }
 }
-
+<span class="doccomment">/// read syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_read</span>(<span class="ident">fd</span>: <span class="ident">usize</span>, <span class="ident">buf</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_read&quot;</span>,
@@ -202,7 +202,7 @@
         <span class="op">-</span><span class="number">1</span>
     }
 }
-
+<span class="doccomment">/// open sys</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_open</span>(<span class="ident">path</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">flags</span>: <span class="ident">u32</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_open&quot;</span>,
@@ -220,7 +220,7 @@
         <span class="op">-</span><span class="number">1</span>
     }
 }
-
+<span class="doccomment">/// close syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_close</span>(<span class="ident">fd</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_close&quot;</span>,
@@ -237,7 +237,7 @@
     <span class="ident">inner</span>.<span class="ident">fd_table</span>[<span class="ident">fd</span>].<span class="ident">take</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// pipe syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_pipe</span>(<span class="ident">pipe</span>: <span class="kw-2">*mut</span> <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_pipe&quot;</span>,
@@ -255,7 +255,7 @@
     <span class="kw-2">*</span><span class="ident">translated_refmut</span>(<span class="ident">token</span>, <span class="kw">unsafe</span> { <span class="ident">pipe</span>.<span class="ident">add</span>(<span class="number">1</span>) }) <span class="op">=</span> <span class="ident">write_fd</span>;
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// dup syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_dup</span>(<span class="ident">fd</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] sys_dup&quot;</span>,

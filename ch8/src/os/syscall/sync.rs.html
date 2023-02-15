@@ -248,11 +248,12 @@
 <span id="248">248</span>
 <span id="249">249</span>
 <span id="250">250</span>
+<span id="251">251</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sync</span>::{<span class="ident">Condvar</span>, <span class="ident">Mutex</span>, <span class="ident">MutexBlocking</span>, <span class="ident">MutexSpin</span>, <span class="ident">Semaphore</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task</span>::{<span class="ident">block_current_and_run_next</span>, <span class="ident">current_process</span>, <span class="ident">current_task</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::timer</span>::{<span class="ident">add_timer</span>, <span class="ident">get_time_ms</span>};
 <span class="kw">use</span> <span class="ident">alloc::sync::Arc</span>;
-
+<span class="doccomment">/// sleep syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_sleep</span>(<span class="ident">ms</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_sleep&quot;</span>,
@@ -271,7 +272,7 @@
     <span class="ident">block_current_and_run_next</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// mutex create syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_mutex_create</span>(<span class="ident">blocking</span>: <span class="ident">bool</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_mutex_create&quot;</span>,
@@ -305,7 +306,7 @@
         <span class="ident">process_inner</span>.<span class="ident">mutex_list</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span> <span class="op">-</span> <span class="number">1</span>
     }
 }
-
+<span class="doccomment">/// mutex lock syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_mutex_lock</span>(<span class="ident">mutex_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_mutex_lock&quot;</span>,
@@ -326,7 +327,7 @@
     <span class="ident">mutex</span>.<span class="ident">lock</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// mutex unlock syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_mutex_unlock</span>(<span class="ident">mutex_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_mutex_unlock&quot;</span>,
@@ -347,7 +348,7 @@
     <span class="ident">mutex</span>.<span class="ident">unlock</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// semaphore create syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_semaphore_create</span>(<span class="ident">res_count</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_semaphore_create&quot;</span>,
@@ -379,7 +380,7 @@
     };
     <span class="ident">id</span> <span class="kw">as</span> <span class="ident">isize</span>
 }
-
+<span class="doccomment">/// semaphore up syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_semaphore_up</span>(<span class="ident">sem_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_semaphore_up&quot;</span>,
@@ -399,7 +400,7 @@
     <span class="ident">sem</span>.<span class="ident">up</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// s</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_semaphore_down</span>(<span class="ident">sem_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_semaphore_down&quot;</span>,
@@ -419,7 +420,7 @@
     <span class="ident">sem</span>.<span class="ident">down</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// condvar create syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_condvar_create</span>() -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_condvar_create&quot;</span>,
@@ -451,7 +452,7 @@
     };
     <span class="ident">id</span> <span class="kw">as</span> <span class="ident">isize</span>
 }
-
+<span class="doccomment">/// condvar signal syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_condvar_signal</span>(<span class="ident">condvar_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_condvar_signal&quot;</span>,
@@ -471,7 +472,7 @@
     <span class="ident">condvar</span>.<span class="ident">signal</span>();
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// condvar wait syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_condvar_wait</span>(<span class="ident">condvar_id</span>: <span class="ident">usize</span>, <span class="ident">mutex_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(
         <span class="string">&quot;kernel:pid[{}] tid[{}] sys_condvar_wait&quot;</span>,
@@ -492,7 +493,8 @@
     <span class="ident">condvar</span>.<span class="ident">wait</span>(<span class="ident">mutex</span>);
     <span class="number">0</span>
 }
-
+<span class="doccomment">/// enable deadlock detection syscall</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// YOUR JOB: Implement deadlock detection, but might not all in this syscall</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sys_enable_deadlock_detect</span>(<span class="ident">_enabled</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span> {
     <span class="macro">trace!</span>(<span class="string">&quot;kernel: sys_enable_deadlock_detect NOT IMPLEMENTED&quot;</span>);
