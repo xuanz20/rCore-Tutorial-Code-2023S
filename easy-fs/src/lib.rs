@@ -2,7 +2,7 @@
 //！
 //！ easy-fs is a simple file system implementation.
 //!
-//! As a file system, [`EasyFileSystem`] disk layout [`SuperBlock`] is reflected in the contents of individual sectors on the disk, while the logical file & directory tree structure obtained by parsing the disk layout is accessed through the data structure in memory, which means that it involves access to both disk and memory.
+//! [`EasyFileSystem`]'s disk layout overall design -- [`SuperBlock`] is reflected in the contents of individual sectors on the disk, while the logical file & directory tree structure obtained by parsing the disk layout is accessed through the data structure in memory, which means that it involves access to both disk and memory.
 //!
 //! They( [`DiskInode`] in disk and [`Inode`] in memory) have different access modes. For the disk, you need to send a request to the disk in a software way to indirectly read and write. so, we also nee to pay special attention to which data structures are store on disk and which are stored in memory.
 //!

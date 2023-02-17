@@ -1,10 +1,10 @@
-//! Implementation of process management mechanism
+//! Implementation of process [`ProcessControlBlock`] and task(thread) [`TaskControlBlock`] management mechanism
 //!
-//! Here is the entry for process scheduling required by other modules
+//! Here is the entry for task scheduling required by other modules
 //! (such as syscall or clock interrupt).
-//! By suspending or exiting the current process, you can
-//! modify the process state, manage the process queue through TASK_MANAGER,
-//! and switch the control flow through PROCESSOR.
+//! By suspending or exiting the current task, you can
+//! modify the task state, manage the task queue through TASK_MANAGER (in task/manager.rs) ,
+//! and switch the control flow through PROCESSOR (in task/processor.rs) .
 //!
 //! Be careful when you see [`__switch`]. Control flow around this function
 //! might not be what you expect.
@@ -37,6 +37,7 @@ pub use processor::{
 };
 pub use signal::SignalFlags;
 pub use task::{TaskControlBlock, TaskStatus};
+
 /// Make current task suspended and switch to the next task
 pub fn suspend_current_and_run_next() {
     // There must be an application running.

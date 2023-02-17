@@ -6,7 +6,7 @@
 //!  - inode bitmap
 //!  - inode area with [`DiskInode`]
 //!  - data bitmap
-//!  - data area with [`DataBlock`]
+//!  - data area with DataBlock
 
 use super::{get_block_cache, BlockDevice, BLOCK_SZ};
 use alloc::sync::Arc;
