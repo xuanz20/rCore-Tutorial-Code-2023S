@@ -295,7 +295,7 @@
 <span class="kw">const</span> <span class="ident">PPN_WIDTH_SV39</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">PA_WIDTH_SV39</span> <span class="op">-</span> <span class="ident">PAGE_SIZE_BITS</span>;
 <span class="kw">const</span> <span class="ident">VPN_WIDTH_SV39</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">VA_WIDTH_SV39</span> <span class="op">-</span> <span class="ident">PAGE_SIZE_BITS</span>;
 
-<span class="doccomment">/// Definitions</span>
+<span class="doccomment">/// Physical Address</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PhysAddr</span>(<span class="kw">pub</span> <span class="ident">usize</span>);

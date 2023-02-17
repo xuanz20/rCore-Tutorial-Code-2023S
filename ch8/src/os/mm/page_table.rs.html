@@ -432,7 +432,7 @@
     }
 }
 
-<span class="doccomment">/// Create mutable Vec&lt;u8&gt; slice&gt; in kernel space from ptr in other address space.</span>
+<span class="doccomment">/// Create mutable Vec&lt;u8&gt; slice in kernel space from ptr in other address space. NOTICE: the content pointed to by the pointer `ptr` can cross physical pages.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">translated_byte_buffer</span>(<span class="ident">token</span>: <span class="ident">usize</span>, <span class="ident">ptr</span>: <span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="kw-2">mut</span> [<span class="ident">u8</span>]<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">page_table</span> <span class="op">=</span> <span class="ident">PageTable::from_token</span>(<span class="ident">token</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">usize</span>;
@@ -474,7 +474,7 @@
     <span class="ident">string</span>
 }
 
-<span class="doccomment">/// translate a pointer `ptr` in other address space to a immutable u8 slice in kernel address space</span>
+<span class="doccomment">/// translate a pointer `ptr` in other address space to a immutable u8 slice in kernel address space. NOTICE: the content pointed to by the pointer `ptr` cannot cross physical pages, otherwise translated_byte_buffer should be used.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">translated_ref</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">token</span>: <span class="ident">usize</span>, <span class="ident">ptr</span>: <span class="kw-2">*const</span> <span class="ident">T</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">T</span> {
     <span class="kw">let</span> <span class="ident">page_table</span> <span class="op">=</span> <span class="ident">PageTable::from_token</span>(<span class="ident">token</span>);
     <span class="ident">page_table</span>
@@ -483,7 +483,7 @@
         .<span class="ident">get_ref</span>()
 }
 
-<span class="doccomment">/// translate a pointer `ptr` in other address space to a mutable u8 slice in kernel address space</span>
+<span class="doccomment">/// translate a pointer `ptr` in other address space to a mutable u8 slice in kernel address space. NOTICE: the content pointed to by the pointer `ptr` cannot cross physical pages, otherwise translated_byte_buffer should be used.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">translated_refmut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">token</span>: <span class="ident">usize</span>, <span class="ident">ptr</span>: <span class="kw-2">*mut</span> <span class="ident">T</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="kw-2">mut</span> <span class="ident">T</span> {
     <span class="kw">let</span> <span class="ident">page_table</span> <span class="op">=</span> <span class="ident">PageTable::from_token</span>(<span class="ident">token</span>);
     <span class="kw">let</span> <span class="ident">va</span> <span class="op">=</span> <span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">usize</span>;
