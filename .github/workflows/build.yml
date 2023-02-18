@@ -78,4 +78,3 @@ jobs:
         GITLAB_PROJECT_NAME: "rcore-tutorial-code-2023s"
         GITLAB_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BASE_TEST_TOKEN: ${{ secrets.BASE_TEST_TOKEN }}

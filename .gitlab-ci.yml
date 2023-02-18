@@ -1,5 +1,5 @@
 default:
-  image: deathwish2019/rcore-ci
+  image: duskmoon/dev-env:rcore-ci
 
 stages:
   - test
