@@ -1,0 +1,12 @@
+default:
+  image: deathwish2019/rcore-ci
+
+stages:
+  - test
+
+test-code-job:
+  stage: test
+  script:
+    - git clone https://github.com/LearningOS/rCore-Tutorial-Checker-2023S.git ci-user
+    - git clone https://github.com/LearningOS/rCore-Tutorial-Test-2023S.git ci-user/user
+    - cd ci-user && make test CHAPTER=`echo $CI_COMMIT_REF_NAME | grep -oP 'ch\K[0-9]'` passwd=$BASE_TEST_TOKEN

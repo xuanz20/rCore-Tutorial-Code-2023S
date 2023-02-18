@@ -76,5 +76,6 @@ jobs:
         GITLAB_HOSTNAME: "git.tsinghua.edu.cn"
         GITLAB_PROJECT_ID: "20881"
         GITLAB_PROJECT_NAME: "rcore-tutorial-code-2023s"
-        GITLAB_PROJECT_TOKEN: ${{secrets.GITLAB_PROJECT_TOKEN}}
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        GITLAB_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BASE_TEST_TOKEN: ${{ secrets.BASE_TEST_TOKEN }}
