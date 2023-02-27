@@ -24,6 +24,7 @@ jobs:
           publish_dir: ./os/target/riscv64gc-unknown-none-elf/doc
           destination_dir: ${{ github.ref_name }}
   basic-test:
+    if: github.repository == 'LearningOS/rCore-Tutorial-Code-2023S'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
