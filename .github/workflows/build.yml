@@ -10,8 +10,6 @@ jobs:
   build-doc:
     if: github.repository == 'LearningOS/rCore-Tutorial-Code-2023S'
     runs-on: ubuntu-latest
-    outputs:
-      points: ${{ steps.end.outputs.points}}
     steps:
       - uses: actions/checkout@v2
       - name: Build doc
@@ -28,6 +26,8 @@ jobs:
           destination_dir: ${{ github.ref_name }}
   basic-test:
     runs-on: ubuntu-latest
+    outputs:
+      points: ${{ steps.end.outputs.points}}
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -108,7 +108,7 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v3
         with:
           target_branch: gh-pages
-          build_dir: ./public
+          build_dir: ./classroom
           keep_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
