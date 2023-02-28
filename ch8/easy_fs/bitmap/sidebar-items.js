@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["Bitmap","bitmap struct for disk block management"]]};

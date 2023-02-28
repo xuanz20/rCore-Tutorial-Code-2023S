@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["Inode","Inode struct in memory"]]};

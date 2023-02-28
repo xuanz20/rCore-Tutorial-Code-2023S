@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["DIRENT_SZ",""]],"enum":[["DiskInodeType","Inode Type of easy-fs"]],"struct":[["DirEntry","Directory entry struct"],["DiskInode","Inode struct in disk"],["SuperBlock","superblock of easy-fs"]]};

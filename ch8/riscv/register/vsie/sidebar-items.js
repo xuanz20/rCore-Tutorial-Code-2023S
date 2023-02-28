@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["clear_seie","External Interrupt "],["clear_ssie","Software Interrupt"],["clear_stie","Timer Interrupt"],["read","Reads the CSR"],["set_seie","External Interrupt "],["set_ssie","Software Interrupt"],["set_stie","Timer Interrupt"]],"struct":[["Vsie",""]]};

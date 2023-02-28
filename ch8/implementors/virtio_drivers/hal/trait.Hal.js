@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["os"] = [{"text":"impl <a class=\"trait\" href=\"virtio_drivers/hal/trait.Hal.html\" title=\"trait virtio_drivers::hal::Hal\">Hal</a> for <a class=\"struct\" href=\"os/drivers/block/virtio_blk/struct.VirtioHal.html\" title=\"struct os::drivers::block::virtio_blk::VirtioHal\">VirtioHal</a>","synthetic":false,"types":["os::drivers::block::virtio_blk::VirtioHal"]}];
+implementors["os"] = [{"text":"impl Hal for <a class=\"struct\" href=\"os/drivers/block/virtio_blk/struct.VirtioHal.html\" title=\"struct os::drivers::block::virtio_blk::VirtioHal\">VirtioHal</a>","synthetic":false,"types":["os::drivers::block::virtio_blk::VirtioHal"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
