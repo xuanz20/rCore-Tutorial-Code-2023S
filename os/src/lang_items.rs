@@ -18,12 +18,13 @@ fn panic(info: &PanicInfo) -> ! {
     } else {
         println!("[kernel] Panicked: {}", info.message().unwrap());
     }
-    unsafe {
-        backtrace();
-    }
+    // unsafe {
+    //     backtrace();
+    // }
     shutdown()
 }
 /// backtrace function
+#[allow(unused)]
 unsafe fn backtrace() {
     let mut fp: usize;
     let stop = current_kstack_top();
