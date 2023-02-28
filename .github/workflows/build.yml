@@ -10,6 +10,8 @@ jobs:
   build-doc:
     if: github.repository == 'LearningOS/rCore-Tutorial-Code-2023S'
     runs-on: ubuntu-latest
+    outputs:
+      points: ${{ steps.end.outputs.points}}
     steps:
       - uses: actions/checkout@v2
       - name: Build doc
@@ -100,6 +102,7 @@ jobs:
       - name: Save Log File
         uses: yfblock/multi-rank-log@main
         with:
+          public-dir: classroom
           points: ${{ needs.basic-test.outputs.points }}
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v3
