@@ -144,6 +144,9 @@
 <span id="144">144</span>
 <span id="145">145</span>
 <span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Trap handling functionality</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! For rCore, we have a single trap entry point, namely `__alltraps`. At</span>
@@ -182,8 +185,11 @@
 }
 <span class="doccomment">/// set trap entry for traps happen in kernel(supervisor) mode</span>
 <span class="kw">fn</span> <span class="ident">set_kernel_trap_entry</span>() {
+    <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+        <span class="kw">fn</span> <span class="ident">__trap_from_kernel</span>();
+    }
     <span class="kw">unsafe</span> {
-        <span class="ident">stvec::write</span>(<span class="ident">trap_from_kernel</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">TrapMode::Direct</span>);
+        <span class="ident">stvec::write</span>(<span class="ident">__trap_from_kernel</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">TrapMode::Direct</span>);
     }
 }
 <span class="doccomment">/// set trap entry for traps happen in user mode</span>

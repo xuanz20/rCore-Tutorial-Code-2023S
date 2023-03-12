@@ -436,6 +436,9 @@
 <span id="436">436</span>
 <span id="437">437</span>
 <span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Address Space [`MemorySet`] management of Process</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">frame_alloc</span>, <span class="ident">FrameTracker</span>};
@@ -517,6 +520,9 @@
         {
             <span class="ident">area</span>.<span class="ident">unmap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">page_table</span>);
             <span class="self">self</span>.<span class="ident">areas</span>.<span class="ident">remove</span>(<span class="ident">idx</span>);
+            <span class="kw">unsafe</span> {
+                <span class="macro">asm!</span>(<span class="string">&quot;sfence.vma&quot;</span>);
+            }
         }
     }
     <span class="doccomment">/// Add a new MapArea into this MemorySet.</span>

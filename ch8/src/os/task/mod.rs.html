@@ -197,6 +197,13 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implementation of process [`ProcessControlBlock`] and task(thread) [`TaskControlBlock`] management mechanism</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Here is the entry for task scheduling required by other modules</span>
@@ -220,6 +227,7 @@
 
 <span class="kw">use</span> <span class="ident"><span class="self">self</span>::id::TaskUserRes</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::fs</span>::{<span class="ident">open_file</span>, <span class="ident">OpenFlags</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::task::manager::add_stopping_task</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::timer::remove_timer</span>;
 <span class="kw">use</span> <span class="ident">alloc</span>::{<span class="ident">sync::Arc</span>, <span class="ident">vec::Vec</span>};
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="kw-2">*</span>;
@@ -285,7 +293,13 @@
     <span class="comment">// here we do not remove the thread since we are still using the kstack</span>
     <span class="comment">// it will be deallocated when sys_waittid is called</span>
     <span class="ident">drop</span>(<span class="ident">task_inner</span>);
-    <span class="ident">drop</span>(<span class="ident">task</span>);
+
+    <span class="comment">// Move the task to stop-wait status, to avoid kernel stack from being freed</span>
+    <span class="kw">if</span> <span class="ident">tid</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="ident">add_stopping_task</span>(<span class="ident">task</span>);
+    } <span class="kw">else</span> {
+        <span class="ident">drop</span>(<span class="ident">task</span>);
+    }
     <span class="comment">// however, if this is the main thread of current process</span>
     <span class="comment">// the process should terminate at once</span>
     <span class="kw">if</span> <span class="ident">tid</span> <span class="op">==</span> <span class="number">0</span> {
