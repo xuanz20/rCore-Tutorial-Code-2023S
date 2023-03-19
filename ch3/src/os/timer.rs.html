@@ -61,7 +61,7 @@
 <span class="doccomment">/// get current time in microseconds</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_time_us</span>() -&gt; <span class="ident">usize</span> {
-    <span class="ident">time::read</span>() <span class="op">/</span> (<span class="ident">CLOCK_FREQ</span> <span class="op">/</span> <span class="ident">MICRO_PER_SEC</span>)
+    <span class="ident">time::read</span>() <span class="op">*</span> <span class="ident">MICRO_PER_SEC</span> <span class="op">/</span> <span class="ident">CLOCK_FREQ</span>
 }
 
 <span class="doccomment">/// Set the next timer interrupt</span>
